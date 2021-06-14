@@ -1,0 +1,243 @@
+package com.contactmanager.utils.io;
+
+import java.awt.Desktop;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.imageio.ImageIO;
+
+import com.contactmanager.datamodel.Contact;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
+
+public class DataStorageFile implements DataStorageHandler{
+	private static final String FILENAME_NOTES = "notes.txt";
+	private static final String FILENAME_LOGS = "logs.csv";
+	private static final String FILENAME_PROFILE_PICTURE = "profilePicture";
+	private static final String FILENAME_MAIN = "Main.csv";
+	
+	public static final String CHILD_NAME = "DataStorageFile";
+	
+	private String path;
+	private ConfigFileData pointerConfigFileData;
+	
+	@Override
+	public String getChildClassName() {
+		return CHILD_NAME;
+	}
+	
+	@Override
+	public void setConfigFileDataPointer(ConfigFileData configFileData) {
+		pointerConfigFileData = configFileData;
+	}
+	
+	@Override
+	public void initialize() {
+		path = pointerConfigFileData.getPath();
+	}
+
+	private File checkIfFileExists(int id, String fileName) {
+		String idPath= path + "/" + String.format(MAX_ID_FORMATTING, id);
+		String filePath = idPath + "/" + fileName;
+		checkIfDirExists(id);
+		
+		File file = new File(filePath);
+		
+		if(!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return file;
+	}
+	private void checkIfDirExists(int id) {
+		String idPath= path + "/" + String.format(MAX_ID_FORMATTING, id);
+		File directory = new File(idPath);
+		if(!directory.isDirectory()) {
+			directory.mkdir();
+		}
+	}
+	
+	@Override
+	public String getNotes(int id) {
+		File file = checkIfFileExists(id, FILENAME_NOTES);
+		
+		String notesTxt;
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				notesTxt = br.lines().collect(Collectors.joining("\n"));
+				br.close();
+			} catch (Exception e) {				
+				notesTxt = "";
+				e.printStackTrace();
+			}		
+		return notesTxt;
+	}
+	@Override
+	public void saveNotes(int id, String notes) {
+		File file = checkIfFileExists(id, FILENAME_NOTES);
+		
+		try (FileWriter fw = new FileWriter(file)){
+			fw.write(notes);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public List<String[]> getLogs(int id) {
+		File file = checkIfFileExists(id, FILENAME_LOGS);		
+		List<String[]> allLogs = new ArrayList<>();
+		
+		try (Reader fr = new FileReader(file, StandardCharsets.UTF_8)){
+			
+			var reader = new CSVReader(fr);
+			allLogs = reader.readAll();
+			reader.close();		
+			
+		} catch (IOException |CsvException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
+		if (allLogs.size() != 0) {
+			allLogs.remove(0);
+		}
+		return allLogs;
+	}
+	@Override
+	public void saveLogs(int id, String[][] logs) {
+		File file = checkIfFileExists(id, FILENAME_LOGS);
+		
+		try (var fos = new FileOutputStream(file)){
+			var osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+	        var writer = new CSVWriter(osw);
+			for (String[] log : logs) {
+				writer.writeNext(log);
+			}
+			writer.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public Image getProfileImage(int id) {
+		checkIfDirExists(id);
+		String parsedId = String.format(MAX_ID_FORMATTING, id);
+		String fileName = path + "/" + parsedId + "/" + FILENAME_PROFILE_PICTURE;
+		String[] allExtensions = {".png", ".jpeg"};
+		
+		File profilePictureFile = null;
+		URL noImageStream = null;		
+		try {
+			for (String extension: allExtensions) {
+				profilePictureFile = new File(fileName + extension);
+				if (profilePictureFile.exists()) {
+					BufferedImage profilePictureImage = ImageIO.read(profilePictureFile);
+					return profilePictureImage;
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			noImageStream = getClass().getResource("/NoProfilePicture.png");
+			Image noImage = ImageIO.read(noImageStream);
+			return noImage;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	@Override
+	public void saveProfileImage(int id, Image image) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<String[]> getContactData() {
+		String file = path + "/" + FILENAME_MAIN;
+		List<String[]> allRows = new ArrayList<String[]>();
+		
+		try (Reader fr = new FileReader(file, StandardCharsets.UTF_8)){
+			
+			var reader = new CSVReader(fr);
+			allRows = reader.readAll();
+			reader.close();		
+			return allRows;
+			
+		} catch (IOException |CsvException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+	@Override
+	public void saveContactData(List<Contact> data) {
+		String file = path + "/" + FILENAME_MAIN;
+
+		try (var fos = new FileOutputStream(file)){			
+	        var osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+	        var writer = new CSVWriter(osw);
+	        List<String> columnsList = Contact.getColumnNames(false);
+	        
+	        String[] columns = columnsList.toArray(new String[columnsList.size()]);
+	        writer.writeNext(columns);
+	        for (int i = 0; i < data.size(); i++) {
+	        	List<String> rowList = data.get(i).getElementsAsList(false);
+				String[] row = rowList.toArray(new String[rowList.size()]);
+				writer.writeNext(row);
+			        
+			} 
+	        writer.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		//System.out.println(data.get(0).toString());
+		
+	}
+	
+
+	public void goToPath(int id) {
+		
+		Desktop desktop = null;
+		String dirPath = path + "/" + String.format(MAX_ID_FORMATTING, id);
+		File file = new File(dirPath);
+		try {
+			if (Desktop.isDesktopSupported()) {
+			   desktop = Desktop.getDesktop();
+			   desktop.open(file);
+			}
+			else {
+			   System.out.println("desktop is not supported");
+			}
+	    }
+	    catch (IOException e){  }
+	}
+
+	
+}

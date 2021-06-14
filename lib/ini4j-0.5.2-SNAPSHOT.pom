@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.ini4j</groupId>
+	<artifactId>ini4j</artifactId>
+	<version>0.5.2-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>ini4j</name>
+	<description>Java API for handling configuration files in Windows .ini format. The library includes its own Map based API, Java Preferences API and Java Beans API for handling .ini files. Additionally, the library includes a feature rich (variable/macro substitution, multiply property values, etc) java.util.Properties replacement.</description>
+	<url>http://www.ini4j.org</url>
+	<scm>
+		<connection>scm:svn:https://ini4j.svn.sourceforge.net/svnroot/ini4j/trunk</connection>
+		<developerConnection>scm:svn:https://ini4j.svn.sourceforge.net/svnroot/ini4j/trunk</developerConnection>
+	</scm>
+	<issueManagement>
+		<system>sourceforge</system>
+		<url>http://sourceforge.net/tracker2/?group_id=129580</url>
+	</issueManagement>
+	<licenses>
+		<license>
+			<name>Apache 2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<id>ivan</id>
+			<name>Ivan Szkiba</name>
+			<email>szkiba at SourceForge</email>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-1</timezone>
+		</developer>
+	</developers>
+	<dependencies>
+	</dependencies>
+	<properties>
+		<upload.url>scp://shell.sourceforge.net//home/frs/project/i/in/ini4j/uploads</upload.url>
+		<jdk14.home>/usr/local/j2sdk1.4.2_19</jdk14.home>
+		
+			<debian.jetty.jetty.originalVersion>4.2.2</debian.jetty.jetty.originalVersion>
+		
+			<debian.junit.junit.originalVersion>4.5</debian.junit.junit.originalVersion>
+		
+			<debian.net.sf.retrotranslator.retrotranslator-runtime.originalVersion>1.2.4</debian.net.sf.retrotranslator.retrotranslator-runtime.originalVersion>
+		
+			<debian.org.beanshell.bsh.originalVersion>2.0b4</debian.org.beanshell.bsh.originalVersion>
+		
+			<debian.org.easymock.easymock.originalVersion>2.3</debian.org.easymock.easymock.originalVersion>
+		
+			<debian.org.easymock.easymockclassextension.originalVersion>2.3</debian.org.easymock.easymockclassextension.originalVersion>
+		
+			<debian.originalVersion>0.5.2-SNAPSHOT</debian.originalVersion>
+		
+			<debian.package>libini4j-java</debian.package>
+	</properties>
+</project>
