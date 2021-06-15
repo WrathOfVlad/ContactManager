@@ -1,0 +1,21 @@
+Id,storedName,DisplayedName
+1,id,Id
+2,name,Name
+3,surname,Surname
+4,email1,Email 1
+5,email2,Email 2
+6,email3,Email 3
+7,phone1,Phone 1
+8,phone2,Phone 2
+9,company,Company
+10,location,Location
+11,address,Address
+12,role,Role
+13,linkedin,LinkedIn
+14,facebook,Facebook
+15,companyURL,Company URL
+16,skype,Skype
+17,contactStatus,Contact Status
+18,birthday,Birthday
+19,lastContact,Last Contact
+20,nextContact,Next Contact

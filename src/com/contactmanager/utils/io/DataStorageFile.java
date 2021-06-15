@@ -2,7 +2,6 @@ package com.contactmanager.utils.io;
 
 import java.awt.Desktop;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -99,8 +98,7 @@ public class DataStorageFile implements DataStorageHandler{
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
-		}
-		
+		}	
 	}
 
 	@Override
@@ -120,7 +118,7 @@ public class DataStorageFile implements DataStorageHandler{
 			
 		}
 		if (allLogs.size() != 0) {
-			allLogs.remove(0);
+			//allLogs.remove(0);
 		}
 		return allLogs;
 	}
@@ -146,7 +144,7 @@ public class DataStorageFile implements DataStorageHandler{
 		checkIfDirExists(id);
 		String parsedId = String.format(MAX_ID_FORMATTING, id);
 		String fileName = path + "/" + parsedId + "/" + FILENAME_PROFILE_PICTURE;
-		String[] allExtensions = {".png", ".jpeg"};
+		String[] allExtensions = {".png", ".jpg"};
 		
 		File profilePictureFile = null;
 		URL noImageStream = null;		
@@ -154,20 +152,20 @@ public class DataStorageFile implements DataStorageHandler{
 			for (String extension: allExtensions) {
 				profilePictureFile = new File(fileName + extension);
 				if (profilePictureFile.exists()) {
-					BufferedImage profilePictureImage = ImageIO.read(profilePictureFile);
+					Image profilePictureImage = ImageIO.read(profilePictureFile);
 					return profilePictureImage;
 				}
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		try {
-			noImageStream = getClass().getResource("/NoProfilePicture.png");
+			noImageStream = getClass().getResource(NO_PROFILE_IMAGE_PATH);
 			Image noImage = ImageIO.read(noImageStream);
 			return noImage;
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			return null;
 		}
 	}

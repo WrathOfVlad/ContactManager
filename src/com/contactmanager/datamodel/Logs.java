@@ -70,6 +70,7 @@ public class Logs {
 			addLog(log);
 		}
 	}
+
 	
 	public void saveLogsToFile() {
 		List<String[]> logs = getLogs();

@@ -1,6 +1,10 @@
 package com.contactmanager.entrypoint;
 
 
+import java.io.IOException;
+
+import org.ini4j.InvalidFileFormatException;
+
 import com.contactmanager.datamodel.Contacts;
 import com.contactmanager.datamodel.Logs;
 import com.contactmanager.utils.io.ConfigFileData;
@@ -8,11 +12,9 @@ import com.contactmanager.utils.io.DataStorageFactory;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.vew.MainFrame;
 
-
-
 public class Main 
 {
-	public static void main(String[] args){
+	public static void main(String[] args) throws InvalidFileFormatException, IOException{
 		//System.out.println(System.getProperty("user.dir"));
 		DataStorageFactory pointerDataStorageFactory = new DataStorageFactory();
 		ConfigFileData pointerConfigFileData = new ConfigFileData();
