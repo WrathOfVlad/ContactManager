@@ -16,6 +16,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.text.ParseException;
@@ -24,14 +26,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
+import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -55,6 +60,7 @@ import com.contactmanager.datamodel.Log;
 import com.contactmanager.datamodel.Logs;
 import com.contactmanager.utils.io.DataStorageFile;
 import com.contactmanager.utils.io.DataStorageHandler;
+
 
 public class ContactDetail extends JPanel {
 	
@@ -94,6 +100,7 @@ public class ContactDetail extends JPanel {
 		
 
 		profilePictureLabel = new JLabel();
+		profilePictureLabel.setHorizontalAlignment(JLabel.CENTER);
 		profilePictureLabel.setFocusTraversalKeysEnabled(false);
 		profilePictureLabel.setBounds(25, 25, 100, 119);
 		profilePictureLabel.setIconTextGap(0);
@@ -107,15 +114,49 @@ public class ContactDetail extends JPanel {
 		MaskFormatter dateFormat = null;
 		try {
 			dateFormat = new MaskFormatter("####-##-##");
+			dateFormat.setPlaceholderCharacter('_');
 
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		InputVerifier verifier = new InputVerifier() {
+			
+			@Override
+			public boolean verify(JComponent input) {
+				Boolean returnValue = false;
+				JFormattedTextField textField = (JFormattedTextField)input;
+				AbstractFormatter formater = textField.getFormatter();
+				if(formater != null) {
+					try {
+				         formater.stringToValue(textField.getText());
+				         returnValue = true;
+				    } 
+					catch (Exception e) {
+						returnValue = false;
+						
+				    }
+				    return returnValue;
+				}
+				else {
+					return true;
+				}
+			}
+			public boolean shouldYieldFocus(JComponent input) {
+				Boolean isValid =verify(input);
+				if(!isValid) {
+					((JFormattedTextField)input).setValue(null);
+					isValid = verify(input);
+				}
+				return true;
+			}
+		};
+		
 		JFormattedTextField birthdayTextField = new JFormattedTextField(dateFormat);
 		birthdayTextField.setBounds(130, 150, 85, 20);
 		add(birthdayTextField);
+		birthdayTextField.setInputVerifier(verifier);
 		allTextFields.put(Contact.BIRTHDAY_FIELD, birthdayTextField);
 		
 		JFormattedTextField formattedTextField = new JFormattedTextField(dateFormat);
@@ -123,6 +164,7 @@ public class ContactDetail extends JPanel {
 		formattedTextField.setEditable(false);
 		formattedTextField.setBounds(500, 325, 85, 20);
 		add(formattedTextField);
+		formattedTextField.setInputVerifier(verifier);
 		allTextFields.put(Contact.NEXTCONTACT_FIELD, formattedTextField);
 		
 		JFormattedTextField formattedTextField_1 = new JFormattedTextField(dateFormat);
@@ -130,6 +172,7 @@ public class ContactDetail extends JPanel {
 		formattedTextField_1.setEditable(false);
 		formattedTextField_1.setBounds(500, 350, 85, 20);
 		add(formattedTextField_1);
+		formattedTextField_1.setInputVerifier(verifier);
 		allTextFields.put(Contact.LASTCONTACT_FIELD, formattedTextField_1);
 		
 		
@@ -598,20 +641,34 @@ public class ContactDetail extends JPanel {
 	}
 
 	public void loadImage() {
-		Image image = null;
+
+		BufferedImage bufferedImage = null;
 		if (id == null) {
-			image = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/NoProfilePicture.png"));
+			try {
+				URL noImageStream = getClass().getResource(DataStorageHandler.NO_PROFILE_IMAGE_PATH);
+				bufferedImage = ImageIO.read(noImageStream);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		else {
-			image = pointerDataStorage.getProfileImage(id);
+			Image image = pointerDataStorage.getProfileImage(id);
+			bufferedImage = (BufferedImage) image;	
 		}
 		
-		//BufferedImage bufferedImage = (BufferedImage) image;		
-		double aspectRatio = image.getWidth(null)/image.getHeight(null);
 		
-		image = image.getScaledInstance(profilePictureLabel.getWidth(), (int) Math.floor(profilePictureLabel.getWidth()/aspectRatio), Image.SCALE_SMOOTH);
-		ImageIcon imageToIcon = new ImageIcon(image);
-		profilePictureLabel.setIcon(imageToIcon);
+		Dimension original = new Dimension(bufferedImage.getHeight(),bufferedImage.getWidth());
+		Dimension boundary = new Dimension(profilePictureLabel.getHeight(),profilePictureLabel.getWidth());
+		
+		double widthRatio = boundary.getWidth() / original.getWidth();
+	    double heightRatio = boundary.getHeight() / original.getHeight();
+	    double ratio = Math.min(widthRatio, heightRatio);
+		
+	    Image scaledImage = bufferedImage.getScaledInstance((int) (original.height*ratio),(int)(original.width*ratio), Image.SCALE_SMOOTH);
+	    
+	    
+		ImageIcon imageIcon = new ImageIcon(scaledImage);
+		profilePictureLabel.setIcon(imageIcon);
 
 	
 	}
@@ -619,7 +676,8 @@ public class ContactDetail extends JPanel {
 		Contact contact = pointerContacts.getContactById(id);
 		
 		contact.writeToContactDetail(allTextFields);
-		textPane.setText(pointerDataStorage.getNotes(id));
+		String notes = pointerDataStorage.getNotes(id);
+		textPane.setText(notes);
 	}
 	
 	public void loadDetail(int id) {
@@ -644,9 +702,9 @@ public class ContactDetail extends JPanel {
 	}
 	
 	private void loadLogs() {
-		logs = new Logs(id);
+		Logs localLogs = new Logs(id);
 		
-		List<String[]> allLogsList = logs.getLogs();
+		List<String[]> allLogsList = localLogs.getLogs();
 		String[] columns = Log.getColumnNames();
 		
 		String[][] allLogsArray = new String[allLogsList.size()][];
@@ -663,6 +721,7 @@ public class ContactDetail extends JPanel {
 		table.setAutoCreateRowSorter(true);
 		table.getTableHeader().setReorderingAllowed(false);
 		scrollPane_1.setViewportView(table);
+		logs = localLogs;
 		
 	}
 	
@@ -675,7 +734,13 @@ public class ContactDetail extends JPanel {
 		this.id = null;
 
 		for (String field : allTextFields.keySet()) {
-			allTextFields.get(field).setText(null);
+			JTextField textField = allTextFields.get(field);
+			if( textField instanceof JFormattedTextField) {
+				((JFormattedTextField) textField).setValue(null);
+			}
+			else {
+				textField.setText(null);
+			}
 		}
 		
 		textPane.setText("");
@@ -691,7 +756,6 @@ public class ContactDetail extends JPanel {
 	
 	public void save() {
 		Contact contact;
-
 		if (id != null) {
 			contact = pointerContacts.getContactById(id);
 		}

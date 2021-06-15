@@ -89,26 +89,26 @@ public class Contact {
 			return;
 		}
 		
-		this.id = rowData[columnNames.indexOf(ID_FIELD)];
-		this.name = rowData[columnNames.indexOf(NAME_FIELD)];
-		this.surname = rowData[columnNames.indexOf(SURNAME_FIELD)];
-		this.email1 = rowData[columnNames.indexOf(EMAIL1_FIELD)];
-		this.email2 = rowData[columnNames.indexOf(EMAIL2_FIELD)];
-		this.email3 = rowData[columnNames.indexOf(EMAIL3_FIELD)];
-		this.phone1 = rowData[columnNames.indexOf(PHONE1_FIELD)];
-		this.phone2 = rowData[columnNames.indexOf(PHONE2_FIELD)];
-		this.birthday = rowData[columnNames.indexOf(BIRTHDAY_FIELD)];
-		this.linkedIn = rowData[columnNames.indexOf(LINKEDIN_FIELD)];
-		this.facebook = rowData[columnNames.indexOf(FACEBOOK_FIELD)];
-		this.company = rowData[columnNames.indexOf(COMPANY_FIELD)];
-		this.role = rowData[columnNames.indexOf(ROLE_FIELD)];
-		this.location = rowData[columnNames.indexOf(LOCATION_FIELD)];
+		setId(rowData[columnNames.indexOf(ID_FIELD)]);;
+		setName(rowData[columnNames.indexOf(NAME_FIELD)]);
+		setSurname(rowData[columnNames.indexOf(SURNAME_FIELD)]);
+		setEmail1(rowData[columnNames.indexOf(EMAIL1_FIELD)]);
+		setEmail2(rowData[columnNames.indexOf(EMAIL2_FIELD)]);
+		setEmail3(rowData[columnNames.indexOf(EMAIL3_FIELD)]);
+		setPhone1(rowData[columnNames.indexOf(PHONE1_FIELD)]);
+		setPhone2(rowData[columnNames.indexOf(PHONE2_FIELD)]);
+		setBirthday(rowData[columnNames.indexOf(BIRTHDAY_FIELD)]);
+		setLinkedIn(rowData[columnNames.indexOf(LINKEDIN_FIELD)]);
+		setFacebook(rowData[columnNames.indexOf(FACEBOOK_FIELD)]);
+		setCompany(rowData[columnNames.indexOf(COMPANY_FIELD)]);
+		setRole(rowData[columnNames.indexOf(ROLE_FIELD)]);
+		setLocation(rowData[columnNames.indexOf(LOCATION_FIELD)]);
 		//this.contactStatus = rowData[columnNames.indexOf(CONTACTSTATUS_FIELD)];
-		this.lastContact = rowData[columnNames.indexOf(LASTCONTACT_FIELD)];
-		this.nextContact = rowData[columnNames.indexOf(NEXTCONTACT_FIELD)];
-		this.companyURL = rowData[columnNames.indexOf(COMPANYURL_FIELD)];
-		this.skype = rowData[columnNames.indexOf(SKYPE_FIELD)];
-		this.address = rowData[columnNames.indexOf(ADDRESS_FIELD)];
+		setLastContact(rowData[columnNames.indexOf(LASTCONTACT_FIELD)]);
+		setNextContact(rowData[columnNames.indexOf(NEXTCONTACT_FIELD)]);
+		setCompanyURL(rowData[columnNames.indexOf(COMPANYURL_FIELD)]);
+		setSkype(rowData[columnNames.indexOf(SKYPE_FIELD)]);
+		setAddress(rowData[columnNames.indexOf(ADDRESS_FIELD)]);
 		
 		setFullName();
 	}
@@ -120,82 +120,123 @@ public class Contact {
 		if (includeFullName) {
 			listElements.add(fullName);
 		}
-		
-		listElements.add(name);
-		listElements.add(surname);
-		listElements.add(email1);
-		listElements.add(email2);
-		listElements.add(email3);
-		listElements.add(phone1);
-		listElements.add(phone2);
-		listElements.add(birthday);
-		listElements.add(linkedIn);
-		listElements.add(facebook);
-		listElements.add(company);
-		listElements.add(role);
-		listElements.add(location);
-		listElements.add(contactStatus);		
-		listElements.add(lastContact);		
-		listElements.add(nextContact);		
-		listElements.add(companyURL);
-		listElements.add(skype);
-		listElements.add(address);
-		
-		
+		listElements.add(getName());
+		listElements.add(getSurname());
+		listElements.add(getEmail1());
+		listElements.add(getEmail2());
+		listElements.add(getEmail3());
+		listElements.add(getPhone1());
+		listElements.add(getPhone2());
+		listElements.add(getBirthday());
+		listElements.add(getLinkedIn());
+		listElements.add(getFacebook());
+		listElements.add(getCompany());
+		listElements.add(getRole());
+		listElements.add(getLocation());
+		listElements.add(getContactStatus());		
+		listElements.add(getLastContact());		
+		listElements.add(getNextContact());		
+		listElements.add(getCompanyURL());
+		listElements.add(getSkype());
+		listElements.add(getAddress());
 		return listElements;
-		
-		
+	
 	}
 
 	
 	public void loadFromContactDetail(Map<String, JTextField> textFieldMap) {
-		this.name = textFieldMap.get(NAME_FIELD).getText();
-		this.surname = textFieldMap.get(SURNAME_FIELD).getText();
-		this.email1 = textFieldMap.get(EMAIL1_FIELD).getText();
-		this.email2 = textFieldMap.get(EMAIL2_FIELD).getText();
-		this.email3 = textFieldMap.get(EMAIL3_FIELD).getText();
-		this.phone1 = textFieldMap.get(PHONE1_FIELD).getText();
-		this.phone2 = textFieldMap.get(PHONE2_FIELD).getText();
-		this.linkedIn = textFieldMap.get(LINKEDIN_FIELD).getText();
-		this.facebook = textFieldMap.get(FACEBOOK_FIELD).getText();
-		this.company = textFieldMap.get(COMPANY_FIELD).getText();
-		this.role = textFieldMap.get(ROLE_FIELD).getText();
-		this.location = textFieldMap.get(LOCATION_FIELD).getText();
-		this.contactStatus = textFieldMap.get(CONTACTSTATUS_FIELD).getText();
-		this.address = textFieldMap.get(ADDRESS_FIELD).getText();
-		this.companyURL = textFieldMap.get(COMPANYURL_FIELD).getText();
-		this.skype = textFieldMap.get(SKYPE_FIELD).getText();
+		setName(textFieldMap.get(NAME_FIELD).getText());
+		setSurname(textFieldMap.get(SURNAME_FIELD).getText());
+		setEmail1(textFieldMap.get(EMAIL1_FIELD).getText());
+		setEmail2(textFieldMap.get(EMAIL2_FIELD).getText());
+		setEmail3(textFieldMap.get(EMAIL3_FIELD).getText());
+		setPhone1(textFieldMap.get(PHONE1_FIELD).getText());
+		setPhone2(textFieldMap.get(PHONE2_FIELD).getText());
+		setLinkedIn(textFieldMap.get(LINKEDIN_FIELD).getText());
+		setFacebook(textFieldMap.get(FACEBOOK_FIELD).getText());
+		setCompany(textFieldMap.get(COMPANY_FIELD).getText());
+		setRole(textFieldMap.get(ROLE_FIELD).getText());
+		setLocation(textFieldMap.get(LOCATION_FIELD).getText());
+		setContactStatus(textFieldMap.get(CONTACTSTATUS_FIELD).getText());
+		setAddress(textFieldMap.get(ADDRESS_FIELD).getText());
+		setCompanyURL(textFieldMap.get(COMPANYURL_FIELD).getText());
+		setSkype(textFieldMap.get(SKYPE_FIELD).getText());
 		
-		this.birthday = textFieldMap.get(BIRTHDAY_FIELD).getText();
-		this.lastContact = textFieldMap.get(LASTCONTACT_FIELD).getText();
-		this.nextContact = textFieldMap.get(NEXTCONTACT_FIELD).getText();
+		((JFormattedTextField)textFieldMap.get(BIRTHDAY_FIELD)).getValue();
+		setBirthday(((JFormattedTextField)textFieldMap.get(BIRTHDAY_FIELD)).getValue());
+		setLastContact(((JFormattedTextField)textFieldMap.get(LASTCONTACT_FIELD)).getValue());
+		setNextContact(((JFormattedTextField)textFieldMap.get(NEXTCONTACT_FIELD)).getValue());
 		
+		
+
 		getFullName();
 	}
 	
-	public void writeToContactDetail(Map<String, JTextField> textFieldMap) {
-		textFieldMap.get(NAME_FIELD).setText(this.name);
-		textFieldMap.get(SURNAME_FIELD).setText(this.surname);
-		textFieldMap.get(EMAIL1_FIELD).setText(this.email1);
-		textFieldMap.get(EMAIL2_FIELD).setText(this.email2);
-		textFieldMap.get(EMAIL3_FIELD).setText(this.email3);
-		textFieldMap.get(PHONE1_FIELD).setText(this.phone1);
-		textFieldMap.get(PHONE2_FIELD).setText(this.phone2);
-		textFieldMap.get(LINKEDIN_FIELD).setText(this.linkedIn);
-		textFieldMap.get(FACEBOOK_FIELD).setText(this.facebook);
-		textFieldMap.get(COMPANY_FIELD).setText(this.company);
-		textFieldMap.get(ROLE_FIELD).setText(this.role);
-		textFieldMap.get(LOCATION_FIELD).setText(this.location);
-		textFieldMap.get(CONTACTSTATUS_FIELD).setText(this.contactStatus);
-		textFieldMap.get(ADDRESS_FIELD).setText(this.address);
-		textFieldMap.get(COMPANYURL_FIELD).setText(this.companyURL);
-		textFieldMap.get(SKYPE_FIELD).setText(this.skype);
+	public void setNextContact(Object value) {
+		this.nextContact = dateFormatToString(value);
+	}
+
+	public void setLastContact(Object value) {
+		this.lastContact = dateFormatToString(value);
+	}
+
+	public void setBirthday(Object value) {
+		this.birthday = dateFormatToString(value);
 		
-		((JFormattedTextField)textFieldMap.get(BIRTHDAY_FIELD)).setValue(this.birthday);
-		((JFormattedTextField)textFieldMap.get(LASTCONTACT_FIELD)).setValue(this.lastContact);
-		((JFormattedTextField)textFieldMap.get(NEXTCONTACT_FIELD)).setValue(this.nextContact);	
 	}
 	
+	public Object getBirthdayObject() {
+		return getDateAsObject(birthday);
+	}
+	
+	public Object getLastContactObject() {
+		return getDateAsObject(lastContact);
+	}
+	public Object getNextContactObject() {
+		return getDateAsObject(nextContact);
+	}
+	
+	public Object getDateAsObject(String string) {
+		if (string == "") {
+			return null;
+		}
+		else {
+			return string;
+		}
+	}
+	
+
+	private String dateFormatToString(Object value) {
+		if(value == null) {
+			return "";
+		}
+		else {
+			return value.toString();
+		}
+	}
+	
+	public void writeToContactDetail(Map<String, JTextField> textFieldMap) {
+		textFieldMap.get(NAME_FIELD).setText(getName());
+		textFieldMap.get(SURNAME_FIELD).setText(getSurname());
+		textFieldMap.get(EMAIL1_FIELD).setText(getEmail1());
+		textFieldMap.get(EMAIL2_FIELD).setText(getEmail2());
+		textFieldMap.get(EMAIL3_FIELD).setText(getEmail3());
+		textFieldMap.get(PHONE1_FIELD).setText(getPhone1());
+		textFieldMap.get(PHONE2_FIELD).setText(getPhone2());
+		textFieldMap.get(LINKEDIN_FIELD).setText(getLinkedIn());
+		textFieldMap.get(FACEBOOK_FIELD).setText(getFacebook());
+		textFieldMap.get(COMPANY_FIELD).setText(getCompany());
+		textFieldMap.get(ROLE_FIELD).setText(getRole());
+		textFieldMap.get(LOCATION_FIELD).setText(getLocation());
+		textFieldMap.get(CONTACTSTATUS_FIELD).setText(getContactStatus());
+		textFieldMap.get(ADDRESS_FIELD).setText(getAddress());
+		textFieldMap.get(COMPANYURL_FIELD).setText(getCompanyURL());
+		textFieldMap.get(SKYPE_FIELD).setText(getSkype());
+		
+		((JFormattedTextField)textFieldMap.get(BIRTHDAY_FIELD)).setValue(getBirthdayObject());
+		((JFormattedTextField)textFieldMap.get(LASTCONTACT_FIELD)).setValue(getLastContactObject());
+		((JFormattedTextField)textFieldMap.get(NEXTCONTACT_FIELD)).setValue(getNextContactObject());	
+	}
 	
 	public static void setVisibleColumns(List<String> list) {
 		visibleColumns = list;
@@ -203,6 +244,7 @@ public class Contact {
 	public static List<String> getVisibleColumns() {
 		return visibleColumns;
 	}
+	
 	
 	public String getAddress() {
 		return address;

@@ -35,6 +35,7 @@ public class MainFrame extends JFrame {
 	public static final String CONTACT_LOG = "ContactLog";
 	public static final String SETTINGS = "Settings";
 	public static final String EMPTY = "empty";
+	public static final String VERSION = "2.3.2";
 	
 	public MainFrame(Contacts contacts, DataStorageHandler dataStorage, ConfigFileData configFileData) {
 		pointerContacts = contacts;
@@ -46,7 +47,7 @@ public class MainFrame extends JFrame {
 		pointerSettingsView = new SettingsView(this, pointerConfigFileData);
 		pointerContactLog = new ContactLog(this);
 		
-		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icon.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(DataStorageHandler.ICON_PATH)));
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -88,7 +89,7 @@ public class MainFrame extends JFrame {
 		});
 		mnHelp.add(mntmSettings);
 		
-		JMenuItem mntmVersion = new JMenuItem("Version:   2.3.1");
+		JMenuItem mntmVersion = new JMenuItem("Version:   " + VERSION);
 		mnHelp.add(mntmVersion);
 		
 		getContentPane().setLayout(new CardLayout(0, 0));
@@ -227,8 +228,8 @@ public class MainFrame extends JFrame {
 	}
 	
 	private void sendNotification(String title, String message) throws IOException, AWTException {
-		Image image = ImageIO.read(getClass().getResource("/icon.png"));
-		String path = getClass().getResource("/icon.png").getPath();
+		Image image = ImageIO.read(getClass().getResource(DataStorageHandler.ICON_PATH));
+		String path = getClass().getResource(DataStorageHandler.ICON_PATH).getPath();
 		
 		String os = System.getProperty("os.name");
 		if (os.contains("Linux")) {

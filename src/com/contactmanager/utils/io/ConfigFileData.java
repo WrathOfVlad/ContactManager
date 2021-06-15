@@ -3,6 +3,9 @@ package com.contactmanager.utils.io;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,17 +23,26 @@ public class ConfigFileData {
 	private static final String STORING_TYPE = "storageType";
 	private static final String PATH = "path";
 	
-	private static final String CONFIG_PATH = System.getProperty("user.dir") + "/config.ini";
-	
+	private static final String CONFIG_PATH = DataStorageHandler.BASE_PATH + "/config.ini";
+	private static final String CONFIG_DEFAULT_PATH = "/configurations/config.ini";
 	
 	private Ini ini = new Ini();
 	
-	public ConfigFileData() {
+	public ConfigFileData(){
 		try {
 			ini.load(new FileReader(CONFIG_PATH));
 			
 		} catch (IOException e) {
-			e.printStackTrace();
+			try {
+				InputStream iStream = getClass().getResource(CONFIG_DEFAULT_PATH).openStream();
+				File configCopy = new File(CONFIG_PATH);
+				Files.copy(iStream, configCopy.toPath(),StandardCopyOption.REPLACE_EXISTING);
+				ini.load(configCopy);
+			}
+			catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 	
@@ -59,9 +71,16 @@ public class ConfigFileData {
 	}
 	
 	
+	
 	public void getVisibleColumns() {
 		String visibleColumnsString = ini.get(USER_SETTINGS,VISIBLE_COLUMNS);
 		String[] visibleColumnsArray = visibleColumnsString.split(",");
-		Contact.setVisibleColumns(new ArrayList<>(Arrays.asList(visibleColumnsArray)));
+		
+		List<String> visibleList = new ArrayList<>(Arrays.asList(visibleColumnsArray));
+		if (!visibleList.contains("Id")) {
+			visibleList.add(0, "Id");
+		}
+		
+		Contact.setVisibleColumns(visibleList);
 	}
 }
