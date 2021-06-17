@@ -35,9 +35,15 @@ public class ConfigFileData {
 		} catch (IOException e) {
 			try {
 				InputStream iStream = getClass().getResource(CONFIG_DEFAULT_PATH).openStream();
+				
 				File configCopy = new File(CONFIG_PATH);
 				Files.copy(iStream, configCopy.toPath(),StandardCopyOption.REPLACE_EXISTING);
+				Wini iniStore = new Wini(configCopy);
+				iniStore.put(GENERAL, PATH, DataStorageHandler.BASE_PATH + "/Data");
+				iniStore.store();
+				
 				ini.load(configCopy);
+				
 			}
 			catch (Exception e1) {
 				// TODO Auto-generated catch block

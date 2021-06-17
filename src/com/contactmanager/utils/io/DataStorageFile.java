@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,11 +50,23 @@ public class DataStorageFile implements DataStorageHandler{
 		path = pointerConfigFileData.getPath();
 	}
 
-	private File checkIfFileExists(int id, String fileName) {
+	private File checkIfFileExistsInIdDir(int id, String fileName) {
 		String idPath= path + "/" + String.format(MAX_ID_FORMATTING, id);
 		String filePath = idPath + "/" + fileName;
-		checkIfDirExists(id);
+		checkIfDirExists(idPath);
+		return checkIfFileExists(filePath);
 		
+	}
+	private File checkIfFileExistsInBackupDir(int id, String fileName) {
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		String idPath= path + "/backup/" + timestamp.toString() + "/" + String.format(MAX_ID_FORMATTING, id);
+		String filePath = idPath + "/" + fileName;
+		checkIfDirExists(idPath);
+		return checkIfFileExists(filePath);
+		
+	}
+	
+	private File checkIfFileExists(String filePath) {
 		File file = new File(filePath);
 		
 		if(!file.exists()) {
@@ -66,8 +79,7 @@ public class DataStorageFile implements DataStorageHandler{
 		}
 		return file;
 	}
-	private void checkIfDirExists(int id) {
-		String idPath= path + "/" + String.format(MAX_ID_FORMATTING, id);
+	private void checkIfDirExists(String idPath) {
 		File directory = new File(idPath);
 		if(!directory.isDirectory()) {
 			directory.mkdir();
@@ -76,7 +88,7 @@ public class DataStorageFile implements DataStorageHandler{
 	
 	@Override
 	public String getNotes(int id) {
-		File file = checkIfFileExists(id, FILENAME_NOTES);
+		File file = checkIfFileExistsInIdDir(id, FILENAME_NOTES);
 		
 		String notesTxt;
 			try {
@@ -91,7 +103,7 @@ public class DataStorageFile implements DataStorageHandler{
 	}
 	@Override
 	public void saveNotes(int id, String notes) {
-		File file = checkIfFileExists(id, FILENAME_NOTES);
+		File file = checkIfFileExistsInIdDir(id, FILENAME_NOTES);
 		
 		try (FileWriter fw = new FileWriter(file)){
 			fw.write(notes);
@@ -103,7 +115,7 @@ public class DataStorageFile implements DataStorageHandler{
 
 	@Override
 	public List<String[]> getLogs(int id) {
-		File file = checkIfFileExists(id, FILENAME_LOGS);		
+		File file = checkIfFileExistsInIdDir(id, FILENAME_LOGS);		
 		List<String[]> allLogs = new ArrayList<>();
 		
 		try (Reader fr = new FileReader(file, StandardCharsets.UTF_8)){
@@ -122,9 +134,10 @@ public class DataStorageFile implements DataStorageHandler{
 		}
 		return allLogs;
 	}
+
 	@Override
-	public void saveLogs(int id, String[][] logs) {
-		File file = checkIfFileExists(id, FILENAME_LOGS);
+	public void saveLogs(int id, List<String[]> logs) {
+		File file = checkIfFileExistsInIdDir(id, FILENAME_LOGS);
 		
 		try (var fos = new FileOutputStream(file)){
 			var osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
@@ -141,9 +154,10 @@ public class DataStorageFile implements DataStorageHandler{
 
 	@Override
 	public Image getProfileImage(int id) {
-		checkIfDirExists(id);
 		String parsedId = String.format(MAX_ID_FORMATTING, id);
-		String fileName = path + "/" + parsedId + "/" + FILENAME_PROFILE_PICTURE;
+		String idPath = path + "/" + parsedId;
+		checkIfDirExists(idPath);
+		String fileName =  idPath + "/" + FILENAME_PROFILE_PICTURE;
 		String[] allExtensions = {".png", ".jpg"};
 		
 		File profilePictureFile = null;
@@ -205,10 +219,10 @@ public class DataStorageFile implements DataStorageHandler{
 	        String[] columns = columnsList.toArray(new String[columnsList.size()]);
 	        writer.writeNext(columns);
 	        for (int i = 0; i < data.size(); i++) {
-	        	List<String> rowList = data.get(i).getElementsAsList(false);
+	        	Contact contact = data.get(i);
+	        	List<String> rowList = contact.getElementsAsList(false);
 				String[] row = rowList.toArray(new String[rowList.size()]);
 				writer.writeNext(row);
-			        
 			} 
 	        writer.close();
 		}
@@ -216,6 +230,12 @@ public class DataStorageFile implements DataStorageHandler{
 			e.printStackTrace();
 		}
 		//System.out.println(data.get(0).toString());
+		
+	}
+	
+	@Override
+	public void createBackup(int id) {
+		checkIfFileExistsInBackupDir(id, FILENAME_NOTES);
 		
 	}
 	
@@ -236,6 +256,8 @@ public class DataStorageFile implements DataStorageHandler{
 	    }
 	    catch (IOException e){  }
 	}
+	
+	
 
 	
 }

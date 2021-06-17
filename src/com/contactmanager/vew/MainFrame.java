@@ -9,6 +9,8 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.io.IOException;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.contactmanager.datamodel.Contact;
 import com.contactmanager.datamodel.Contacts;
+import com.contactmanager.datamodel.CurrentContactInfo;
 import com.contactmanager.utils.io.ConfigFileData;
 import com.contactmanager.utils.io.DataStorageHandler;
 
@@ -35,15 +38,29 @@ public class MainFrame extends JFrame {
 	public static final String CONTACT_LOG = "ContactLog";
 	public static final String SETTINGS = "Settings";
 	public static final String EMPTY = "empty";
-	public static final String VERSION = "2.3.2";
+	public static final String VERSION = "2.3.3";
+	
+	public boolean isContactListViewerUpToDate = true;
+	
+	private Contacts pointerContacts;
+	private ConfigFileData pointerConfigFileData;
+	private ContactList pointerContactList;
+	private ContactDetail pointerContactDetail;
+	private SettingsView pointerSettingsView;
+	private ContactLog pointerContactLog;
+	
+	
+	private JPanel contentPane;
+	private JPanel screenLayout = new JPanel(new CardLayout());
+	public String currentCard;
 	
 	public MainFrame(Contacts contacts, DataStorageHandler dataStorage, ConfigFileData configFileData) {
 		pointerContacts = contacts;
-		pointerDataStorage = dataStorage;
 		pointerConfigFileData = configFileData;
 		
 		pointerContactList = new ContactList(this, pointerContacts);
-		pointerContactDetail= new ContactDetail(this, pointerContacts,pointerDataStorage);
+		CurrentContactInfo contactInfo = new CurrentContactInfo(pointerContacts,dataStorage);
+		pointerContactDetail= new ContactDetail(this,contactInfo);
 		pointerSettingsView = new SettingsView(this, pointerConfigFileData);
 		pointerContactLog = new ContactLog(this);
 		
@@ -71,7 +88,6 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				changePage(CONTACT_DETAIL);
-				pointerContactDetail.clearLoadedDetails();
 			}
 		});
 		mnMenu_1.add(mntmNewContact);
@@ -93,20 +109,12 @@ public class MainFrame extends JFrame {
 		mnHelp.add(mntmVersion);
 		
 		getContentPane().setLayout(new CardLayout(0, 0));
-		
-		JPanel contactDetail = pointerContactDetail;
-		getContentPane().add(new JScrollPane(contactDetail), CONTACT_DETAIL);
-		
-		JPanel contactList = pointerContactList;
-		getContentPane().add(new JScrollPane(contactList), CONTACT_LIST);
-		
-		JPanel contactLog = pointerContactDetail;
-		getContentPane().add(new JScrollPane(contactLog), CONTACT_LOG);
-		
-		JPanel settings = pointerSettingsView;
-		getContentPane().add(new JScrollPane(settings), SETTINGS);
+		getContentPane().add(new JScrollPane(pointerContactDetail), CONTACT_DETAIL);
+		getContentPane().add(new JScrollPane(pointerContactList), CONTACT_LIST);
+		getContentPane().add(new JScrollPane(pointerContactLog), CONTACT_LOG);
+		getContentPane().add(new JScrollPane(pointerSettingsView), SETTINGS);
 		initialize();
-		
+
 	}
 	
 	/**
@@ -124,15 +132,6 @@ public class MainFrame extends JFrame {
 	public void updateRowInTable(int id) {
 		pointerContactList.updateRowInTable(id);
 	}
-
-	public boolean isContactListViewerUpToDate = true;
-	
-	private Contacts pointerContacts;
-	private DataStorageHandler pointerDataStorage;
-	private ConfigFileData pointerConfigFileData;
-	
-	private ContactList pointerContactList;
-	private ContactDetail pointerContactDetail;
 	
 	public void newLogInContactDetailView(String[] log) {
 		pointerContactDetail.newLog(log);
@@ -140,24 +139,6 @@ public class MainFrame extends JFrame {
 	public void loadDetailInContactDetailViewer(int id) {
 		pointerContactDetail.loadDetail(id);
 	}
-
-
-	private SettingsView pointerSettingsView;
-	private ContactLog pointerContactLog;
-	
-	
-	
-	
-	private JPanel contentPane;
-
-	private JPanel screenLayout = new JPanel(new CardLayout());
-	
-	public String currentCard;
-	
-	
-	/**
-	 * Launch the application.
-	 */
 
 	public void initialize() {
 		UIManager.getLookAndFeelDefaults().put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN , 14));
@@ -197,15 +178,29 @@ public class MainFrame extends JFrame {
 	}
 	
 	public void changePage(String pageName){
+		//before switching the page
+		if(currentCard == CONTACT_DETAIL) {
+			pointerContactDetail.exitPoint();
+		}
+		
+		
+		//switch the page
 		CardLayout cardLayout = (CardLayout) screenLayout.getLayout();
 		cardLayout.show(screenLayout, pageName);
 		currentCard = pageName;
+		
+		//after switching the page
 		if(pageName == CONTACT_DETAIL) {
 			pointerContactDetail.requestFocus();
 		}
-		else if(pageName == CONTACT_LIST && !isContactListViewerUpToDate) {
-			pointerContactList.loadData();
-			isContactListViewerUpToDate = true;
+		else if(pageName == CONTACT_LIST) {
+			if(!isContactListViewerUpToDate) {
+				pointerContactList.loadData();
+				isContactListViewerUpToDate = true;
+			}
+			
+			pointerContactList.focusSelectedRow();
+			
 		}
 	}
 	

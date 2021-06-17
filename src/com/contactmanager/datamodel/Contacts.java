@@ -28,6 +28,9 @@ public class Contacts {
 	public List<Integer> getIds(){
 		return allIds;
 	}
+	public int getNextId() {
+		return Collections.max(allIds) + 1;
+	}
 	
 	public List<String[]> getVisibleData(){
 		List<String[]> data = new ArrayList<>();
@@ -57,17 +60,7 @@ public class Contacts {
 		return contactsAsArray;
 		
 		
-	}
-	
-	public Contact addNewContact() {
-		int newId = Collections.max(allIds) + 1; //new id is one more than the highest one in the list
-		
-		Contact newContact = new Contact(null, null);
-		newContact.setId(newId);
-		
-		addToMaps(newContact);
-		return newContact;
-	}
+	}	
 	
 	public void setSpecificValue(int id, String varName, String varValue) {
 		Contact getContact = getContactById(id);
@@ -109,6 +102,7 @@ public class Contacts {
 	public void save() {
 		pointerDataStorage.saveContactData(contactList);
 	}
+	
 	public int getRowIndexById(int id) {
 		return allIds.indexOf(id);
 	}

@@ -82,13 +82,13 @@ public class Contact {
 	private String fullName;
 	private String address;
 	
+	
 	private static List<String> visibleColumns;
 	
 	public Contact(String[] rowData, List<String> columnNames) {
 		if(rowData == null || columnNames == null) {
 			return;
 		}
-		
 		setId(rowData[columnNames.indexOf(ID_FIELD)]);;
 		setName(rowData[columnNames.indexOf(NAME_FIELD)]);
 		setSurname(rowData[columnNames.indexOf(SURNAME_FIELD)]);
@@ -111,6 +111,7 @@ public class Contact {
 		setAddress(rowData[columnNames.indexOf(ADDRESS_FIELD)]);
 		
 		setFullName();
+		
 	}
 	
 	public List<String> getElementsAsList(boolean includeFullName) {
@@ -162,7 +163,6 @@ public class Contact {
 		setCompanyURL(textFieldMap.get(COMPANYURL_FIELD).getText());
 		setSkype(textFieldMap.get(SKYPE_FIELD).getText());
 		
-		((JFormattedTextField)textFieldMap.get(BIRTHDAY_FIELD)).getValue();
 		setBirthday(((JFormattedTextField)textFieldMap.get(BIRTHDAY_FIELD)).getValue());
 		setLastContact(((JFormattedTextField)textFieldMap.get(LASTCONTACT_FIELD)).getValue());
 		setNextContact(((JFormattedTextField)textFieldMap.get(NEXTCONTACT_FIELD)).getValue());
@@ -215,7 +215,7 @@ public class Contact {
 		}
 	}
 	
-	public void writeToContactDetail(Map<String, JTextField> textFieldMap) {
+	public void loadContactDataFromDatamodel(Map<String, JTextField> textFieldMap) {
 		textFieldMap.get(NAME_FIELD).setText(getName());
 		textFieldMap.get(SURNAME_FIELD).setText(getSurname());
 		textFieldMap.get(EMAIL1_FIELD).setText(getEmail1());

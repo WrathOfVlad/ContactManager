@@ -9,7 +9,6 @@ import com.contactmanager.utils.io.DataStorageHandler;
 
 public class Logs {
 	
-	private int id;
 	private List<Log> logList = new ArrayList<>();
 	
 	private static DataStorageHandler pointerDataStorageHandler;
@@ -18,10 +17,6 @@ public class Logs {
 		pointerDataStorageHandler = dataStorageHandler;
 	}
 	
-	public Logs(int id) {
-		this.id = id;
-		loadLogsFromFile();
-	}
 	
 	private void addToMap(Log log) {
 		logList.add(log);
@@ -32,7 +27,7 @@ public class Logs {
 		addToMap(log);		
 	}
 	
-	public List<String[]> getLogs() {
+	public List<String[]> getLogsAsList() {
 		List<String[]> logs = new ArrayList<>();
 		for (Log log : logList) {
 			logs.add(log.getLog());
@@ -64,24 +59,12 @@ public class Logs {
 	}
 	
 	
-	public void loadLogsFromFile() {
+	public void loadLogsFromFile(int id) {
 		List<String[]> allLogs = pointerDataStorageHandler.getLogs(id);
 		for (String[] log : allLogs) {
 			addLog(log);
 		}
 	}
 
-	
-	public void saveLogsToFile() {
-		List<String[]> logs = getLogs();
-		String[][] allLogs = new String[logs.size()][];
-		
-		for (int i = 0; i < allLogs.length; i++) {
-			allLogs[i] = logs.get(i);
-		}
-		pointerDataStorageHandler.saveLogs(id, allLogs);
-		
-		
-	}
 	
 }

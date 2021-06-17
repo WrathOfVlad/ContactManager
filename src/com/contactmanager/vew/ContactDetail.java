@@ -11,13 +11,14 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.text.ParseException;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -55,18 +55,13 @@ import javax.swing.text.MaskFormatter;
 import javax.swing.undo.UndoManager;
 
 import com.contactmanager.datamodel.Contact;
-import com.contactmanager.datamodel.Contacts;
+import com.contactmanager.datamodel.CurrentContactInfo;
 import com.contactmanager.datamodel.Log;
-import com.contactmanager.datamodel.Logs;
-import com.contactmanager.utils.io.DataStorageFile;
-import com.contactmanager.utils.io.DataStorageHandler;
 
 
 public class ContactDetail extends JPanel {
 	
-	private DataStorageHandler pointerDataStorage;
 	private MainFrame pointerMainFrame;
-	private Contacts pointerContacts;
 	private Integer id = null;
 	public boolean isInEditMode;
 	
@@ -84,22 +79,21 @@ public class ContactDetail extends JPanel {
 	private JScrollPane scrollPane_1;
 	private DefaultTableModel tableModel;
 	
-	private Logs logs;
+	private CurrentContactInfo contactInfo;
 
-
-	public ContactDetail(MainFrame mainFrame, Contacts contacts, DataStorageHandler dataStorageHandler) {
+	public ContactDetail(MainFrame mainFrame, CurrentContactInfo contactInfo) {
 		pointerMainFrame = mainFrame;
-		pointerContacts = contacts;
-		pointerDataStorage = dataStorageHandler;
+		this.contactInfo = contactInfo;
+		//pointerDataStorage = dataStorageHandler;
 		setFocusTraversalKeysEnabled(false);
 		int screenWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth()-20;
 		int screenHight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()-120;
 		setPreferredSize(new Dimension(screenWidth,screenHight));
 		setBounds(0, 0, screenWidth, screenHight);
 		setLayout(null);
-		
 
 		profilePictureLabel = new JLabel();
+
 		profilePictureLabel.setHorizontalAlignment(JLabel.CENTER);
 		profilePictureLabel.setFocusTraversalKeysEnabled(false);
 		profilePictureLabel.setBounds(25, 25, 100, 119);
@@ -117,7 +111,6 @@ public class ContactDetail extends JPanel {
 			dateFormat.setPlaceholderCharacter('_');
 
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -314,19 +307,19 @@ public class ContactDetail extends JPanel {
 		JLabel lblPhone_2 = new JLabel(Contact.PHONE1_FIELD + ":");
 		lblPhone_2.setFocusable(false);
 		lblPhone_2.setFocusTraversalKeysEnabled(false);
-		lblPhone_2.setBounds(700, 75, 70, 15);
+		lblPhone_2.setBounds(740, 75, 70, 15);
 		add(lblPhone_2);
 		
 		JLabel lblPhone_3 = new JLabel(Contact.PHONE2_FIELD + ":");
 		lblPhone_3.setFocusable(false);
 		lblPhone_3.setFocusTraversalKeysEnabled(false);
-		lblPhone_3.setBounds(700, 100, 70, 15);
+		lblPhone_3.setBounds(740, 100, 70, 15);
 		add(lblPhone_3);
 		
 		JLabel lblRole_1 = new JLabel(Contact.ROLE_FIELD + ":");
 		lblRole_1.setFocusable(false);
 		lblRole_1.setFocusTraversalKeysEnabled(false);
-		lblRole_1.setBounds(700, 150, 70, 15);
+		lblRole_1.setBounds(740, 150, 70, 15);
 		add(lblRole_1);
 		
 		JLabel lblLinkedin_1 = new JLabel(Contact.LINKEDIN_FIELD + ":");
@@ -350,7 +343,7 @@ public class ContactDetail extends JPanel {
 		JLabel lblStatusContact = new JLabel(Contact.CONTACTSTATUS_FIELD + ":");
 		lblStatusContact.setFocusable(false);
 		lblStatusContact.setFocusTraversalKeysEnabled(false);
-		lblStatusContact.setBounds(700, 325, 125, 15);
+		lblStatusContact.setBounds(740, 325, 125, 15);
 		add(lblStatusContact);
 		
 		
@@ -376,7 +369,7 @@ public class ContactDetail extends JPanel {
 		JLabel lblNotes = new JLabel("Notes:");
 		lblNotes.setFocusable(false);
 		lblNotes.setFocusTraversalKeysEnabled(false);
-		lblNotes.setBounds(960, 75, 70, 15);
+		lblNotes.setBounds(1025, 75, 48, 15);
 		add(lblNotes);
 		
 		  /////////////////////////////////////////////
@@ -385,67 +378,67 @@ public class ContactDetail extends JPanel {
 
 		
 		JTextField textField = new JTextField();
-		textField.setBounds(475, 73, 175, 20);
+		textField.setBounds(475, 75, 250, 20);
 		add(textField);
 		textField.setColumns(10);
 		allTextFields.put(Contact.NAME_FIELD, textField);
 		
 		JTextField textField_2 = new JTextField();
-		textField_2.setBounds(475, 100, 175, 20);
+		textField_2.setBounds(475, 100, 250, 20);
 		add(textField_2);
 		textField_2.setColumns(10);
 		allTextFields.put(Contact.SURNAME_FIELD, textField_2);
 		
 		JTextField textField_3 = new JTextField();
-		textField_3.setBounds(475, 125, 175, 20);
+		textField_3.setBounds(475, 125, 250, 20);
 		add(textField_3);
 		textField_3.setColumns(10);
 		allTextFields.put(Contact.EMAIL1_FIELD, textField_3);
 		
 		JTextField textField_4 = new JTextField();
-		textField_4.setBounds(475, 150, 175, 20);
+		textField_4.setBounds(475, 150, 250, 20);
 		add(textField_4);
 		textField_4.setColumns(10);
 		allTextFields.put(Contact.EMAIL2_FIELD, textField_4);
 		
 		JTextField textField_5 = new JTextField();
-		textField_5.setBounds(475, 175, 175, 20);
+		textField_5.setBounds(475, 175, 250, 20);
 		add(textField_5);
 		textField_5.setColumns(10);
 		allTextFields.put(Contact.EMAIL3_FIELD, textField_5);
 		
 		JTextField textField_6 = new JTextField();
-		textField_6.setBounds(475, 200, 175, 20);
+		textField_6.setBounds(475, 200, 250, 20);
 		add(textField_6);
 		textField_6.setColumns(10);
 		allTextFields.put(Contact.COMPANY_FIELD, textField_6);
 		
 		JTextField textField_7 = new JTextField();
-		textField_7.setBounds(475, 225, 175, 20);
+		textField_7.setBounds(475, 225, 250, 20);
 		add(textField_7);
 		textField_7.setColumns(10);
 		allTextFields.put(Contact.LOCATION_FIELD, textField_7);
 		
 		JTextField textField_8 = new JTextField();
-		textField_8.setBounds(475, 250, 175, 20);
+		textField_8.setBounds(475, 250, 250, 20);
 		add(textField_8);
 		textField_8.setColumns(10);
 		allTextFields.put(Contact.ADDRESS_FIELD, textField_8);
 		
 		JTextField textField_9 = new JTextField();
-		textField_9.setBounds(775, 75, 175, 20);
+		textField_9.setBounds(800, 75, 200, 20);
 		add(textField_9);
 		textField_9.setColumns(10);
 		allTextFields.put(Contact.PHONE1_FIELD, textField_9);
 		
 		JTextField textField_10 = new JTextField();
-		textField_10.setBounds(775, 100, 175, 20);
+		textField_10.setBounds(800, 100, 200, 20);
 		add(textField_10);
 		textField_10.setColumns(10);
 		allTextFields.put(Contact.PHONE2_FIELD, textField_10);
 		
 		JTextField textField_11 = new JTextField();
-		textField_11.setBounds(775, 150, 175, 20);
+		textField_11.setBounds(800, 150, 200, 20);
 		add(textField_11);
 		textField_11.setColumns(10);
 		allTextFields.put(Contact.ROLE_FIELD, textField_11);
@@ -476,7 +469,7 @@ public class ContactDetail extends JPanel {
 		
 		JTextField textField_16 = new JTextField();
 		textField_16.setEditable(false);
-		textField_16.setBounds(825, 325, 125, 20);
+		textField_16.setBounds(850, 325, 150, 20);
 		add(textField_16);
 		textField_16.setColumns(10);
 		allTextFields.put(Contact.CONTACTSTATUS_FIELD, textField_16);
@@ -484,7 +477,7 @@ public class ContactDetail extends JPanel {
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setFocusTraversalKeysEnabled(false);
-		scrollPane.setBounds(1025, 75, 750, 750);
+		scrollPane.setBounds(1075, 75, 750, 750);
 		add(scrollPane);
 		
 		textPane = new JTextPane();
@@ -584,8 +577,18 @@ public class ContactDetail extends JPanel {
 		order.add(btnSave);
 		
 	    //order.add(table);
-	    //newPolicy = new MyOwnFocusTraversalPolicy(order);
+		this.setFocusCycleRoot(true);
+	    this.setFocusTraversalPolicy(new CustomTraversalPolicy(order));
 
+	}
+	
+	
+	public void entryPoint() {
+		profilePictureLabel.requestFocus();
+	}
+	public void exitPoint() {
+		contactInfo.clear();
+		clearLoadedDetails();
 	}
 	
 	public boolean validateURL(String url) {
@@ -625,7 +628,7 @@ public class ContactDetail extends JPanel {
 			public void keyTyped(KeyEvent arg0) {
 				if(arg0.getKeyChar() == KeyEvent.VK_ESCAPE) {
 					if(isInEditMode && id != null) {
-						loadContact();
+						contactInfo.getContact().loadContactDataFromDatamodel(allTextFields);
 						toggleEdit(false);
 					}
 					else {
@@ -641,30 +644,16 @@ public class ContactDetail extends JPanel {
 	}
 
 	public void loadImage() {
-
-		BufferedImage bufferedImage = null;
-		if (id == null) {
-			try {
-				URL noImageStream = getClass().getResource(DataStorageHandler.NO_PROFILE_IMAGE_PATH);
-				bufferedImage = ImageIO.read(noImageStream);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		else {
-			Image image = pointerDataStorage.getProfileImage(id);
-			bufferedImage = (BufferedImage) image;	
-		}
-		
-		
-		Dimension original = new Dimension(bufferedImage.getHeight(),bufferedImage.getWidth());
+		BufferedImage image = (BufferedImage)contactInfo.getImage();
+	
+		Dimension original = new Dimension(image.getHeight(),image.getWidth());
 		Dimension boundary = new Dimension(profilePictureLabel.getHeight(),profilePictureLabel.getWidth());
 		
 		double widthRatio = boundary.getWidth() / original.getWidth();
 	    double heightRatio = boundary.getHeight() / original.getHeight();
 	    double ratio = Math.min(widthRatio, heightRatio);
 		
-	    Image scaledImage = bufferedImage.getScaledInstance((int) (original.height*ratio),(int)(original.width*ratio), Image.SCALE_SMOOTH);
+	    Image scaledImage = image.getScaledInstance((int) (original.height*ratio),(int)(original.width*ratio), Image.SCALE_SMOOTH);
 	    
 	    
 		ImageIcon imageIcon = new ImageIcon(scaledImage);
@@ -672,39 +661,34 @@ public class ContactDetail extends JPanel {
 
 	
 	}
-	public void loadContact() {
-		Contact contact = pointerContacts.getContactById(id);
-		
-		contact.writeToContactDetail(allTextFields);
-		String notes = pointerDataStorage.getNotes(id);
-		textPane.setText(notes);
-	}
-	
+
 	public void loadDetail(int id) {
 		this.id = id;
+		contactInfo.loadContactInfo(id);
 		
-		loadContact();
+		contactInfo.getContact().loadContactDataFromDatamodel(allTextFields);
+		String notes = contactInfo.getNotes();
+		textPane.setText(notes);
+		
 		loadLogs();
-		
-		dataDisplayed();
+		loadImage();
 		toggleEdit(false);
 	}
 	
 	public void setFieldsFromLogs() {
-		Log log = logs.getLatestLog();
+		Log latestLog = contactInfo.getLogs().getLatestLog();  
 		
-		((JFormattedTextField)allTextFields.get(Contact.LASTCONTACT_FIELD)).setValue(log.getDate());
+		((JFormattedTextField)allTextFields.get(Contact.LASTCONTACT_FIELD)).setValue(latestLog.getDate());
 		
-		((JFormattedTextField)allTextFields.get(Contact.NEXTCONTACT_FIELD)).setValue(log.getNextTime());
+		((JFormattedTextField)allTextFields.get(Contact.NEXTCONTACT_FIELD)).setValue(latestLog.getNextTime());
 		
-		allTextFields.get(Contact.CONTACTSTATUS_FIELD).setText(log.getStatus());
+		allTextFields.get(Contact.CONTACTSTATUS_FIELD).setText(latestLog.getStatus());
 		save();
 	}
 	
 	private void loadLogs() {
-		Logs localLogs = new Logs(id);
-		
-		List<String[]> allLogsList = localLogs.getLogs();
+
+		List<String[]> allLogsList = contactInfo.getLogs().getLogsAsList();
 		String[] columns = Log.getColumnNames();
 		
 		String[][] allLogsArray = new String[allLogsList.size()][];
@@ -721,13 +705,7 @@ public class ContactDetail extends JPanel {
 		table.setAutoCreateRowSorter(true);
 		table.getTableHeader().setReorderingAllowed(false);
 		scrollPane_1.setViewportView(table);
-		logs = localLogs;
 		
-	}
-	
-	
-	private void saveLogs() {
-		logs.saveLogsToFile();
 	}
 	
 	public void clearLoadedDetails() {
@@ -742,40 +720,25 @@ public class ContactDetail extends JPanel {
 				textField.setText(null);
 			}
 		}
-		
 		textPane.setText("");
-		
-		dataDisplayed();
+		loadImage();
 		toggleEdit(true);
 	}
 	
-	public void dataDisplayed() {
-		loadImage();
-		profilePictureLabel.requestFocus();
-	}
-	
 	public void save() {
-		Contact contact;
-		if (id != null) {
-			contact = pointerContacts.getContactById(id);
-		}
-		else {
-			contact = pointerContacts.addNewContact();
-		}
-	
-		contact.loadFromContactDetail(allTextFields);
 		
 		if (id != null) {
 			pointerMainFrame.updateRowInTable(id);
 		}
 		else {
-			id = contact.getIdAsInt();
+			id = contactInfo.addNewContact();
 			pointerMainFrame.addRowToTable(id);
 		}
-		pointerDataStorage.saveNotes(id,textPane.getText());
 		
-		saveLogs();
-		pointerContacts.save();
+		contactInfo.getContact().loadFromContactDetail(allTextFields);
+		contactInfo.setNotes(textPane.getText());
+		contactInfo.save(id);
+		
 		toggleEdit(false);
 		
 	}
@@ -793,7 +756,10 @@ public class ContactDetail extends JPanel {
 		
 		//enable and disable buttons
 		btnEdit.setEnabled(!activateEditModeIfTrue);
+		btnEdit.setFocusable(!activateEditModeIfTrue);
+		
 		btnSave.setEnabled(activateEditModeIfTrue);
+		btnSave.setFocusable(activateEditModeIfTrue);
 		
 		//set links
 		allTextFields.get(Contact.LINKEDIN_FIELD).setVisible(activateEditModeIfTrue);
@@ -818,9 +784,9 @@ public class ContactDetail extends JPanel {
 		
 	}
 	public void newLog(String[] log) {
-		logs.addLog(log);
+		contactInfo.getLogs().addLog(log);
 		tableModel.addRow(log);
-		logs.saveLogsToFile();
+		contactInfo.save(id);
 		setFieldsFromLogs();
 	}
 	
@@ -845,52 +811,46 @@ public class ContactDetail extends JPanel {
 		add();
 	}
 	private void fileExplorerPressed(ActionEvent e) {
-		if(pointerDataStorage.getChildClassName() == DataStorageFile.CHILD_NAME) {
-			DataStorageFile fileStorage = (DataStorageFile)pointerDataStorage;
-			fileStorage.goToPath(id);
+		if(id != null) {
+			if(!contactInfo.fileExplorer(id)) {
+				JOptionPane.showMessageDialog(pointerMainFrame, "Viewing Directory unavailable in your selected storage type.");
+			}
 		}
-		else {
-			JOptionPane.showMessageDialog(pointerMainFrame, "Viewing Directory unavailable in your selected storage type.");
-		}
+		
 		
 	}
 	
-	
-	 public static class MyOwnFocusTraversalPolicy extends FocusTraversalPolicy {
-		    Vector<Component> order;
-
-		    public MyOwnFocusTraversalPolicy(Vector<Component> order) {
-		      this.order = new Vector<Component>(order.size());
-		      this.order.addAll(order);
-		    }
-
-		    public Component getComponentAfter(Container focusCycleRoot,
-		        Component aComponent) {
-		      int idx = (order.indexOf(aComponent) + 1) % order.size();
-		      return order.get(idx);
-		    }
-
-		    public Component getComponentBefore(Container focusCycleRoot,
-		        Component aComponent) {
-		      int idx = order.indexOf(aComponent) - 1;
-		      if (idx < 0) {
-		        idx = order.size() - 1;
-		      }
-		      return order.get(idx);
-		    }
-
-		    public Component getDefaultComponent(Container focusCycleRoot) {
-		      return order.get(0);
-		    }
-
-		    public Component getLastComponent(Container focusCycleRoot) {
-		      return order.lastElement();
-		    }
-
-		    public Component getFirstComponent(Container focusCycleRoot) {
-		      return order.get(0);
-		    }
-
-		  }
+    public static class CustomTraversalPolicy extends FocusTraversalPolicy{
+		Vector<Component> order;
+		
+		public CustomTraversalPolicy(Vector<Component> order) {
+			this.order = new Vector<Component>(order.size());
+			this.order.addAll(order);
+		}
+		public Component getComponentAfter(Container focusCycleRoot,Component aComponent){
+			int idx = (order.indexOf(aComponent) + 1) % order.size();
+			return order.get(idx);
+		}
+		
+		public Component getComponentBefore(Container focusCycleRoot,Component aComponent){
+			int idx = order.indexOf(aComponent) - 1;
+			if (idx < 0) {
+			  idx = order.size() - 1;
+		}
+			return order.get(idx);
+		}
+		
+		public Component getDefaultComponent(Container focusCycleRoot) {
+			return order.get(0);
+		}
+		
+		public Component getLastComponent(Container focusCycleRoot) {
+			return order.lastElement();
+		}
+		
+		public Component getFirstComponent(Container focusCycleRoot) {
+			return order.get(0);
+		}
+	}
 }
 

@@ -240,4 +240,7 @@ public class ContactList extends JPanel{
         pointerMainFrame.loadDetailInContactDetailViewer(id);
 	}
 
+	public void focusSelectedRow() {
+		table.requestFocus();
+	}
 }
