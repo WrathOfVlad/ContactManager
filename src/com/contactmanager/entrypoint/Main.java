@@ -10,6 +10,8 @@ import com.contactmanager.datamodel.Logs;
 import com.contactmanager.utils.io.ConfigFileData;
 import com.contactmanager.utils.io.DataStorageFactory;
 import com.contactmanager.utils.io.DataStorageHandler;
+import com.contactmanager.utils.multiplatform.MultiPlatformSupportFactory;
+import com.contactmanager.utils.multiplatform.MultiPlatformSupportHandler;
 import com.contactmanager.vew.MainFrame;
 
 public class Main 
@@ -18,8 +20,13 @@ public class Main
 		//System.out.println(System.getProperty("user.dir"));
 		DataStorageFactory pointerDataStorageFactory = new DataStorageFactory();
 		ConfigFileData pointerConfigFileData = new ConfigFileData();
+		MultiPlatformSupportFactory pointerMultiPlatformSupportFactory = new MultiPlatformSupportFactory();
 		
-
+		MultiPlatformSupportHandler pointerMultiPlatformSupport = pointerMultiPlatformSupportFactory.getSupportHandler();
+		if(pointerMultiPlatformSupport == null) {
+			System.out.println("Unsupported OS");
+		}
+		
 		DataStorageHandler pointerDataStorage = pointerDataStorageFactory.getDataStorage(pointerConfigFileData);
 		if(pointerDataStorage == null) {
 			System.out.println("Invalid Storage Type");
@@ -35,7 +42,7 @@ public class Main
 		Logs.setDataStorageHandler(pointerDataStorage);
 		
 		
-		new MainFrame(pointerContacts, pointerDataStorage, pointerConfigFileData);
+		new MainFrame(pointerContacts, pointerDataStorage, pointerConfigFileData, pointerMultiPlatformSupport);
 
 		//mainFrame.setVisible(true);
 		

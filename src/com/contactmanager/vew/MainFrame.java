@@ -1,18 +1,12 @@
 package com.contactmanager.vew;
-import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Font;
-import java.awt.Image;
-import java.awt.SystemTray;
 import java.awt.Toolkit;
-import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -27,6 +21,7 @@ import com.contactmanager.datamodel.Contacts;
 import com.contactmanager.datamodel.CurrentContactInfo;
 import com.contactmanager.utils.io.ConfigFileData;
 import com.contactmanager.utils.io.DataStorageHandler;
+import com.contactmanager.utils.multiplatform.MultiPlatformSupportHandler;
 
 
 public class MainFrame extends JFrame {
@@ -46,15 +41,16 @@ public class MainFrame extends JFrame {
 	private ContactDetail pointerContactDetail;
 	private SettingsView pointerSettingsView;
 	private ContactLog pointerContactLog;
-	
+	private MultiPlatformSupportHandler pointerMultiPlatformSupport;
 	
 	private JPanel contentPane;
 	private JPanel screenLayout = new JPanel(new CardLayout());
 	public String currentCard;
 	
-	public MainFrame(Contacts contacts, DataStorageHandler dataStorage, ConfigFileData configFileData) {
+	public MainFrame(Contacts contacts, DataStorageHandler dataStorage, ConfigFileData configFileData, MultiPlatformSupportHandler multiPlatformSupport) {
 		pointerContacts = contacts;
 		pointerConfigFileData = configFileData;
+		pointerMultiPlatformSupport = multiPlatformSupport;
 		
 		pointerContactList = new ContactList(this, pointerContacts);
 		CurrentContactInfo contactInfo = new CurrentContactInfo(pointerContacts,dataStorage);
@@ -205,12 +201,8 @@ public class MainFrame extends JFrame {
 	private void sendAllReminders(String title, String rawContent, String field) {
 		List<Contact> reminders = pointerContacts.getReminders(field);
 		for (Contact contact : reminders) {
-			try {
-				String content = String.format(rawContent, contact.getFullName());
-				sendNotification(title, content);
-			} catch (IOException | AWTException e) {
-				e.printStackTrace();
-			}
+			String content = String.format(rawContent, contact.getFullName());
+			pointerMultiPlatformSupport.sendNotification(title, content);
 		}
 	}
 	
@@ -220,36 +212,11 @@ public class MainFrame extends JFrame {
 		
 	}
 	
-	private void sendNotification(String title, String message) throws IOException, AWTException {
-		Image image = ImageIO.read(getClass().getResource(DataStorageHandler.ICON_PATH));
-		String path = getClass().getResource(DataStorageHandler.ICON_PATH).getPath();
-		
-		String os = System.getProperty("os.name");
-		if (os.contains("Linux")) {
-		    ProcessBuilder builder = new ProcessBuilder(
-		        "notify-send",
-		         title,
-		        message, 
-		        "-i",path);
-		    builder.inheritIO().start();
-		} else if (os.contains("Mac")) {
-		    ProcessBuilder builder = new ProcessBuilder(
-		        "osascript", "-e",
-		        "display notification \"" + message + "\""
-		            + " with title \"" + title + "\"");
-		    builder.inheritIO().start();
-		} else if (SystemTray.isSupported()) {
-		    SystemTray tray = SystemTray.getSystemTray();
-
-		    TrayIcon trayIcon = new TrayIcon(image, "Tray Demo");
-		    trayIcon.setImageAutoSize(true);
-		    tray.add(trayIcon);
-
-		    trayIcon.displayMessage(title, message, TrayIcon.MessageType.INFO);
-		}
-
-	}
 	
+	public void openURL(String url) throws Exception {
+		pointerMultiPlatformSupport.openLinkInBrowser(url);
+	}
+
 
 
 }

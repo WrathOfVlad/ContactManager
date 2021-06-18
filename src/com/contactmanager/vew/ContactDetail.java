@@ -607,11 +607,10 @@ public class ContactDetail extends JPanel {
 		String url = allTextFields.get(field).getText();
 		boolean isValid = validateURL(url);
 		if (isValid) {
-			try {   
-		        Desktop.getDesktop().browse(new URI(url));
-			}
-			catch (Exception e2) {
-				e2.printStackTrace();
+			try {
+				pointerMainFrame.openURL(url);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(pointerMainFrame, "Something went wrong");
 			}
 		}
 		else {
