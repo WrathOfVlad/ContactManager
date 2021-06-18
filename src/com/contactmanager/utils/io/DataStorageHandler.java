@@ -10,7 +10,7 @@ public interface DataStorageHandler {
 	static final String MAX_ID_FORMATTING = "%05d";
 	static final String ICON_PATH = "/images/icon.png";
 	static final String NO_PROFILE_IMAGE_PATH = "/images/NoProfilePicture.png";
-	static final String BASE_PATH = System.getProperty("user.dir");
+	static final String PATH_OF_PROGRAM = System.getProperty("user.dir");
 	
 	String getChildClassName();
 	

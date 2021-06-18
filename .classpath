@@ -24,5 +24,6 @@
 	<classpathentry kind="lib" path="lib/JCommunique-2.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/java-to-OS-notify-0.6.jar"/>
 	<classpathentry kind="lib" path="lib/jgoodies-forms-1.8.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

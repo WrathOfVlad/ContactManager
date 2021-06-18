@@ -11,8 +11,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -609,8 +607,7 @@ public class ContactDetail extends JPanel {
 		String url = allTextFields.get(field).getText();
 		boolean isValid = validateURL(url);
 		if (isValid) {
-			try {
-		        
+			try {   
 		        Desktop.getDesktop().browse(new URI(url));
 			}
 			catch (Exception e2) {
@@ -728,14 +725,16 @@ public class ContactDetail extends JPanel {
 	public void save() {
 		
 		if (id != null) {
+			contactInfo.getContact().loadFromContactDetail(allTextFields);
 			pointerMainFrame.updateRowInTable(id);
 		}
 		else {
 			id = contactInfo.addNewContact();
+			contactInfo.getContact().loadFromContactDetail(allTextFields);
 			pointerMainFrame.addRowToTable(id);
 		}
 		
-		contactInfo.getContact().loadFromContactDetail(allTextFields);
+		
 		contactInfo.setNotes(textPane.getText());
 		contactInfo.save(id);
 		

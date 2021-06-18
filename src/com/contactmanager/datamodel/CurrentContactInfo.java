@@ -12,7 +12,7 @@ import com.contactmanager.utils.io.DataStorageHandler;
 public class CurrentContactInfo {
 	private Logs logs = new Logs();
 	private String notes;
-	private Contact contact;
+	private Contact contact = new Contact(null,null);
 	//private int id;
 	private Image image;
 	
@@ -68,6 +68,7 @@ public class CurrentContactInfo {
 	public int addNewContact() {
 		int id = pointerContacts.getNextId();
 		contact.setId(id);
+		pointerContacts.addToMaps(contact);
 		return id;
 	}
 	public void loadContactInfo(int id) {
@@ -77,9 +78,9 @@ public class CurrentContactInfo {
 		image = pointerDataStorage.getProfileImage(id);
 	}
 	public void save(int id) {
-		pointerContacts.addToMaps(contact);
-		pointerContacts.save();
+		pointerDataStorage.createBackup(id);
 		
+		pointerContacts.save();
 		pointerDataStorage.saveLogs(id, logs.getLogsAsList());
 		pointerDataStorage.saveNotes(id, notes);
 	}

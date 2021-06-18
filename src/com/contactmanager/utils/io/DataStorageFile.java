@@ -4,20 +4,27 @@ import java.awt.Desktop;
 import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
 
 import com.contactmanager.datamodel.Contact;
 import com.opencsv.CSVReader;
@@ -29,6 +36,7 @@ public class DataStorageFile implements DataStorageHandler{
 	private static final String FILENAME_LOGS = "logs.csv";
 	private static final String FILENAME_PROFILE_PICTURE = "profilePicture";
 	private static final String FILENAME_MAIN = "Main.csv";
+	private static final String DIRPATH_BACKUPS = "/backups/";
 	
 	public static final String CHILD_NAME = "DataStorageFile";
 	
@@ -52,14 +60,6 @@ public class DataStorageFile implements DataStorageHandler{
 
 	private File checkIfFileExistsInIdDir(int id, String fileName) {
 		String idPath= path + "/" + String.format(MAX_ID_FORMATTING, id);
-		String filePath = idPath + "/" + fileName;
-		checkIfDirExists(idPath);
-		return checkIfFileExists(filePath);
-		
-	}
-	private File checkIfFileExistsInBackupDir(int id, String fileName) {
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		String idPath= path + "/backup/" + timestamp.toString() + "/" + String.format(MAX_ID_FORMATTING, id);
 		String filePath = idPath + "/" + fileName;
 		checkIfDirExists(idPath);
 		return checkIfFileExists(filePath);
@@ -235,8 +235,37 @@ public class DataStorageFile implements DataStorageHandler{
 	
 	@Override
 	public void createBackup(int id) {
-		checkIfFileExistsInBackupDir(id, FILENAME_NOTES);
+		String parsedId = String.format(MAX_ID_FORMATTING, id);
+		checkIfDirExists(path + DIRPATH_BACKUPS);
 		
+		Date date = new Date();
+		long timeMilli = date.getTime();
+		String backupPath = path + DIRPATH_BACKUPS + timeMilli;
+		checkIfDirExists(backupPath);
+		
+		//InputStream main = new Inpu(path + "/" + FILENAME_MAIN); 
+		
+		File main = new File(path + "/" + FILENAME_MAIN);
+		File mainCopy = new File(backupPath + "/" + FILENAME_MAIN);		
+		try {
+			FileUtils.copyFile(main, mainCopy);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		String fullPath =  path+"/"+parsedId;
+		File idDirFile = new File(fullPath);
+		if(!idDirFile.exists()) {return;};
+		
+		File originalFile = new File(fullPath);
+		File newFile = new File(backupPath + "/" +parsedId );
+		
+		try {
+			FileUtils.copyDirectory(originalFile, newFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
 	}
 	
 
