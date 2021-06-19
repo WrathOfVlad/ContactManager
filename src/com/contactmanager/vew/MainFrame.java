@@ -31,7 +31,7 @@ public class MainFrame extends JFrame {
 	public static final String CONTACT_LOG = "ContactLog";
 	public static final String SETTINGS = "Settings";
 	public static final String EMPTY = "empty";
-	public static final String VERSION = "2.3.3";
+	public static final String VERSION = "2.3.4";
 	
 	public boolean isContactListViewerUpToDate = true;
 	

@@ -38,7 +38,7 @@ public class Main
 		
 		pointerDataStorage.initialize();
 		pointerConfigFileData.getVisibleColumns();
-		pointerDataStorage.deleteOldBackups();
+		
 		
 		Contacts pointerContacts = new Contacts(pointerDataStorage);
 		pointerContacts.loadContacts();	
@@ -47,7 +47,7 @@ public class Main
 		
 		new MainFrame(pointerContacts, pointerDataStorage, pointerConfigFileData, pointerMultiPlatformSupport);
 
-		
+		pointerDataStorage.deleteOldBackups();
 		
 	}
 }
