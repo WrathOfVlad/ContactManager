@@ -74,14 +74,16 @@ public class ContactList extends JPanel{
 		searchField = new JTextField();
 		searchField.setBounds(100, 5, 472, 20);
 		panel.add(searchField);
+		
 		searchField.addKeyListener(new KeyAdapter() {
 			@Override
-		    public void keyTyped(KeyEvent e) {
-		    	if(e.getKeyChar() != KeyEvent.VK_ESCAPE) {
-		    		sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchField.getText()));
-			        table.setRowSorter(sorter);
+		    public void keyReleased(KeyEvent e) {
+		    	if(e.getKeyChar() != KeyEvent.VK_ESCAPE) {		    		
+			        //
+			        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchField.getText()));
 		    	}
 		    }
+			
 		});
 		
 		searchField.setColumns(10);
@@ -222,6 +224,7 @@ public class ContactList extends JPanel{
 		tableModel = new DefaultTableModel(visibleData, visibleColumns.toArray());
 		sorter = new TableRowSorter<TableModel>(tableModel);
 		table.setModel(tableModel);
+		table.setRowSorter(sorter);
 		
 		JTableHeader header = table.getTableHeader();
 		Font newFont = table.getFont().deriveFont(Font.BOLD);

@@ -4,19 +4,19 @@ import java.awt.Desktop;
 import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.sql.Timestamp;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -161,8 +161,9 @@ public class DataStorageFile implements DataStorageHandler{
 		String[] allExtensions = {".png", ".jpg"};
 		
 		File profilePictureFile = null;
-		URL noImageStream = null;		
-		try {
+		URL noImageStream = null;	
+		
+		try {			
 			for (String extension: allExtensions) {
 				profilePictureFile = new File(fileName + extension);
 				if (profilePictureFile.exists()) {
@@ -235,6 +236,7 @@ public class DataStorageFile implements DataStorageHandler{
 	
 	@Override
 	public void createBackup(int id) {
+		deleteOldBackups();
 		String parsedId = String.format(MAX_ID_FORMATTING, id);
 		checkIfDirExists(path + DIRPATH_BACKUPS);
 		
@@ -243,7 +245,6 @@ public class DataStorageFile implements DataStorageHandler{
 		String backupPath = path + DIRPATH_BACKUPS + timeMilli;
 		checkIfDirExists(backupPath);
 		
-		//InputStream main = new Inpu(path + "/" + FILENAME_MAIN); 
 		
 		File main = new File(path + "/" + FILENAME_MAIN);
 		File mainCopy = new File(backupPath + "/" + FILENAME_MAIN);		
@@ -267,7 +268,28 @@ public class DataStorageFile implements DataStorageHandler{
 		}
 	
 	}
-	
+	@Override
+	public void deleteOldBackups() {
+		checkIfDirExists(path + DIRPATH_BACKUPS);
+		File  backupDir = new File(path+DIRPATH_BACKUPS);
+		String[] backups = backupDir.list();
+		
+		int backupTimeLimit = pointerConfigFileData.getBackupTimeLimit();
+		
+		for (String backup : backups) {
+			long backupCreationEpoch = Long.parseLong(backup);
+			long dayDifference = Instant.ofEpochMilli(backupCreationEpoch).until(Instant.now(), ChronoUnit.DAYS);
+			if (dayDifference >= backupTimeLimit) {
+				try {
+					FileUtils.deleteDirectory(new File(path+ DIRPATH_BACKUPS + backup));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
 
 	public void goToPath(int id) {
 		

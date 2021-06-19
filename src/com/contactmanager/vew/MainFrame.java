@@ -82,6 +82,7 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				changePage(CONTACT_DETAIL);
+				pointerContactDetail.toggleEdit(true);
 			}
 		});
 		mnMenu_1.add(mntmNewContact);

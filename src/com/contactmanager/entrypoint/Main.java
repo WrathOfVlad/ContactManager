@@ -17,9 +17,11 @@ import com.contactmanager.vew.MainFrame;
 public class Main 
 {
 	public static void main(String[] args) throws InvalidFileFormatException, IOException{
-		//System.out.println(System.getProperty("user.dir"));
-		DataStorageFactory pointerDataStorageFactory = new DataStorageFactory();
-		ConfigFileData pointerConfigFileData = new ConfigFileData();
+		
+		ConfigFileData pointerConfigFileData = new ConfigFileData(); //get user configurations
+		
+		//set up factories
+		DataStorageFactory pointerDataStorageFactory = new DataStorageFactory(); 
 		MultiPlatformSupportFactory pointerMultiPlatformSupportFactory = new MultiPlatformSupportFactory();
 		
 		MultiPlatformSupportHandler pointerMultiPlatformSupport = pointerMultiPlatformSupportFactory.getSupportHandler();
@@ -36,6 +38,7 @@ public class Main
 		
 		pointerDataStorage.initialize();
 		pointerConfigFileData.getVisibleColumns();
+		pointerDataStorage.deleteOldBackups();
 		
 		Contacts pointerContacts = new Contacts(pointerDataStorage);
 		pointerContacts.loadContacts();	
@@ -44,7 +47,7 @@ public class Main
 		
 		new MainFrame(pointerContacts, pointerDataStorage, pointerConfigFileData, pointerMultiPlatformSupport);
 
-		//mainFrame.setVisible(true);
+		
 		
 	}
 }

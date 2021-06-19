@@ -23,6 +23,7 @@ public class ConfigFileData {
 	private static final String VISIBLE_COLUMNS = "visibleColumns";
 	private static final String STORING_TYPE = "storageType";
 	private static final String PATH = "path";
+	private static final String BACKUP_TIME_LIMIT = "backupTimeLimit";
 	
 	private static final String CONFIG_PATH = DataStorageHandler.PATH_OF_PROGRAM + "/config.ini";
 	private static final String CONFIG_DEFAULT_PATH = "/configurations/config.ini";
@@ -59,6 +60,10 @@ public class ConfigFileData {
 	
 	public String getType() {
 		return ini.get(GENERAL,STORING_TYPE);
+	}
+	
+	public int getBackupTimeLimit() {
+		return Integer.parseInt(ini.get(USER_SETTINGS,BACKUP_TIME_LIMIT));
 	}
 	
 	public void saveVisibleColumns() {

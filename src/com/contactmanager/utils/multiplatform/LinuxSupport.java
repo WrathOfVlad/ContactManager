@@ -25,8 +25,8 @@ public class LinuxSupport extends MultiPlatformSupportHandler{
 	@Override
 	public void openLinkInBrowser(String url) throws Exception {
 		Runtime rt = Runtime.getRuntime();
-		String[] browsers = { "epiphany", "firefox", "mozilla", "konqueror",
-		                                 "netscape", "opera", "links", "lynx","google-chrome" };
+		String[] browsers = { "xdg-open", "firefox","google-chrome", "mozilla", "konqueror",
+		                                 "netscape", "opera", "links", "lynx" };
 
 		StringBuffer cmd = new StringBuffer();
 		for (int i = 0; i < browsers.length; i++)

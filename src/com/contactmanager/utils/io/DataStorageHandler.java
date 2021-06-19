@@ -30,6 +30,7 @@ public interface DataStorageHandler {
 	void saveContactData(List<Contact> data);
 	
 	void createBackup(int id);
+	void deleteOldBackups();
 
 	
 }
