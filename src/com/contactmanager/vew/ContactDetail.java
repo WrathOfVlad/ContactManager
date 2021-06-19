@@ -4,22 +4,18 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.net.URI;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -610,11 +606,9 @@ public class ContactDetail extends JPanel {
 		boolean isValid = validateURL(url);
 		if (isValid) {
 			try {
-		        
-		        Desktop.getDesktop().browse(new URI(url));
-			}
-			catch (Exception e2) {
-				e2.printStackTrace();
+				pointerMainFrame.openURL(url);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(pointerMainFrame, "Something went wrong");
 			}
 		}
 		else {
@@ -728,14 +722,16 @@ public class ContactDetail extends JPanel {
 	public void save() {
 		
 		if (id != null) {
+			contactInfo.getContact().loadFromContactDetail(allTextFields);
 			pointerMainFrame.updateRowInTable(id);
 		}
 		else {
 			id = contactInfo.addNewContact();
+			contactInfo.getContact().loadFromContactDetail(allTextFields);
 			pointerMainFrame.addRowToTable(id);
 		}
 		
-		contactInfo.getContact().loadFromContactDetail(allTextFields);
+		
 		contactInfo.setNotes(textPane.getText());
 		contactInfo.save(id);
 		

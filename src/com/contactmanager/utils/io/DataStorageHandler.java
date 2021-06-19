@@ -1,6 +1,7 @@
 package com.contactmanager.utils.io;
 
 import java.awt.Image;
+import java.io.File;
 import java.util.List;
 
 import com.contactmanager.datamodel.Contact;
@@ -8,9 +9,9 @@ import com.contactmanager.datamodel.Contact;
 public interface DataStorageHandler {
 	
 	static final String MAX_ID_FORMATTING = "%05d";
-	static final String ICON_PATH = "/images/icon.png";
-	static final String NO_PROFILE_IMAGE_PATH = "/images/NoProfilePicture.png";
-	static final String BASE_PATH = System.getProperty("user.dir");
+	static final String ICON_PATH = File.separator + "images"+File.separator+ "icon.png";
+	static final String NO_PROFILE_IMAGE_PATH = File.separator + "images" + File.separator +"NoProfilePicture.png";
+	static final String PATH_OF_PROGRAM = System.getProperty("user.dir");
 	
 	String getChildClassName();
 	
@@ -30,6 +31,7 @@ public interface DataStorageHandler {
 	void saveContactData(List<Contact> data);
 	
 	void createBackup(int id);
+	void deleteOldBackups();
 
 	
 }

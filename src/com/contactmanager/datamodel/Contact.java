@@ -87,6 +87,28 @@ public class Contact {
 	
 	public Contact(String[] rowData, List<String> columnNames) {
 		if(rowData == null || columnNames == null) {
+			setId("");
+			setName("");
+			setSurname("");
+			setEmail1("");
+			setEmail2("");
+			setEmail3("");
+			setPhone1("");
+			setPhone2("");
+			setBirthday("");
+			setLinkedIn("");
+			setFacebook("");
+			setCompany("");
+			setRole("");
+			setLocation("");
+			//this.contactStatus = rowData[columnNames.indexOf(CONTACTSTATUS_FIELD)];
+			setLastContact("");
+			setNextContact("");
+			setCompanyURL("");
+			setSkype("");
+			setAddress("");
+			
+			setFullName();
 			return;
 		}
 		setId(rowData[columnNames.indexOf(ID_FIELD)]);;
@@ -167,9 +189,7 @@ public class Contact {
 		setLastContact(((JFormattedTextField)textFieldMap.get(LASTCONTACT_FIELD)).getValue());
 		setNextContact(((JFormattedTextField)textFieldMap.get(NEXTCONTACT_FIELD)).getValue());
 		
-		
-
-		getFullName();
+		setFullName();
 	}
 	
 	public void setNextContact(Object value) {
@@ -204,7 +224,6 @@ public class Contact {
 			return string;
 		}
 	}
-	
 
 	private String dateFormatToString(Object value) {
 		if(value == null) {
@@ -235,7 +254,7 @@ public class Contact {
 		
 		((JFormattedTextField)textFieldMap.get(BIRTHDAY_FIELD)).setValue(getBirthdayObject());
 		((JFormattedTextField)textFieldMap.get(LASTCONTACT_FIELD)).setValue(getLastContactObject());
-		((JFormattedTextField)textFieldMap.get(NEXTCONTACT_FIELD)).setValue(getNextContactObject());	
+		((JFormattedTextField)textFieldMap.get(NEXTCONTACT_FIELD)).setValue(getNextContactObject());
 	}
 	
 	public static void setVisibleColumns(List<String> list) {
@@ -244,7 +263,6 @@ public class Contact {
 	public static List<String> getVisibleColumns() {
 		return visibleColumns;
 	}
-	
 	
 	public String getAddress() {
 		return address;

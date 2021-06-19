@@ -1,3 +1,4 @@
+
 package com.contactmanager.utils.io;
 
 import java.io.File;
@@ -22,9 +23,10 @@ public class ConfigFileData {
 	private static final String VISIBLE_COLUMNS = "visibleColumns";
 	private static final String STORING_TYPE = "storageType";
 	private static final String PATH = "path";
+	private static final String BACKUP_TIME_LIMIT = "backupTimeLimit";
 	
-	private static final String CONFIG_PATH = DataStorageHandler.BASE_PATH + "/config.ini";
-	private static final String CONFIG_DEFAULT_PATH = "/configurations/config.ini";
+	private static final String CONFIG_PATH = DataStorageHandler.PATH_OF_PROGRAM + File.separator+"config.ini";
+	private static final String CONFIG_DEFAULT_PATH = File.separator +"configurations" + File.separator +"config.ini";
 	
 	private Ini ini = new Ini();
 	
@@ -39,7 +41,7 @@ public class ConfigFileData {
 				File configCopy = new File(CONFIG_PATH);
 				Files.copy(iStream, configCopy.toPath(),StandardCopyOption.REPLACE_EXISTING);
 				Wini iniStore = new Wini(configCopy);
-				iniStore.put(GENERAL, PATH, DataStorageHandler.BASE_PATH + "/Data");
+				iniStore.put(GENERAL, PATH, DataStorageHandler.PATH_OF_PROGRAM + File.separator +"Data");
 				iniStore.store();
 				
 				ini.load(configCopy);
@@ -58,6 +60,10 @@ public class ConfigFileData {
 	
 	public String getType() {
 		return ini.get(GENERAL,STORING_TYPE);
+	}
+	
+	public int getBackupTimeLimit() {
+		return Integer.parseInt(ini.get(USER_SETTINGS,BACKUP_TIME_LIMIT));
 	}
 	
 	public void saveVisibleColumns() {

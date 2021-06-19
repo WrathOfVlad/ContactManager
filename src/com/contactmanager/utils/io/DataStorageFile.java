@@ -12,12 +12,16 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
 
 import com.contactmanager.datamodel.Contact;
 import com.opencsv.CSVReader;
@@ -29,6 +33,7 @@ public class DataStorageFile implements DataStorageHandler{
 	private static final String FILENAME_LOGS = "logs.csv";
 	private static final String FILENAME_PROFILE_PICTURE = "profilePicture";
 	private static final String FILENAME_MAIN = "Main.csv";
+	private static final String DIRPATH_BACKUPS = File.separator + "backups" + File.separator;
 	
 	public static final String CHILD_NAME = "DataStorageFile";
 	
@@ -51,16 +56,8 @@ public class DataStorageFile implements DataStorageHandler{
 	}
 
 	private File checkIfFileExistsInIdDir(int id, String fileName) {
-		String idPath= path + "/" + String.format(MAX_ID_FORMATTING, id);
-		String filePath = idPath + "/" + fileName;
-		checkIfDirExists(idPath);
-		return checkIfFileExists(filePath);
-		
-	}
-	private File checkIfFileExistsInBackupDir(int id, String fileName) {
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		String idPath= path + "/backup/" + timestamp.toString() + "/" + String.format(MAX_ID_FORMATTING, id);
-		String filePath = idPath + "/" + fileName;
+		String idPath= path + File.separator + String.format(MAX_ID_FORMATTING, id);
+		String filePath = idPath + File.separator + fileName;
 		checkIfDirExists(idPath);
 		return checkIfFileExists(filePath);
 		
@@ -155,14 +152,15 @@ public class DataStorageFile implements DataStorageHandler{
 	@Override
 	public Image getProfileImage(int id) {
 		String parsedId = String.format(MAX_ID_FORMATTING, id);
-		String idPath = path + "/" + parsedId;
+		String idPath = path + File.separator + parsedId;
 		checkIfDirExists(idPath);
-		String fileName =  idPath + "/" + FILENAME_PROFILE_PICTURE;
+		String fileName =  idPath + File.separator + FILENAME_PROFILE_PICTURE;
 		String[] allExtensions = {".png", ".jpg"};
 		
 		File profilePictureFile = null;
-		URL noImageStream = null;		
-		try {
+		URL noImageStream = null;	
+		
+		try {			
 			for (String extension: allExtensions) {
 				profilePictureFile = new File(fileName + extension);
 				if (profilePictureFile.exists()) {
@@ -191,7 +189,7 @@ public class DataStorageFile implements DataStorageHandler{
 
 	@Override
 	public List<String[]> getContactData() {
-		String file = path + "/" + FILENAME_MAIN;
+		String file = path + File.separator + FILENAME_MAIN;
 		List<String[]> allRows = new ArrayList<String[]>();
 		
 		try (Reader fr = new FileReader(file, StandardCharsets.UTF_8)){
@@ -209,7 +207,7 @@ public class DataStorageFile implements DataStorageHandler{
 	}
 	@Override
 	public void saveContactData(List<Contact> data) {
-		String file = path + "/" + FILENAME_MAIN;
+		String file = path + File.separator + FILENAME_MAIN;
 
 		try (var fos = new FileOutputStream(file)){			
 	        var osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
@@ -235,15 +233,65 @@ public class DataStorageFile implements DataStorageHandler{
 	
 	@Override
 	public void createBackup(int id) {
-		checkIfFileExistsInBackupDir(id, FILENAME_NOTES);
+		deleteOldBackups();
+		String parsedId = String.format(MAX_ID_FORMATTING, id);
+		checkIfDirExists(path + DIRPATH_BACKUPS);
+		
+		Date date = new Date();
+		long timeMilli = date.getTime();
+		String backupPath = path + DIRPATH_BACKUPS + timeMilli;
+		checkIfDirExists(backupPath);
+		
+		
+		File main = new File(path + File.separator + FILENAME_MAIN);
+		File mainCopy = new File(backupPath + File.separator + FILENAME_MAIN);		
+		try {
+			FileUtils.copyFile(main, mainCopy);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		String fullPath =  path + File.separator+parsedId;
+		File idDirFile = new File(fullPath);
+		if(!idDirFile.exists()) {return;};
+		
+		File originalFile = new File(fullPath);
+		File newFile = new File(backupPath + File.separator +parsedId );
+		
+		try {
+			FileUtils.copyDirectory(originalFile, newFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
+	}
+	@Override
+	public void deleteOldBackups() {
+		checkIfDirExists(path + DIRPATH_BACKUPS);
+		File  backupDir = new File(path+DIRPATH_BACKUPS);
+		String[] backups = backupDir.list();
+		
+		int backupTimeLimit = pointerConfigFileData.getBackupTimeLimit();
+		
+		for (String backup : backups) {
+			long backupCreationEpoch = Long.parseLong(backup);
+			long dayDifference = Instant.ofEpochMilli(backupCreationEpoch).until(Instant.now(), ChronoUnit.DAYS);
+			if (dayDifference >= backupTimeLimit) {
+				try {
+					FileUtils.deleteDirectory(new File(path+ DIRPATH_BACKUPS + backup));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		
 	}
-	
 
 	public void goToPath(int id) {
 		
 		Desktop desktop = null;
-		String dirPath = path + "/" + String.format(MAX_ID_FORMATTING, id);
+		String dirPath = path + File.separator + String.format(MAX_ID_FORMATTING, id);
 		File file = new File(dirPath);
 		try {
 			if (Desktop.isDesktopSupported()) {
