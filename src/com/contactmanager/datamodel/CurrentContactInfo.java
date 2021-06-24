@@ -12,9 +12,10 @@ import com.contactmanager.utils.io.DataStorageHandler;
 public class CurrentContactInfo {
 	private Logs logs = new Logs();
 	private String notes;
-	private Contact contact = new Contact(null,null);
 	//private int id;
 	private Image image;
+	
+	private Contact contact = new Contact(null);
 	
 	private Contacts pointerContacts;
 	private DataStorageHandler pointerDataStorage;
@@ -24,10 +25,11 @@ public class CurrentContactInfo {
 		this.pointerDataStorage = dataStorageHandler;
 	}
 	
-	public void clear() {
+	public void clear(){
 		logs = new Logs();
 		notes = "";
-		contact = new Contact(null, null);
+		
+		contact = new Contact(null);
 		URL noImageStream = getClass().getResource(DataStorageHandler.NO_PROFILE_IMAGE_PATH);
 		try {
 			image = ImageIO.read(noImageStream);

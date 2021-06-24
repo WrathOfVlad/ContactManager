@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -19,7 +18,7 @@ import javax.swing.border.EmptyBorder;
 import com.contactmanager.datamodel.Contact;
 import com.contactmanager.datamodel.Contacts;
 import com.contactmanager.datamodel.CurrentContactInfo;
-import com.contactmanager.utils.io.ConfigFileData;
+import com.contactmanager.datamodel.Logs;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.utils.multiplatform.MultiPlatformSupportHandler;
 
@@ -36,7 +35,6 @@ public class MainFrame extends JFrame {
 	public boolean isContactListViewerUpToDate = true;
 	
 	private Contacts pointerContacts;
-	private ConfigFileData pointerConfigFileData;
 	private ContactList pointerContactList;
 	private ContactDetail pointerContactDetail;
 	private SettingsView pointerSettingsView;
@@ -47,15 +45,18 @@ public class MainFrame extends JFrame {
 	private JPanel screenLayout = new JPanel(new CardLayout());
 	public String currentCard;
 	
-	public MainFrame(Contacts contacts, DataStorageHandler dataStorage, ConfigFileData configFileData, MultiPlatformSupportHandler multiPlatformSupport) {
-		pointerContacts = contacts;
-		pointerConfigFileData = configFileData;
+	public MainFrame(DataStorageHandler dataStorage, MultiPlatformSupportHandler multiPlatformSupport) {
+		
+		pointerContacts = new Contacts(dataStorage,this);
+		pointerContacts.loadContacts();	
+		Logs.setDataStorageHandler(dataStorage);
+		
 		pointerMultiPlatformSupport = multiPlatformSupport;
 		
 		pointerContactList = new ContactList(this, pointerContacts);
 		CurrentContactInfo contactInfo = new CurrentContactInfo(pointerContacts,dataStorage);
 		pointerContactDetail= new ContactDetail(this,contactInfo);
-		pointerSettingsView = new SettingsView(this, pointerConfigFileData);
+		pointerSettingsView = new SettingsView(this);
 		pointerContactLog = new ContactLog(this);
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(DataStorageHandler.ICON_PATH)));
@@ -199,18 +200,15 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
-	private void sendAllReminders(String title, String rawContent, String field) {
-		List<Contact> reminders = pointerContacts.getReminders(field);
-		for (Contact contact : reminders) {
-			String content = String.format(rawContent, contact.getFullName());
-			pointerMultiPlatformSupport.sendNotification(title, content);
-		}
+	public void sendReminder(Contact contact,String title, String rawContent) {
+		
+		String content = String.format(rawContent, contact.getFullName());
+		pointerMultiPlatformSupport.sendNotification(title, content);
+		
 	}
 	
 	private void notificationReminder() {
-		sendAllReminders("Birthday Notification", "It's %s's birthday today!", Contact.BIRTHDAY_FIELD);
-		sendAllReminders("Appointment Notification", "you scheduled a meeting with %s today.", Contact.NEXTCONTACT_FIELD);
-		
+		pointerContacts.getReminders();
 	}
 	
 	

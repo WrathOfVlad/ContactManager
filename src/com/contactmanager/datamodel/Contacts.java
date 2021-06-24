@@ -1,8 +1,5 @@
 package com.contactmanager.datamodel;
 
-import java.lang.reflect.Method;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,7 +8,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.contactmanager.datamodel.items.DataItemHandler;
+import com.contactmanager.datamodel.items.DateItem;
+import com.contactmanager.utils.io.ConfigFileData;
 import com.contactmanager.utils.io.DataStorageHandler;
+import com.contactmanager.vew.MainFrame;
 
 public class Contacts {
 	
@@ -20,9 +21,11 @@ public class Contacts {
 	private List<Integer> allIds = new ArrayList<Integer>();
 	
 	private DataStorageHandler pointerDataStorage;
+	private MainFrame mainFrame;
 	
-	public Contacts(DataStorageHandler dataStorage) {
+	public Contacts(DataStorageHandler dataStorage, MainFrame mainFrame) {
 		pointerDataStorage = dataStorage;
+		this.mainFrame = mainFrame;
 	}
 	
 	public List<Integer> getIds(){
@@ -31,16 +34,6 @@ public class Contacts {
 	public int getNextId() {
 		return Collections.max(allIds) + 1;
 	}
-	
-	public List<String[]> getVisibleData(){
-		List<String[]> data = new ArrayList<>();
-		for (Contact contact : contactList) {
-			String[] contactData = null;
-			data.add(contact.getElementsAsList(true).toArray(contactData));
-		}
-		return data;
-	}
-	
 	
 	public String[][] contactsAs2DArray(){
 		List<String[]> contacts = new ArrayList<>();
@@ -62,18 +55,6 @@ public class Contacts {
 		
 	}	
 	
-	public void setSpecificValue(int id, String varName, String varValue) {
-		Contact getContact = getContactById(id);
-		String methodName = "set" + varName.replaceAll("\\s", "");
-		try {
-			Method variableSetMethod = getContact.getClass().getDeclaredMethod(methodName, String.class);
-			variableSetMethod.invoke(getContact, varValue);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-	}
-	
 	public void addToMaps(Contact newContact) {
 		contactList.add(newContact);
 		
@@ -89,10 +70,17 @@ public class Contacts {
 	
 	public void loadContacts() {
 		List<String[]> allContacts = pointerDataStorage.getContactData();
+		
 		if (allContacts != null) {
 			List<String> columns = new ArrayList<String>(Arrays.asList(allContacts.get(0)));
+			
 			for (Integer i=1; i < allContacts.size(); i++) {
-				Contact newContact = new Contact(allContacts.get(i), columns);
+				Map<String,String > dataMap = new HashMap<>();
+				for (int j=0;j<columns.size();j++) {
+					dataMap.put(columns.get(j),allContacts.get(i)[j]);
+				}
+				
+				Contact newContact = new Contact(dataMap);
 				addToMaps(newContact);
 			}
 		}
@@ -107,35 +95,20 @@ public class Contacts {
 		return allIds.indexOf(id);
 	}
 	
-	public List<Contact> getReminders(String field){
-		List<Contact> todayReminders = new ArrayList<>();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate today = LocalDate.now();
+	public void getReminders(){
 		
 		for (Contact contact : contactList) {
-			try {
-				if(field == Contact.BIRTHDAY_FIELD) {
-				
-					LocalDate date = LocalDate.parse(contact.getBirthday(), formatter);
-					String dateAsString = date.getMonth() + "-" + date.getDayOfMonth();
-					String todayAsString = today.getMonth() + "-" + today.getDayOfMonth();
-					if (todayAsString.equals(dateAsString)) {
-						todayReminders.add(contact);
-					}
-				}
-				else if (field == Contact.NEXTCONTACT_FIELD) {
-					LocalDate date = LocalDate.parse(contact.getNextContact(), formatter);
-					if(date.equals(today)) {
-						todayReminders.add(contact);
+			for (String dataId: ConfigFileData.getInstance().getColumns(false)) {
+				DataItemHandler item = contact.getItemInfo(dataId);
+				if(item instanceof DateItem) {
+					String[] titleAndContent = ((DateItem) item).isReminderToday();
+					if(titleAndContent != null) {
+						mainFrame.sendReminder(contact,titleAndContent[0],titleAndContent[1]);
 					}
 				}
 			}
-					
-			catch (Exception e) {
-			}	
 		}
-		return todayReminders;
 	}
-
+	
 }
 

@@ -6,32 +6,27 @@ import java.util.List;
 
 import com.contactmanager.datamodel.Contact;
 
-public interface DataStorageHandler {
+public abstract class DataStorageHandler {
 	
 	static final String MAX_ID_FORMATTING = "%05d";
-	static final String ICON_PATH = File.separator + "images"+File.separator+ "icon.png";
-	static final String NO_PROFILE_IMAGE_PATH = File.separator + "images" + File.separator +"NoProfilePicture.png";
-	static final String PATH_OF_PROGRAM = System.getProperty("user.dir");
+	public static final String ICON_PATH = File.separator + "images"+File.separator+ "icon.png";
+	public static final String NO_PROFILE_IMAGE_PATH = File.separator + "images" + File.separator +"NoProfilePicture.png";
+	static final String PATH_OF_PROGRAM = System.getProperty("user.dir");	
 	
-	String getChildClassName();
+	public abstract String getNotes(int id);
+	public abstract void saveNotes(int id,String notes);
 	
-	void setConfigFileDataPointer(ConfigFileData configFileData);
-	void initialize();
+	public abstract List<String[]> getLogs(int id);
+	public abstract void saveLogs(int id, List<String[]> logs);
 	
-	String getNotes(int id);
-	void saveNotes(int id,String notes);
+	public abstract Image getProfileImage(int id);
+	public abstract void saveProfileImage(int id, Image image);
 	
-	List<String[]> getLogs(int id);
-	void saveLogs(int id, List<String[]> logs);
+	public abstract List<String[]> getContactData();
+	public abstract void saveContactData(List<Contact> data);
 	
-	Image getProfileImage(int id);
-	void saveProfileImage(int id, Image image);
-	
-	List<String[]> getContactData();
-	void saveContactData(List<Contact> data);
-	
-	void createBackup(int id);
-	void deleteOldBackups();
+	public abstract void createBackup(int id);
+	public abstract void deleteOldBackups();
 
 	
 }

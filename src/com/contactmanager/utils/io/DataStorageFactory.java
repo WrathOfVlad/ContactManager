@@ -2,10 +2,10 @@ package com.contactmanager.utils.io;
 
 public class DataStorageFactory {
 
-	public DataStorageHandler getDataStorage(ConfigFileData configFileData) {
+	public DataStorageHandler getDataStorage() {
 		DataStorageHandler dataStrorage;
 		
-		String type = configFileData.getType();
+		String type = ConfigFileData.getInstance().getType();
 		if (type.equals("file") ) {
 			dataStrorage = new DataStorageFile();
 		}
@@ -13,7 +13,6 @@ public class DataStorageFactory {
 			return null;
 		}
 		
-		dataStrorage.setConfigFileDataPointer(configFileData);
 		return dataStrorage;
 	}
 }

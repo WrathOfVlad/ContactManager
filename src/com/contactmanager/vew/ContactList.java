@@ -31,6 +31,7 @@ import javax.swing.table.TableRowSorter;
 
 import com.contactmanager.datamodel.Contact;
 import com.contactmanager.datamodel.Contacts;
+import com.contactmanager.utils.io.ConfigFileData;
 
 
 public class ContactList extends JPanel{
@@ -51,6 +52,7 @@ public class ContactList extends JPanel{
 	public ContactList(MainFrame mainFrame, Contacts contacts) {
 		this.pointerContacts = contacts;
 		this.pointerMainFrame = mainFrame;
+		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {100};
 		gridBagLayout.rowHeights = new int[] {30, 387, 0};
@@ -79,7 +81,6 @@ public class ContactList extends JPanel{
 			@Override
 		    public void keyReleased(KeyEvent e) {
 		    	if(e.getKeyChar() != KeyEvent.VK_ESCAPE) {		    		
-			        //
 			        sorter.setRowFilter(RowFilter.regexFilter("(?i)" + searchField.getText()));
 		    	}
 		    }
@@ -96,10 +97,6 @@ public class ContactList extends JPanel{
 		gbc_scrollPane.gridy = 1;
 		add(scrollPane, gbc_scrollPane);
 		
-		initialize();
-	} 
-	
-	public void initialize() {
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setDefaultEditor(Object.class, null);
 		table.setAutoCreateRowSorter(true);
@@ -126,7 +123,7 @@ public class ContactList extends JPanel{
 		});
 		
 		addTableToScrollPane();
-	}
+	} 
 	
 	public void resizeAllColumns() {
 		for (int column = 0; column < table.getColumnCount(); column++)
@@ -182,14 +179,19 @@ public class ContactList extends JPanel{
 	
 	public String[] getVisibleDataFromFullRow(int id) {
 		Contact contact = pointerContacts.getContactById(id);
-		List<String> row = contact.getElementsAsList(true);
-		
-		List<String> columns = Contact.getColumnNames(true);
 		List<String> visibleRow = new ArrayList<>();
-		List<String> visibleColumns = Contact.getVisibleColumns();
-				
+		List<String> visibleColumns = ConfigFileData.getInstance().getVisibleColumns();
+		
 		for (int i = 0; i < visibleColumns.size(); i++) {
-			visibleRow.add(row.get(columns.indexOf(visibleColumns.get(i))));
+			if(visibleColumns.get(i).equals(Contact.ID_FIELD)) {
+				visibleRow.add(contact.getIdAsString());
+			}
+			else if(visibleColumns.get(i).equals(Contact.FULL_NAME_FIELD)) {
+				visibleRow.add(contact.getFullName());
+			}
+			else {
+				visibleRow.add(contact.getItemInfo(visibleColumns.get(i)).getDataValue());
+			}
 		}
 		return visibleRow.toArray(new String[visibleRow.size()]);
 	}
@@ -197,7 +199,6 @@ public class ContactList extends JPanel{
 	
 	public void updateRowInTable(int id) {
 		String[] row = getVisibleDataFromFullRow(id);
-		
 		//There's no need to add one here, as the column name row is only on mainTable, not on the actual displayed table
 		int rowNumber = pointerContacts.getRowIndexById(id);
 		
@@ -207,7 +208,7 @@ public class ContactList extends JPanel{
 	}
 	
 	public void loadData() {
-		List<String> visibleColumns = Contact.getVisibleColumns();
+		List<String> visibleColumns = ConfigFileData.getInstance().getVisibleColumns();
 		String[][] rawData = pointerContacts.contactsAs2DArray();
 		String[][] visibleData = new String[rawData.length][visibleColumns.size()];
 		List<Integer> ids = pointerContacts.getIds();

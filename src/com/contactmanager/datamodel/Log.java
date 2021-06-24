@@ -27,6 +27,19 @@ public class Log {
 		return log;
 	}
 	
+	public String getValue(String field) {
+		if(field == "lastContact") {
+			return date;
+		}
+		if(field == "nextContact") {
+			return nextTime;
+		}
+		if(field == "contactStatus") {
+			return status;
+		}
+		return null;
+	}
+	
 	
 	public String getDate() {
 		return date;

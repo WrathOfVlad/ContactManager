@@ -24,13 +24,11 @@ public class SettingsView extends JPanel {
 	private JTable table;
 	private DefaultTableModel tableModel;
 	
-	private ConfigFileData pointerConfigFileData;
 	private MainFrame pointerMainFrame;
 
 	
-	public SettingsView(MainFrame mainFrame, ConfigFileData configFileData) {
+	public SettingsView(MainFrame mainFrame) {
 		pointerMainFrame = mainFrame;
-		pointerConfigFileData = configFileData;
 		
 		table = new JTable();
 		table.setDefaultEditor(Object.class, null);
@@ -111,16 +109,19 @@ public class SettingsView extends JPanel {
 				values.add(table.getValueAt(i, 0).toString());
 			}
 		}
-		Contact.setVisibleColumns(values);
-		pointerConfigFileData.saveVisibleColumns();
+		ConfigFileData.getInstance().setVisibleColumns(values);
+		ConfigFileData.getInstance().saveVisibleColumns();
 		pointerMainFrame.isContactListViewerUpToDate = false;
 	}
 	
 	public void createTable() {
 		tableModel = new DefaultTableModel();
 		table.setModel(tableModel);
-		List<String> columns = Contact.getColumnNames(true);
-		List<String> displayedColumns = Contact.getVisibleColumns();
+		
+		
+		List<String> columns = ConfigFileData.getInstance().getColumns(false);
+		columns.add(0,Contact.FULL_NAME_FIELD);
+		List<String> displayedColumns = ConfigFileData.getInstance().getVisibleColumns();
 		tableModel.addColumn("Column Names", columns.toArray());
 		
 		tableModel.addColumn("Is Visible");

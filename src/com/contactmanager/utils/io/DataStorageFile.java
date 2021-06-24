@@ -28,32 +28,15 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
 
-public class DataStorageFile implements DataStorageHandler{
+public class DataStorageFile extends DataStorageHandler{
 	private static final String FILENAME_NOTES = "notes.txt";
 	private static final String FILENAME_LOGS = "logs.csv";
 	private static final String FILENAME_PROFILE_PICTURE = "profilePicture";
 	private static final String FILENAME_MAIN = "Main.csv";
 	private static final String DIRPATH_BACKUPS = File.separator + "backups" + File.separator;
 	
-	public static final String CHILD_NAME = "DataStorageFile";
+	private String path = ConfigFileData.getInstance().getPath();
 	
-	private String path;
-	private ConfigFileData pointerConfigFileData;
-	
-	@Override
-	public String getChildClassName() {
-		return CHILD_NAME;
-	}
-	
-	@Override
-	public void setConfigFileDataPointer(ConfigFileData configFileData) {
-		pointerConfigFileData = configFileData;
-	}
-	
-	@Override
-	public void initialize() {
-		path = pointerConfigFileData.getPath();
-	}
 
 	private File checkIfFileExistsInIdDir(int id, String fileName) {
 		String idPath= path + File.separator + String.format(MAX_ID_FORMATTING, id);
@@ -70,7 +53,6 @@ public class DataStorageFile implements DataStorageHandler{
 			try {
 				file.createNewFile();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -122,7 +104,6 @@ public class DataStorageFile implements DataStorageHandler{
 			reader.close();		
 			
 		} catch (IOException |CsvException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			
 		}
@@ -200,7 +181,6 @@ public class DataStorageFile implements DataStorageHandler{
 			return allRows;
 			
 		} catch (IOException |CsvException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
@@ -208,12 +188,12 @@ public class DataStorageFile implements DataStorageHandler{
 	@Override
 	public void saveContactData(List<Contact> data) {
 		String file = path + File.separator + FILENAME_MAIN;
-
+		
 		try (var fos = new FileOutputStream(file)){			
 	        var osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
 	        var writer = new CSVWriter(osw);
-	        List<String> columnsList = Contact.getColumnNames(false);
-	        
+	        List<String> columnsList = ConfigFileData.getInstance().getColumns(true);
+	        columnsList.add(0, Contact.ID_FIELD);
 	        String[] columns = columnsList.toArray(new String[columnsList.size()]);
 	        writer.writeNext(columns);
 	        for (int i = 0; i < data.size(); i++) {
@@ -271,7 +251,7 @@ public class DataStorageFile implements DataStorageHandler{
 		File  backupDir = new File(path+DIRPATH_BACKUPS);
 		String[] backups = backupDir.list();
 		
-		int backupTimeLimit = pointerConfigFileData.getBackupTimeLimit();
+		int backupTimeLimit = ConfigFileData.getInstance().getBackupTimeLimit();
 		
 		for (String backup : backups) {
 			long backupCreationEpoch = Long.parseLong(backup);
@@ -280,7 +260,6 @@ public class DataStorageFile implements DataStorageHandler{
 				try {
 					FileUtils.deleteDirectory(new File(path+ DIRPATH_BACKUPS + backup));
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
