@@ -57,13 +57,14 @@ public class ConfigFileData {
 				FileWriter file = new FileWriter(CONFIG_PATH);
 				file.write(metaDataMap.toJSONString());
 				file.close();
-				loadVisibleColumns();
+				
 				
 			}
 			catch (Exception e1) {
 				e1.printStackTrace();
 			}
 		}
+		loadVisibleColumns();
 	}
 	public static ConfigFileData getInstance() {
 		if(instance == null) {
@@ -145,7 +146,7 @@ public class ConfigFileData {
 	}
 
 	public void setColumns(List<String> cols) {
-		Map<String, Object> itemMetaData = getMetaData().get(ITEM_META_DATA);
+		Map<String, Map<String, Object>> itemMetaData = getMetaData();
 		columns = new ArrayList<String>();
 		for (String col : cols) {
 			if(!itemMetaData.keySet().contains(col)) {continue;}
@@ -154,11 +155,12 @@ public class ConfigFileData {
 		}
 	}
 	public List<String> getColumns(Boolean isIdIncluded){
+		ArrayList<String> tempCols = new ArrayList<String>(columns);
 		if(isIdIncluded) {
-			ArrayList<String> tempCols = new ArrayList<String>(columns);
+			
 			tempCols.add(0,Contact.ID_FIELD);
 			return tempCols;
 		}
-		return columns;
+		return tempCols;
 	}
 }

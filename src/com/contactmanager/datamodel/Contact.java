@@ -61,8 +61,7 @@ public class Contact {
 			listElements.add(fullName);
 		}
 		
-		for (String dataId : ConfigFileData.getInstance().getColumns(true)) {
-			if(dataId.equals(ID_FIELD)) {listElements.add(id);continue;}
+		for (String dataId : ConfigFileData.getInstance().getColumns(false)) {
 			listElements.add(dataMap.get(dataId).getDataValue());
 		}
 		return listElements;

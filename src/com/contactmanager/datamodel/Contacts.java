@@ -38,7 +38,7 @@ public class Contacts {
 	public String[][] contactsAs2DArray(){
 		List<String[]> contacts = new ArrayList<>();
 		for (Contact contact : contactList) {
-			List<String> elements = contact.getElementsAsList(true);
+			List<String> elements = contact.getElementsAsList(false);
 			contacts.add(elements.toArray(new String[elements.size()]));
 		}
 		String[][] contactsAsArray = new String[contacts.size()][];
@@ -73,6 +73,7 @@ public class Contacts {
 		
 		if (allContacts != null) {
 			List<String> columns = new ArrayList<String>(Arrays.asList(allContacts.get(0)));
+			ConfigFileData.getInstance().setColumns(columns);
 			
 			for (Integer i=1; i < allContacts.size(); i++) {
 				Map<String,String > dataMap = new HashMap<>();

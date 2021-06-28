@@ -57,6 +57,10 @@ import com.contactmanager.utils.viewutils.TraversalPolicy;
 
 public class ContactDetail extends JPanel {
 	
+	private static Integer LabelWidth = 100;
+	private static Integer textFieldWidth = 200;
+	private static Integer ySpacingBetweenElements = 25;
+	
 	private MainFrame pointerMainFrame;
 	private Integer id = null;
 	public boolean isInEditMode;
@@ -73,7 +77,7 @@ public class ContactDetail extends JPanel {
 	private JTextPane notesTextPane;
 	
 	private JTable table;
-	private JScrollPane scrollPane_1;
+	private JScrollPane tableScrollPane;
 	private DefaultTableModel tableModel;
 	
 	private CurrentContactInfo contactInfo;
@@ -111,11 +115,13 @@ public class ContactDetail extends JPanel {
 		Map<Integer, Integer[]> columnStartingPositionsMap = new HashMap<>();
 		Integer[] col1 = {25,150};
 		Integer[] col2 = {400,75};
-		Integer[] col3 = {740,75};
+		Integer[] col3 = {775,75};
 		
 		columnStartingPositionsMap.put(1, col1);
 		columnStartingPositionsMap.put(2, col2);
 		columnStartingPositionsMap.put(3, col3);
+		
+		Integer maxY = 0;
 		
 		for (String field:fields) {
 			Map<String,Object> dataItemMetaData = metaData.get(field);
@@ -133,11 +139,16 @@ public class ContactDetail extends JPanel {
 			Integer startX = columnStartingPositionsMap.get(gridPlacement[0])[0]; 
 			Integer startY = columnStartingPositionsMap.get(gridPlacement[0])[1]; 
 			
-			label.setBounds(startX, startY+25*gridPlacement[1], 100, 20);
+			Integer currentX = startX;
+			Integer currentY = startY + ySpacingBetweenElements*gridPlacement[1];
+			
+			if(currentY>maxY) {maxY = currentY;}
+			
+			label.setBounds(currentX, currentY, LabelWidth, 20);
 			add(label);
 			
 			JTextField textField = new JTextField();//myComponents.createFilteredField(dataItem.getRegex(),dataItem.getMaxLength() );
-			textField.setBounds(startX + 105,startY+25*gridPlacement[1],100,20);
+			textField.setBounds(currentX + LabelWidth,currentY,textFieldWidth,20);
 			add(textField);
 			allTextFields.put(field, textField);
 			order.add(textField);
@@ -146,7 +157,7 @@ public class ContactDetail extends JPanel {
 				JLabel linkLabel = new JLabel(labelString);
 				linkLabel.setVisible(false);
 				linkLabel.setEnabled(false);
-				linkLabel.setBounds(startX + 105, startY + 25 * gridPlacement[1], 100, 20);
+				linkLabel.setBounds(currentX + LabelWidth, currentY, textFieldWidth, 20);
 				linkLabel.setForeground(Color.BLUE.darker());
 				linkLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				linkLabel.addMouseListener(new MouseAdapter() {
@@ -186,36 +197,6 @@ public class ContactDetail extends JPanel {
 		btnSave.setBounds(250, 25, 75, 25);
 		add(btnSave);
 		
-		
-
-		
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setFocusTraversalKeysEnabled(false);
-		scrollPane.setBounds(1075, 75, 750, 750);
-		add(scrollPane);
-		
-		notesTextPane = new JTextPane();
-		notesTextPane.setFocusCycleRoot(false);
-		scrollPane.setViewportView(notesTextPane);
-		notesTextPane.setBorder(new LineBorder(new Color(0, 0, 0)));
-		
-		scrollPane_1 = new JScrollPane();
-		scrollPane_1.setFocusTraversalKeysEnabled(false);
-		scrollPane_1.setBounds(25, 375, 950, 250);
-		add(scrollPane_1);
-		
-		
-		JButton btnAdd = new JButton("Add");
-		btnAdd.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				addPressed(arg0);
-			}
-		});
-		btnAdd.setBounds(25, 340, 65, 25);
-		add(btnAdd);
-		
 		JButton btnFileExplorer = new JButton("FIle Explorer");
 		btnFileExplorer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -224,6 +205,34 @@ public class ContactDetail extends JPanel {
 		});
 		btnFileExplorer.setBounds(355, 25, 125, 25);
 		add(btnFileExplorer);
+		
+		JButton btnAdd = new JButton("Add");
+		btnAdd.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				addPressed(arg0);
+			}
+		});
+		Integer addY = maxY < 350? 350 : maxY + ySpacingBetweenElements; 
+		btnAdd.setBounds(25, addY, 65, 25);
+		add(btnAdd);
+		
+		tableScrollPane = new JScrollPane();
+		tableScrollPane.setFocusTraversalKeysEnabled(false);
+		tableScrollPane.setBounds(25, addY + ySpacingBetweenElements, 950, 250);
+		add(tableScrollPane);
+		
+		
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setFocusTraversalKeysEnabled(false);
+		scrollPane.setBounds(1250, 75, 750, 750);
+		add(scrollPane);
+		
+		notesTextPane = new JTextPane();
+		notesTextPane.setFocusCycleRoot(false);
+		scrollPane.setViewportView(notesTextPane);
+		notesTextPane.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
 		Document doc = notesTextPane.getDocument();
 		
@@ -403,7 +412,7 @@ public class ContactDetail extends JPanel {
 		//table.setPreferredSize(new Dimension(getWidth(),getHeight()));
 		table.setAutoCreateRowSorter(true);
 		table.getTableHeader().setReorderingAllowed(false);
-		scrollPane_1.setViewportView(table);
+		tableScrollPane.setViewportView(table);
 		
 	}
 	

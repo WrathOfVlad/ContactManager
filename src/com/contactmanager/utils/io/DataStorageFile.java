@@ -193,7 +193,6 @@ public class DataStorageFile extends DataStorageHandler{
 	        var osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
 	        var writer = new CSVWriter(osw);
 	        List<String> columnsList = ConfigFileData.getInstance().getColumns(true);
-	        columnsList.add(0, Contact.ID_FIELD);
 	        String[] columns = columnsList.toArray(new String[columnsList.size()]);
 	        writer.writeNext(columns);
 	        for (int i = 0; i < data.size(); i++) {
