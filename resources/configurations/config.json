@@ -123,7 +123,10 @@
 			"dataLabel":"Discord",
 			"placementOnDetails":"2,7"
 		}
-	} 
+	},
+	"logsMetaData":{ 
+		
+	}
 }
 
 

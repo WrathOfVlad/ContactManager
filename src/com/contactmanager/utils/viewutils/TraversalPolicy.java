@@ -14,15 +14,26 @@ public class TraversalPolicy extends FocusTraversalPolicy{
 	}
 	public Component getComponentAfter(Container focusCycleRoot,Component aComponent){
 		int idx = (order.indexOf(aComponent) + 1) % order.size();
-		return order.get(idx);
+		if(order.get(idx).isEnabled()) {
+			return order.get(idx);
+		}
+		else {
+			return getComponentAfter(focusCycleRoot, order.get(idx));
+		}		
 	}
+	
 	
 	public Component getComponentBefore(Container focusCycleRoot,Component aComponent){
 		int idx = order.indexOf(aComponent) - 1;
 		if (idx < 0) {
 		  idx = order.size() - 1;
 	}
-		return order.get(idx);
+		if(order.get(idx).isEnabled()) {
+			return order.get(idx);
+		}
+		else {
+			return getComponentBefore(focusCycleRoot, order.get(idx));
+		}
 	}
 	
 	public Component getDefaultComponent(Container focusCycleRoot) {

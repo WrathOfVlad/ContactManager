@@ -7,8 +7,10 @@ import java.util.Calendar;
 
 import javax.swing.*;
 
+import com.contactmanager.datamodel.items.DateItem;
+
 //create class
-class DatePicker 
+public class DatePicker 
 {
 	//define variables
       int month = Calendar.getInstance().get(java.util.Calendar.MONTH);
@@ -54,6 +56,8 @@ class DatePicker
                                {
                                      day = button[selection].getActionCommand();
                                      //call dispose() method
+                                     if(day.equals("")) return;
+                                     
                                      d.dispose();
                                }
                       });
@@ -113,7 +117,7 @@ class DatePicker
       {
       	for (int x = 7; x < button.length; x++)//for loop
       	button[x].setText("");//set text
-    	        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");	
+    	        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(DateItem.dateFormat);	
               //create object of SimpleDateFormat 
               java.util.Calendar cal = java.util.Calendar.getInstance();			
               //create object of java.util.Calendar 
@@ -133,11 +137,11 @@ class DatePicker
       public String setPickedDate() 
       {
       	//if condition
-      	if (day.equals(""))
-      		return day;
-          java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy");
-          java.util.Calendar cal = java.util.Calendar.getInstance();
-          cal.set(year, month, Integer.parseInt(day));
-          return sdf.format(cal.getTime());
+	      if (day.equals("")) return day;
+	      	
+	      java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(DateItem.dateFormat);
+	      java.util.Calendar cal = java.util.Calendar.getInstance();
+	      cal.set(year, month, Integer.parseInt(day));
+	      return sdf.format(cal.getTime());
       }
 }

@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 public class DateItem extends DataItemHandler{
 	
+	public static final String dateFormat = "yyyy-MM-dd";
+	
 	private static final String IS_REMINDER_FIELD = "isReminder";
 	private static final String IS_YEAR_INCLUDED_FIELD = "isYearIncluded";
 	private static final String NOTIFICATION_HEADER_FIELD = "notificationHeader";

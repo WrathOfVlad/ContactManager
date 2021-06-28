@@ -29,7 +29,6 @@ public class ContactLog extends JPanel {
 	private JTextPane textPane;
 	
 	private Map<String, JTextField> textFieldMap = new HashMap<>();
-	private Map<String, JFormattedTextField> formattedTextFieldMap = new HashMap<>();
 	
 	private MainFrame pointerMainFrame;
 
@@ -121,12 +120,12 @@ public class ContactLog extends JPanel {
 		JFormattedTextField formattedTextField = new JFormattedTextField(dateFormat);
 		formattedTextField.setBounds(100, 75, 125, 19);
 		add(formattedTextField);
-		formattedTextFieldMap.put(columns[0], formattedTextField);	
+		textFieldMap.put(columns[0], formattedTextField);	
 		
 		JFormattedTextField formattedTextField_1 = new JFormattedTextField(dateFormat);
 		formattedTextField_1.setBounds(100, 125, 125, 19);
 		add(formattedTextField_1);
-		formattedTextFieldMap.put(columns[2], formattedTextField_1);	
+		textFieldMap.put(columns[2], formattedTextField_1);	
 		addGlobalEventListener();
 	}
 	
@@ -151,11 +150,6 @@ public class ContactLog extends JPanel {
 		for (String fieldKey : textFieldMap.keySet()) {
 			textFieldMap.get(fieldKey).setText("");
 		}
-
-		for (String date : formattedTextFieldMap.keySet()) {
-			formattedTextFieldMap.get(date).setValue(null);
-		}
-		
 		textPane.setText("");
 		textPane.requestFocus();
 	}
@@ -167,7 +161,7 @@ public class ContactLog extends JPanel {
 		String[] columns = Log.getColumnNames();
 		try{
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			LocalDate.parse(formattedTextFieldMap.get(columns[0]).getText(), formatter);
+			LocalDate.parse(textFieldMap.get(columns[0]).getText(), formatter);
 		}
 		catch (Exception e) {
 			JOptionPane.showMessageDialog(pointerMainFrame, "Invalid Date");
@@ -178,9 +172,9 @@ public class ContactLog extends JPanel {
 		
 		
 		
-		log[0] = formattedTextFieldMap.get(columns[0]).getText();
+		log[0] = textFieldMap.get(columns[0]).getText();
 		log[1] = textFieldMap.get(columns[1]).getText();
-		log[2] = formattedTextFieldMap.get(columns[2]).getText();
+		log[2] = textFieldMap.get(columns[2]).getText();
 		log[3] = textFieldMap.get(columns[3]).getText();
 		log[4] = textFieldMap.get(columns[4]).getText();
 		log[5] = textPane.getText();

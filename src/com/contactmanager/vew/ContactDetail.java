@@ -17,8 +17,10 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -52,6 +54,7 @@ import com.contactmanager.datamodel.items.DataItemHandler;
 import com.contactmanager.datamodel.items.DataType;
 import com.contactmanager.datamodel.items.ExternalLoading;
 import com.contactmanager.utils.io.ConfigFileData;
+import com.contactmanager.utils.viewutils.DatePicker;
 import com.contactmanager.utils.viewutils.TraversalPolicy;
 
 
@@ -123,6 +126,8 @@ public class ContactDetail extends JPanel {
 		
 		Integer maxY = 0;
 		
+		List<Map<Integer, JTextField>> tabOrder = new LinkedList<Map<Integer, JTextField>>();
+		
 		for (String field:fields) {
 			Map<String,Object> dataItemMetaData = metaData.get(field);
 			
@@ -147,11 +152,11 @@ public class ContactDetail extends JPanel {
 			label.setBounds(currentX, currentY, LabelWidth, 20);
 			add(label);
 			
+			
 			JTextField textField = new JTextField();//myComponents.createFilteredField(dataItem.getRegex(),dataItem.getMaxLength() );
 			textField.setBounds(currentX + LabelWidth,currentY,textFieldWidth,20);
 			add(textField);
 			allTextFields.put(field, textField);
-			order.add(textField);
 			
 			if (dataItemMetaData.get(DataItemHandler.DATA_TYPE_ID).equals(DataType.LINK.toString())) {
 				JLabel linkLabel = new JLabel(labelString);
@@ -169,11 +174,33 @@ public class ContactDetail extends JPanel {
 				add(linkLabel);
 				allClickableLinks.put(field, linkLabel);
 			}
-			if(!dataItemMetaData.containsKey(DataItemHandler.IS_EDITABLE_FIELD)) {continue;}
+			Boolean isEditable =  !dataItemMetaData.containsKey(DataItemHandler.IS_EDITABLE_FIELD) || Boolean.parseBoolean(dataItemMetaData.get(DataItemHandler.IS_EDITABLE_FIELD).toString());
 			
-			if(!Boolean.parseBoolean(dataItemMetaData.get(DataItemHandler.IS_EDITABLE_FIELD).toString())) {
-				nonEditable.add(field);
+			if(isEditable) {
+				
+				Map<Integer,JTextField> yMap = new TreeMap<Integer,JTextField>();
+				while(tabOrder.size()<=gridPlacement[0]-1) {
+					tabOrder.add(gridPlacement[0]-1, yMap);
+				}
+				tabOrder.get(gridPlacement[0]-1).put(gridPlacement[1], textField);	
+				
+				if (!dataItemMetaData.get(DataItemHandler.DATA_TYPE_ID).equals(DataType.DATE.toString())) {
+					continue;
+				}
+				
+				textField.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent ae) {
+						if(isInEditMode) {
+							String date = new DatePicker(mainFrame).setPickedDate();
+							if(date.equals("")) return;
+							
+							textField.setText(date);
+						}
+					}
+				});
 			}
+			nonEditable.add(field);
 			
 		}
 		
@@ -283,6 +310,12 @@ public class ContactDetail extends JPanel {
 		
 		order.add(btnEdit);
 		order.add(btnSave);
+		
+		for (Map<Integer, JTextField> map : tabOrder) {
+			for (JTextField field : map.values()) {
+				order.add(field);
+			}
+		}
 		
 	    //order.add(table);
 		this.setFocusCycleRoot(true);
