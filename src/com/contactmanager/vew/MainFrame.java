@@ -174,9 +174,10 @@ public class MainFrame extends JFrame {
 	
 	public void changePage(String pageName){
 		//before switching the page
-		if(currentCard == CONTACT_DETAIL) {
-			pointerContactDetail.exitPoint();
+		/*if(currentCard == CONTACT_DETAIL) {
+			
 		}
+		*/
 		
 		
 		//switch the page
@@ -189,6 +190,7 @@ public class MainFrame extends JFrame {
 			pointerContactDetail.requestFocus();
 		}
 		else if(pageName == CONTACT_LIST) {
+			pointerContactDetail.exitPoint();
 			if(!isContactListViewerUpToDate) {
 				pointerContactList.loadData();
 				isContactListViewerUpToDate = true;
