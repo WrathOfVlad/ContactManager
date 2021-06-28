@@ -2,11 +2,14 @@ package com.contactmanager.vew;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -47,7 +50,7 @@ public class MainFrame extends JFrame {
 	private JPanel screenLayout = new JPanel(new CardLayout());
 	public String currentCard;
 	
-	public MainFrame(Contacts contacts, DataStorageHandler dataStorage, ConfigFileData configFileData, MultiPlatformSupportHandler multiPlatformSupport) {
+	public MainFrame(Contacts contacts, DataStorageHandler dataStorage, ConfigFileData configFileData, MultiPlatformSupportHandler multiPlatformSupport) throws IOException {
 		pointerContacts = contacts;
 		pointerConfigFileData = configFileData;
 		pointerMultiPlatformSupport = multiPlatformSupport;
@@ -58,7 +61,8 @@ public class MainFrame extends JFrame {
 		pointerSettingsView = new SettingsView(this, pointerConfigFileData);
 		pointerContactLog = new ContactLog(this);
 		
-		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(DataStorageHandler.ICON_PATH)));
+		Image icon = ImageIO.read(getClass().getResource(DataStorageHandler.ICON_PATH));
+		setIconImage(icon);
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
