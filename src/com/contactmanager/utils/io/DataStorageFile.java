@@ -24,6 +24,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 
 import com.contactmanager.datamodel.Contact;
+import com.contactmanager.datamodel.Log;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
@@ -120,6 +121,9 @@ public class DataStorageFile extends DataStorageHandler{
 		try (var fos = new FileOutputStream(file)){
 			var osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
 	        var writer = new CSVWriter(osw);
+	        List<String> columnsList = Log.getColumns();
+	        String[] columns = columnsList.toArray(new String[columnsList.size()]);
+	        writer.writeNext(columns);
 			for (String[] log : logs) {
 				writer.writeNext(log);
 			}

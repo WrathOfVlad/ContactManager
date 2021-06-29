@@ -1,6 +1,7 @@
 package com.contactmanager.vew;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -18,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 import com.contactmanager.datamodel.Contact;
 import com.contactmanager.datamodel.Contacts;
 import com.contactmanager.datamodel.CurrentContactInfo;
+import com.contactmanager.datamodel.Log;
 import com.contactmanager.datamodel.Logs;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.utils.multiplatform.MultiPlatformSupportHandler;
@@ -60,6 +62,9 @@ public class MainFrame extends JFrame {
 		pointerContactLog = new ContactLog(this);
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(DataStorageHandler.ICON_PATH)));
+		
+		int screenWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth()-20;
+		int screenHight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()-120;
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -105,10 +110,21 @@ public class MainFrame extends JFrame {
 		mnHelp.add(mntmVersion);
 		
 		getContentPane().setLayout(new CardLayout(0, 0));
-		getContentPane().add(new JScrollPane(pointerContactDetail), CONTACT_DETAIL);
-		getContentPane().add(new JScrollPane(pointerContactList), CONTACT_LIST);
-		getContentPane().add(new JScrollPane(pointerContactLog), CONTACT_LOG);
-		getContentPane().add(new JScrollPane(pointerSettingsView), SETTINGS);
+		
+		JScrollPane contactDetailSP = new JScrollPane(pointerContactDetail);
+		JScrollPane contactListSP = new JScrollPane(pointerContactList);
+		JScrollPane contactLogSP = new JScrollPane(pointerContactLog);
+		JScrollPane settingsSP = new JScrollPane(pointerSettingsView);
+		
+		contactDetailSP.setPreferredSize(new Dimension(screenWidth, screenHight));
+		contactListSP.setPreferredSize(new Dimension(screenWidth, screenHight));
+		contactLogSP.setPreferredSize(new Dimension(screenWidth, screenHight));
+		settingsSP.setPreferredSize(new Dimension(screenWidth, screenHight));
+		
+		getContentPane().add(contactDetailSP, CONTACT_DETAIL);
+		getContentPane().add(contactListSP, CONTACT_LIST);
+		getContentPane().add(contactLogSP, CONTACT_LOG);
+		getContentPane().add(settingsSP, SETTINGS);
 		initialize();
 
 	}
@@ -120,6 +136,10 @@ public class MainFrame extends JFrame {
 	public void clear() {
 		pointerContactLog.clear();
 	}
+	public void setContactLog(Log log) {
+		pointerContactLog.setContactLog(log);
+	}
+	
 
 	public void addRowToTable(int id) {
 		pointerContactList.addRowToTable(id);
@@ -129,8 +149,8 @@ public class MainFrame extends JFrame {
 		pointerContactList.updateRowInTable(id);
 	}
 	
-	public void newLogInContactDetailView(String[] log) {
-		pointerContactDetail.newLog(log);
+	public void logToContactDetailView(Log log, Boolean isNewLog) {
+		pointerContactDetail.newLog(log,isNewLog);
 	}
 	public void loadDetailInContactDetailViewer(int id) {
 		pointerContactDetail.loadDetail(id);

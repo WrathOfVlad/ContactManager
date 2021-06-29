@@ -125,6 +125,34 @@
 		}
 	},
 	"logsMetaData":{ 
+		"notes":{ 
+		"dataType":"DEFAULT"
+		},
+		"Last Contact":{ 
+			"dataLabel":"Date",
+			"placementOnDetails":"1,1",
+			"dataType":"DATE"
+		},
+		"Type":{ 
+			"dataLabel":"Type",
+			"dataType":"DEFAULT",
+			"placementOnDetails":"2,1"
+		},
+		"Next Contact":{ 
+			"dataLabel":"Next Time",
+			"dataType":"DATE",
+			"placementOnDetails":"3,1"
+		},
+		"Actions":{ 
+			"dataLabel":"Action",
+			"dataType":"DEFAULT",
+			"placementOnDetails":"4,1"
+		},
+		"Contact Status":{ 
+			"dataLabel":"Status",
+			"dataType":"DEFAULT",
+			"placementOnDetails":"5,1"
+		}
 		
 	}
 }

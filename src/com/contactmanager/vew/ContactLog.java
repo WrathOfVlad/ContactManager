@@ -7,87 +7,96 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.border.LineBorder;
-import javax.swing.text.MaskFormatter;
+import javax.swing.text.JTextComponent;
 
 import com.contactmanager.datamodel.Log;
+import com.contactmanager.datamodel.items.DataItemHandler;
+import com.contactmanager.datamodel.items.DataType;
+import com.contactmanager.utils.io.ConfigFileData;
+import com.contactmanager.utils.viewutils.DatePicker;
 
 public class ContactLog extends JPanel {
-	private JTextPane textPane;
 	
-	private Map<String, JTextField> textFieldMap = new HashMap<>();
+	private static Integer LabelWidth = 100;
+	private static Integer textFieldWidth = 200;
+	private static Integer ySpacingBetweenElements = 25;
 	
+	private Map<String, Map<String, Object>> metaData = ConfigFileData.getInstance().getLogsMetaData();
+	private Map<String, JTextComponent> textFieldMap = new HashMap<>();
+	
+	private Boolean isNewLog = true;
 	private MainFrame pointerMainFrame;
 
-	/**
-	 * Create the panel.
-	 */
+	
 	public ContactLog(MainFrame mainFrame) {
 		pointerMainFrame = mainFrame;
 		setLayout(null);
 		
-		String[] columns = Log.getColumnNames();
+		Integer startX = 25;
+		Integer startY = 75;
 		
-		JLabel lblDate = new JLabel(columns[0] + ":");
-		lblDate.setBounds(26, 76, 50, 15);
-		add(lblDate);
 		
-		JLabel lblType = new JLabel(columns[1] + ":");
-		lblType.setBounds(26, 101, 50, 15);
-		add(lblType);
-		
-		JLabel lblNextTime = new JLabel(columns[2]+":");
-		lblNextTime.setBounds(26, 126, 82, 15);
-		add(lblNextTime);
-		
-		JLabel lblAction = new JLabel(columns[3] + ":");
-		lblAction.setBounds(26, 151, 70, 15);
-		add(lblAction);
-		
-		JLabel lblStatus = new JLabel(columns[4] + ":");
-		lblStatus.setBounds(26, 176, 70, 15);
-		add(lblStatus);
-		
-		JTextField textField_1 = new JTextField();
-		textField_1.setBounds(101, 99, 125, 19);
-		add(textField_1);
-		textField_1.setColumns(10);
-		textFieldMap.put(columns[1], textField_1);
-		
-		JTextField textField_3 = new JTextField();
-		textField_3.setBounds(101, 151, 125, 19);
-		add(textField_3);
-		textField_3.setColumns(10);
-		textFieldMap.put(columns[3], textField_3);
-		
-		JTextField textField_4 = new JTextField();
-		textField_4.setBounds(101, 176, 125, 19);
-		add(textField_4);
-		textField_4.setColumns(10);
-		textFieldMap.put(columns[4], textField_4);
-		
+		for (String dataId : metaData.keySet()) {
+			if(dataId.equals("notes")) {continue;};
+			
+			JLabel label = new JLabel(metaData.get(dataId).get(DataItemHandler.DATA_LABEL_FIELD).toString() + ":");
+			
+			String[] placementsAsString = metaData.get(dataId).get(DataItemHandler.PLACEMENT_ON_DETAILS).toString().split(",");
+			Integer placement = Integer.parseInt(placementsAsString[0]);
+			
+			Integer currentX = startX;
+			Integer currentY = startY + placement * ySpacingBetweenElements;
+			
+			label.setBounds(currentX,currentY,LabelWidth,20);
+			add(label);
+			
+			JTextComponent textField = new JTextField();
+			textField.setBounds(currentX + LabelWidth, currentY, textFieldWidth, 20);
+			add(textField);
+			textFieldMap.put(dataId, textField);
+
+			if (!metaData.get(dataId).get(DataItemHandler.DATA_TYPE_ID).equals(DataType.DATE.toString())) {
+				continue;
+			}
+			
+			textField.setEditable(false);
+			textField.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent ae) {
+					String date = new DatePicker(mainFrame).setPickedDate();
+					if(date.equals("")) return;
+					
+					textField.setText(date);
+				}
+			});
+			
+			
+		}
 		
 		JLabel lblNotes = new JLabel("Notes:");
 		lblNotes.setBounds(300, 25, 70, 15);
 		add(lblNotes);
 		
-		textPane = new JTextPane();
+		JTextComponent textPane = new JTextPane();
 		textPane.setBorder(new LineBorder(new Color(0, 0, 0)));
-		textPane.setBounds(360, 25, 500, 500);
-		add(textPane);
+		
+		
+		JScrollPane scrollPane= new JScrollPane(textPane);
+		scrollPane.setBounds(360, 25, 500, 500);
+		add(scrollPane);
+		textFieldMap.put("notes", textPane);
 		
 		JButton btnExit = new JButton("Exit");
 		btnExit.addActionListener(new ActionListener() {
@@ -108,24 +117,6 @@ public class ContactLog extends JPanel {
 		btnSave.setBounds(100, 25, 70, 25);
 		add(btnSave);
 		
-		MaskFormatter dateFormat = null;
-		try {
-			dateFormat = new MaskFormatter("####-##-##");
-
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		JFormattedTextField formattedTextField = new JFormattedTextField(dateFormat);
-		formattedTextField.setBounds(100, 75, 125, 19);
-		add(formattedTextField);
-		textFieldMap.put(columns[0], formattedTextField);	
-		
-		JFormattedTextField formattedTextField_1 = new JFormattedTextField(dateFormat);
-		formattedTextField_1.setBounds(100, 125, 125, 19);
-		add(formattedTextField_1);
-		textFieldMap.put(columns[2], formattedTextField_1);	
 		addGlobalEventListener();
 	}
 	
@@ -150,36 +141,26 @@ public class ContactLog extends JPanel {
 		for (String fieldKey : textFieldMap.keySet()) {
 			textFieldMap.get(fieldKey).setText("");
 		}
-		textPane.setText("");
-		textPane.requestFocus();
+		isNewLog = true;
 	}
+	
+	public void setContactLog(Log log) {
+		for (String fieldKey : textFieldMap.keySet()) {
+			textFieldMap.get(fieldKey).setText(log.getItemInfo(fieldKey).getDataValue());
+		}
+		isNewLog = false;;
+	}
+	
 	
 	private void exit() {
 		pointerMainFrame.changePage(MainFrame.CONTACT_DETAIL);
 	}
 	private void save() {
-		String[] columns = Log.getColumnNames();
-		try{
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			LocalDate.parse(textFieldMap.get(columns[0]).getText(), formatter);
-		}
-		catch (Exception e) {
-			JOptionPane.showMessageDialog(pointerMainFrame, "Invalid Date");
-			return;
-		}
-		
-		String[] log = new String[Log.getColumnNames().length];
-		
-		
-		
-		log[0] = textFieldMap.get(columns[0]).getText();
-		log[1] = textFieldMap.get(columns[1]).getText();
-		log[2] = textFieldMap.get(columns[2]).getText();
-		log[3] = textFieldMap.get(columns[3]).getText();
-		log[4] = textFieldMap.get(columns[4]).getText();
-		log[5] = textPane.getText();
-		
-		pointerMainFrame.newLogInContactDetailView(log);
+
+		Log log = new Log(null);
+		log.setValuesFromView(textFieldMap);
+
+		pointerMainFrame.logToContactDetailView(log,isNewLog);
 		exit();
 	}
 	

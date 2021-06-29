@@ -25,6 +25,7 @@ public class ConfigFileData {
 	private static final String ITEM_META_DATA = "itemMetaData";
 	private static final String USER_SETTINGS = "USER_SETTINGS";
 	private static final String GENERAL = "GENERAL";
+	private static final String LOGS_METADATA = "logsMetaData";
 	
 	//Second Level Fields
 	private static final String VISIBLE_COLUMNS = "visibleColumns";
@@ -36,7 +37,7 @@ public class ConfigFileData {
 	private static final String CONFIG_PATH = DataStorageHandler.PATH_OF_PROGRAM + File.separator+"config.json";
 	private static final String CONFIG_DEFAULT_PATH = File.separator +"configurations" + File.separator +"config.json";
 	
-	private JSONObject metaDataMap;
+	private JSONObject configJsonData;
 	private List<String> visibleColumns = new ArrayList<String>();
 	private List<String> columns = new ArrayList<String>();
 	
@@ -45,17 +46,17 @@ public class ConfigFileData {
 	private ConfigFileData(){
 		try {
 			InputStream is = new FileInputStream(CONFIG_PATH);
-			metaDataMap = loadMetaData(is);
+			configJsonData = loadItemMetaData(is);
 			
 		} catch (Exception e) {
 			try {
 				InputStream is = getClass().getResourceAsStream(CONFIG_DEFAULT_PATH);
-				metaDataMap = loadMetaData(is);
+				configJsonData = loadItemMetaData(is);
 	
-				((JSONObject)metaDataMap.get(GENERAL)).put(PATH,DataStorageHandler.PATH_OF_PROGRAM + File.separator +"Data");
+				((JSONObject)configJsonData.get(GENERAL)).put(PATH,DataStorageHandler.PATH_OF_PROGRAM + File.separator +"Data");
 				
 				FileWriter file = new FileWriter(CONFIG_PATH);
-				file.write(metaDataMap.toJSONString());
+				file.write(configJsonData.toJSONString());
 				file.close();
 				
 				
@@ -78,13 +79,13 @@ public class ConfigFileData {
 	}
 	
 	public String getPath() {
-		return ((JSONObject)metaDataMap.get(GENERAL)).get(PATH).toString();
+		return ((JSONObject)configJsonData.get(GENERAL)).get(PATH).toString();
 	}
 	public String getType() {
-		return ((JSONObject)metaDataMap.get(GENERAL)).get(STORING_TYPE).toString();
+		return ((JSONObject)configJsonData.get(GENERAL)).get(STORING_TYPE).toString();
 	}
 	public int getBackupTimeLimit() {
-		return Integer.parseInt(((JSONObject)metaDataMap.get(USER_SETTINGS)).get(BACKUP_TIME_LIMIT).toString());
+		return Integer.parseInt(((JSONObject)configJsonData.get(USER_SETTINGS)).get(BACKUP_TIME_LIMIT).toString());
 	}
 	
 	public void setVisibleColumns(List<String> visibleColumns) {
@@ -98,9 +99,9 @@ public class ConfigFileData {
 			endValues += ",";
 		}
 		try {
-			((JSONObject)metaDataMap.get(USER_SETTINGS)).put(VISIBLE_COLUMNS,endValues);
+			((JSONObject)configJsonData.get(USER_SETTINGS)).put(VISIBLE_COLUMNS,endValues);
 			FileWriter file = new FileWriter(CONFIG_PATH);
-			file.write(metaDataMap.toJSONString());
+			file.write(configJsonData.toJSONString());
 			file.close();
 			
 		} catch (IOException e) {
@@ -109,13 +110,21 @@ public class ConfigFileData {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Map<String,Map<String, Object>> getMetaData(){
+	public Map<String,Map<String, Object>> getItemMetaData(){
 		
-		Map<String,Map<String, Object>> metaData = (HashMap<String, Map<String, Object>>) metaDataMap.get(ITEM_META_DATA);
+		Map<String,Map<String, Object>> metaData = (HashMap<String, Map<String, Object>>) configJsonData.get(ITEM_META_DATA);
 		return metaData;
 	}
 	
-	private JSONObject loadMetaData(InputStream is) {
+	@SuppressWarnings("unchecked")
+	public Map<String,Map<String, Object>> getLogsMetaData(){
+		
+		Map<String,Map<String, Object>> metaData = (HashMap<String, Map<String, Object>>) configJsonData.get(LOGS_METADATA);
+		return metaData;
+	}
+	
+	
+	private JSONObject loadItemMetaData(InputStream is) {
 		 
 		 JSONParser parser = new JSONParser();
 		 Object obj = null;
@@ -131,7 +140,7 @@ public class ConfigFileData {
 	}
 	
 	private void loadVisibleColumns() {
-		String visibleColumnsString = ((JSONObject)metaDataMap.get(USER_SETTINGS)).get(VISIBLE_COLUMNS).toString();
+		String visibleColumnsString = ((JSONObject)configJsonData.get(USER_SETTINGS)).get(VISIBLE_COLUMNS).toString();
 		String[] visibleColumnsArray = visibleColumnsString.split(",");
 		
 		List<String> visibleList = new ArrayList<>(Arrays.asList(visibleColumnsArray));
@@ -146,7 +155,7 @@ public class ConfigFileData {
 	}
 
 	public void setColumns(List<String> cols) {
-		Map<String, Map<String, Object>> itemMetaData = getMetaData();
+		Map<String, Map<String, Object>> itemMetaData = getItemMetaData();
 		columns = new ArrayList<String>();
 		for (String col : cols) {
 			if(!itemMetaData.keySet().contains(col)) {continue;}

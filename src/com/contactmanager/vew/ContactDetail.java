@@ -90,10 +90,6 @@ public class ContactDetail extends JPanel {
 		this.contactInfo = contactInfo;
 		
 		setFocusTraversalKeysEnabled(false);
-		int screenWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth()-20;
-		int screenHight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()-120;
-		setPreferredSize(new Dimension(screenWidth,screenHight));
-		setBounds(0, 0, screenWidth, screenHight);
 		setLayout(null);
 
 		profilePictureLabel = new JLabel();
@@ -110,7 +106,7 @@ public class ContactDetail extends JPanel {
 
 		//CustomComponents myComponents = new CustomComponents();
 		
-		Map<String, Map<String, Object>> metaData = ConfigFileData.getInstance().getMetaData();
+		Map<String, Map<String, Object>> metaData = ConfigFileData.getInstance().getItemMetaData();
 		List<String> fields = ConfigFileData.getInstance().getColumns(false);
 		
 		Vector<Component> order = new Vector<Component>();
@@ -416,11 +412,12 @@ public class ContactDetail extends JPanel {
 	
 	public void setFieldsFromLogs() {
 		Log latestLog = contactInfo.getLogs().getLatestLog();  
+		if(latestLog == null) return;
 		
 		Contact contact = contactInfo.getContact();
 		for (String field : allTextFields.keySet()) {
 			if(contact.getItemInfo(field).getExternalLoading() == ExternalLoading.LOGS) {
-				allTextFields.get(field).setText(latestLog.getValue(field));
+				allTextFields.get(field).setText(latestLog.getItemInfo(field).getDataValue());
 			}
 		}
 		
@@ -430,7 +427,7 @@ public class ContactDetail extends JPanel {
 	private void loadLogs() {
 
 		List<String[]> allLogsList = contactInfo.getLogs().getLogsAsList();
-		String[] columns = Log.getColumnNames();
+		List<String> columns = Log.getColumns();
 		
 		String[][] allLogsArray = new String[allLogsList.size()][];
 		
@@ -438,7 +435,7 @@ public class ContactDetail extends JPanel {
 			allLogsArray[i] = allLogsList.get(i);
 		}
 		
-		tableModel =  new DefaultTableModel(allLogsArray, columns);
+		tableModel =  new DefaultTableModel(allLogsArray, columns.toArray(new String[columns.size()]));
 		table = new JTable(tableModel);
 		
 		table.setDefaultEditor(Object.class, null);
@@ -446,7 +443,25 @@ public class ContactDetail extends JPanel {
 		table.setAutoCreateRowSorter(true);
 		table.getTableHeader().setReorderingAllowed(false);
 		tableScrollPane.setViewportView(table);
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2 && table.getSelectedRow() != -1) {
+					getLogToSet();
+		        }
+			}
+		});
 		
+	}
+	
+	private void getLogToSet() {
+		int rowIndex = table.getSelectedRow();
+		
+		int correctedIndex = table.convertRowIndexToModel(rowIndex);
+    	String date = table.getModel().getValueAt(correctedIndex, table.getColumn(Log.LAST_DATE_FIELD).getModelIndex()).toString();
+    	
+        pointerMainFrame.setContactLog(contactInfo.getLogs().getLogFromDate(date));
+        pointerMainFrame.changePage(MainFrame.CONTACT_LOG);
 	}
 	
 	public void clearLoadedDetails() {
@@ -525,11 +540,35 @@ public class ContactDetail extends JPanel {
 		isInEditMode = activateEditModeIfTrue;
 		
 	}
-	public void newLog(String[] log) {
-		contactInfo.getLogs().addLog(log);
-		tableModel.addRow(log);
+	public void newLog(Log log, Boolean isNewLog) {
+		if(isNewLog) {
+			contactInfo.getLogs().addLog(log);
+			
+			String[] cols = new String[tableModel.getColumnCount()];
+			for(int i =0; i<tableModel.getColumnCount();i++) {
+				cols[i] = tableModel.getColumnName(i);
+			}
+			String[] data = new String[cols.length];
+			
+			for (int i=0; i<cols.length;i++) {
+				data[i] = log.getItemInfo(cols[i]).getDataValue();
+			}
+			
+			tableModel.addRow(data);
+			contactInfo.save(id);
+			setFieldsFromLogs();
+		}
+		else {
+			contactInfo.getLogs().changeLog(log.getItemInfo(Log.LAST_DATE_FIELD).getDataValue(),log);
+			String[] row = log.getLog();
+			//There's no need to add one here, as the column name row is only on mainTable, not on the actual displayed table
+			int rowNumber = contactInfo.getLogs().getRowIndexByDate(log.getItemInfo(Log.LAST_DATE_FIELD).getDataValue());
+			
+			for(int i = 0; i < row.length; i++) {
+				tableModel.setValueAt(row[i], rowNumber, i);
+			}
+		}
 		contactInfo.save(id);
-		setFieldsFromLogs();
 	}
 	
 	private void add() {
@@ -551,6 +590,7 @@ public class ContactDetail extends JPanel {
 	}
 	private void addPressed(ActionEvent e) {
 		add();
+		
 	}
 	private void fileExplorerPressed(ActionEvent e) {
 		if(id != null) {

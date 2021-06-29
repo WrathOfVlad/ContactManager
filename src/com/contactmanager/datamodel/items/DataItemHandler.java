@@ -49,11 +49,6 @@ public abstract class DataItemHandler {
 		
 		this.dataLabel = metaData.get(DATA_LABEL_FIELD).toString();
 		
-		String placementString = metaData.get(PLACEMENT_ON_DETAILS).toString();
-		String[] placementsAsString = placementString.split(",");
-		this.placement[0] = Integer.parseInt(placementsAsString[0]);
-		this.placement[1] = Integer.parseInt(placementsAsString[1]);
-		
 		
 		if(metaData.containsKey(IS_EDITABLE_FIELD)) {
 			this.isEditable = Boolean.parseBoolean(metaData.get(IS_EDITABLE_FIELD).toString());

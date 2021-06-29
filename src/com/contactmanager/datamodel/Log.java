@@ -1,81 +1,71 @@
 package com.contactmanager.datamodel;
 
-public class Log {
-	private String date;
-	private String type;
-	private String nextTime;
-	private String actions;
-	private String status;
-	private String notes;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.text.JTextComponent;
+
+import com.contactmanager.datamodel.items.DataItemHandler;
+import com.contactmanager.datamodel.items.ItemFactory;
+import com.contactmanager.utils.io.ConfigFileData;
+
+public class Log {	
+	public static final String LAST_DATE_FIELD = "Next Contact";
 	
-	private static String[] columns = {"Date","Type","Next Time","Actions","Status","Notes"};
+	private Map<String, DataItemHandler> dataMap = new LinkedHashMap<String, DataItemHandler>();
 	
-	public static String[] getColumnNames() {
+	
+	
+	public Log(Map<String,String> rowData) {
+		Map<String, Map<String, Object>> metaData = ConfigFileData.getInstance().getLogsMetaData();
+		
+		ItemFactory itemFactory = new ItemFactory();
+		
+		for (String dataId : metaData.keySet()) {
+			
+			DataItemHandler dataItem = null;
+			try {
+				dataItem = itemFactory.getDataItem(dataId, metaData.get(dataId));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			addToMap(dataId, dataItem);
+			
+			if(rowData == null) {continue;};
+			
+			dataItem.setValue(rowData.get(dataId));
+			
+			
+		}
+	}
+	public static List<String> getColumns() {
+		List<String> columns = new ArrayList<String>(ConfigFileData.getInstance().getLogsMetaData().keySet());
 		return columns;
 	}
 	
-	public Log(String[] row) {
-		date = row[0];
-		type = row[1];
-		nextTime = row[2];
-		actions = row[3];
-		status = row[4];
-		notes = row[5];
+	private void addToMap(String dataId, DataItemHandler dataItem) {
+		dataMap.put(dataId, dataItem);
 	}
+	
 	public String[] getLog() {
-		String[] log = {date,type,nextTime,actions,status,notes};
-		return log;
-	}
-	
-	public String getValue(String field) {
-		if(field == "lastContact") {
-			return date;
+		List<String> log = new ArrayList<>();
+		for (String dataId : dataMap.keySet()) {
+			log.add(dataMap.get(dataId).getDataValue());
 		}
-		if(field == "nextContact") {
-			return nextTime;
+		return log.toArray(new String[log.size()]);
+	}
+	
+	public DataItemHandler getItemInfo(String dataId) {
+		return dataMap.get(dataId);
+	}
+	
+
+	public void setValuesFromView(Map<String, JTextComponent> textFieldMap) {
+		for (String dataId : textFieldMap.keySet()) {
+			dataMap.get(dataId).setValue(textFieldMap.get(dataId).getText());
 		}
-		if(field == "contactStatus") {
-			return status;
-		}
-		return null;
+		
 	}
-	
-	
-	public String getDate() {
-		return date;
-	}
-	public void setDate(String date) {
-		this.date = date;
-	}
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
-	public String getNextTime() {
-		return nextTime;
-	}
-	public void setNextTime(String nextTime) {
-		this.nextTime = nextTime;
-	}
-	public String getActions() {
-		return actions;
-	}
-	public void setActions(String actions) {
-		this.actions = actions;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	public String getNotes() {
-		return notes;
-	}
-	public void setNotes(String notes) {
-		this.notes = notes;
-	}
-	
 }

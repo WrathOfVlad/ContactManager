@@ -25,7 +25,7 @@ public class Contact {
 	private Map<String, DataItemHandler> dataMap = new LinkedHashMap<String, DataItemHandler>();
 	
 	public Contact(Map<String, String> rowData){
-		Map<String, Map<String, Object>> metaData = ConfigFileData.getInstance().getMetaData();
+		Map<String, Map<String, Object>> metaData = ConfigFileData.getInstance().getItemMetaData();
 		if(rowData == null) {
 			setId("");
 			return;
