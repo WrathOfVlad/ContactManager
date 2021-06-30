@@ -1,7 +1,6 @@
 package com.contactmanager.vew;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -32,7 +31,7 @@ public class MainFrame extends JFrame {
 	public static final String CONTACT_LOG = "ContactLog";
 	public static final String SETTINGS = "Settings";
 	public static final String EMPTY = "empty";
-	public static final String VERSION = "2.3.4";
+	public static final String VERSION = "2.4.2";
 	
 	public boolean isContactListViewerUpToDate = true;
 	
@@ -62,9 +61,7 @@ public class MainFrame extends JFrame {
 		pointerContactLog = new ContactLog(this);
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(DataStorageHandler.ICON_PATH)));
-		
-		int screenWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth()-20;
-		int screenHight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight()-120;
+
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -111,15 +108,15 @@ public class MainFrame extends JFrame {
 		
 		getContentPane().setLayout(new CardLayout(0, 0));
 		
-		JScrollPane contactDetailSP = new JScrollPane(pointerContactDetail);
-		JScrollPane contactListSP = new JScrollPane(pointerContactList);
-		JScrollPane contactLogSP = new JScrollPane(pointerContactLog);
-		JScrollPane settingsSP = new JScrollPane(pointerSettingsView);
-		
-		contactDetailSP.setPreferredSize(new Dimension(screenWidth, screenHight));
-		contactListSP.setPreferredSize(new Dimension(screenWidth, screenHight));
-		contactLogSP.setPreferredSize(new Dimension(screenWidth, screenHight));
-		settingsSP.setPreferredSize(new Dimension(screenWidth, screenHight));
+		JScrollPane contactDetailSP = new JScrollPane();
+		contactDetailSP.setViewportView(pointerContactDetail);
+		JScrollPane contactListSP = new JScrollPane();
+		contactListSP.setViewportView(pointerContactList);
+		JScrollPane contactLogSP = new JScrollPane();
+		contactLogSP.setViewportView(pointerContactLog);
+		JScrollPane settingsSP = new JScrollPane();
+		settingsSP.setViewportView(pointerSettingsView);
+
 		
 		getContentPane().add(contactDetailSP, CONTACT_DETAIL);
 		getContentPane().add(contactListSP, CONTACT_LIST);
@@ -160,31 +157,46 @@ public class MainFrame extends JFrame {
 		UIManager.getLookAndFeelDefaults().put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN , 14));
 		//JDesktopIcon icon = new JDesktopIcon(pointerDataSaveLoadHandler.getIcon());
 		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		
 		int screenWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		int screenHight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-		
 		setBounds(0, 0, screenWidth, screenHight);
+		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setViewportView(pointerContactDetail);
-		scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
-		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		
-		screenLayout.add(contentPane, EMPTY);
-		screenLayout.add(pointerContactList, CONTACT_LIST);
-		screenLayout.add(scrollPane, CONTACT_DETAIL);
-		screenLayout.add(pointerSettingsView, SETTINGS);
-		screenLayout.add(pointerContactLog, CONTACT_LOG);
+		JScrollPane contactDetailSP = new JScrollPane();
+		contactDetailSP.setViewportView(pointerContactDetail);
+		contactDetailSP.getHorizontalScrollBar().setUnitIncrement(16);
+		contactDetailSP.getVerticalScrollBar().setUnitIncrement(16);
+		
+		JScrollPane contactListSP = new JScrollPane();
+		contactListSP.setViewportView(pointerContactList);
+		contactListSP.getHorizontalScrollBar().setUnitIncrement(16);
+		contactListSP.getVerticalScrollBar().setUnitIncrement(16);
+		
+		JScrollPane contactLogSP = new JScrollPane();
+		contactLogSP.setViewportView(pointerContactLog);
+		contactLogSP.getHorizontalScrollBar().setUnitIncrement(16);
+		contactLogSP.getVerticalScrollBar().setUnitIncrement(16);
+		
+		JScrollPane settingsSP = new JScrollPane();
+		settingsSP.setViewportView(pointerSettingsView);
+		settingsSP.getHorizontalScrollBar().setUnitIncrement(16);
+		settingsSP.getVerticalScrollBar().setUnitIncrement(16);
+		
+		screenLayout.add(new JScrollPane(), EMPTY);
+		
+		screenLayout.add(contactListSP, CONTACT_LIST);
+		screenLayout.add(contactDetailSP, CONTACT_DETAIL);
+		screenLayout.add(settingsSP, SETTINGS);
+		screenLayout.add(contactLogSP, CONTACT_LOG);
 		
 		//setUIFont(pointereMetaData.font);
 
-		this.setContentPane(screenLayout);
+		this.setContentPane(screenLayout);		
 		changePage(CONTACT_LIST);
 		
 		setVisible(true);

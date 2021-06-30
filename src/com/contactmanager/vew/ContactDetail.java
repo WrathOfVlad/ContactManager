@@ -1,21 +1,26 @@
 package com.contactmanager.vew;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +28,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
@@ -30,6 +36,8 @@ import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -39,10 +47,12 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.Document;
 import javax.swing.undo.UndoManager;
@@ -54,20 +64,20 @@ import com.contactmanager.datamodel.items.DataItemHandler;
 import com.contactmanager.datamodel.items.DataType;
 import com.contactmanager.datamodel.items.ExternalLoading;
 import com.contactmanager.utils.io.ConfigFileData;
-import com.contactmanager.utils.viewutils.DatePicker;
+import com.contactmanager.utils.io.DataStorageHandler;
+import com.contactmanager.utils.viewutils.CustomDatePicker;
 import com.contactmanager.utils.viewutils.TraversalPolicy;
 
 
 public class ContactDetail extends JPanel {
-	
-	private static Integer LabelWidth = 100;
-	private static Integer textFieldWidth = 200;
-	private static Integer ySpacingBetweenElements = 25;
+	private static final int NUM_COLS = 17;
+	private static final int NUM_ROWS = 35;
+	private static final int COL_WIDTHS = 100;
+	private static final int ROW_HEIGHTS = 20;
 	
 	private MainFrame pointerMainFrame;
 	private Integer id = null;
 	public boolean isInEditMode;
-	
 
 	private Map<String, JTextField> allTextFields = new HashMap<String, JTextField>();
 	private Map<String, JLabel> allClickableLinks = new HashMap<String, JLabel>();
@@ -90,18 +100,168 @@ public class ContactDetail extends JPanel {
 		this.contactInfo = contactInfo;
 		
 		setFocusTraversalKeysEnabled(false);
-		setLayout(null);
-
-		profilePictureLabel = new JLabel();
-		profilePictureLabel.setHorizontalAlignment(JLabel.CENTER);
-		profilePictureLabel.setFocusTraversalKeysEnabled(false);
-		profilePictureLabel.setBounds(25, 25, 100, 120);
-		profilePictureLabel.setIconTextGap(0);
-		profilePictureLabel.setPreferredSize(new Dimension(100,150));
 		
 		Border blackline = BorderFactory.createLineBorder(Color.black);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		
+		
+		int[] colWidths = new int[NUM_COLS+1];
+		int[] rowHeights = new int[NUM_ROWS];
+		
+		Arrays.fill(colWidths,0);
+		Arrays.fill(rowHeights, ROW_HEIGHTS);
+		
+		colWidths[0] = 10;
+		gridBagLayout.columnWidths = colWidths;
+		gridBagLayout.rowHeights = rowHeights;
+		
+		
+		double[] rowWeights = new double[gridBagLayout.rowHeights.length];
+		double[] columnWeights = new double[gridBagLayout.columnWidths.length];
+		
+		Arrays.fill(rowWeights, 0);
+		Arrays.fill(columnWeights, 0);
+		
+		gridBagLayout.rowWeights = rowWeights;
+		gridBagLayout.columnWeights = columnWeights;
+		
+		setLayout(gridBagLayout);
+		
+		//last row&column have an empty label with a weight of 1, so if there's extra space, it's added to the last row/column
+		JLabel empty = new JLabel("");
+		GridBagConstraints gbc_empty = new GridBagConstraints();
+		gbc_empty.anchor = GridBagConstraints.NORTHWEST;
+		gbc_empty.insets = new Insets(0, 0, 0, 0);
+		gbc_empty.gridx = gridBagLayout.columnWidths.length-1;
+		gbc_empty.gridy = gridBagLayout.rowHeights.length-1;
+		gbc_empty.weightx = 1;
+		gbc_empty.weighty = 1;
+		add(empty,gbc_empty);
+		
+		
+		Insets defaultPadding = new Insets(5,5,0,0);
+		Vector<Component> order = new Vector<Component>();
+		
+		GridBagConstraints gbc_ppl = new GridBagConstraints();
+		gbc_ppl.anchor = GridBagConstraints.NORTHWEST;
+		gbc_ppl.insets = defaultPadding;
+		gbc_ppl.gridx = 1;
+		gbc_ppl.gridy = 1;
+		gbc_ppl.gridheight = 6;
+		gbc_ppl.gridwidth = 1;
+		
+		profilePictureLabel = new JLabel();
+		profilePictureLabel.setHorizontalAlignment(JLabel.CENTER);
+		profilePictureLabel.setIconTextGap(0);
 		profilePictureLabel.setBorder(blackline);
-		add(profilePictureLabel);
+		profilePictureLabel.setPreferredSize(new Dimension(gbc_ppl.gridwidth*COL_WIDTHS,gbc_ppl.gridheight*ROW_HEIGHTS));
+		profilePictureLabel.setSize(new Dimension(gbc_ppl.gridwidth*COL_WIDTHS,gbc_ppl.gridheight*ROW_HEIGHTS));
+		
+		profilePictureLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent ae) {
+				if(ae.getButton() == MouseEvent.BUTTON1) {
+					if(isInEditMode) {
+						Image image = imageChooser();
+						if(image != null) {
+							contactInfo.setImage(image);
+							loadImage();
+						}
+						
+					}
+					else {
+						showImageBig();
+					}
+					
+				}
+						
+			}
+		});
+		add(profilePictureLabel, gbc_ppl);
+		
+		btnEdit = new JButton("Edit");
+		btnEdit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				editPressed(arg0);
+			}
+		});	
+		GridBagConstraints gbc_btnEdit = new GridBagConstraints();
+		gbc_btnEdit.anchor = GridBagConstraints.WEST;
+		gbc_btnEdit.fill = GridBagConstraints.VERTICAL;
+		gbc_btnEdit.insets = defaultPadding;
+		gbc_btnEdit.gridx = 2;
+		gbc_btnEdit.gridy = 1;
+		
+		btnEdit.setPreferredSize(new Dimension(gbc_btnEdit.gridwidth*COL_WIDTHS,gbc_btnEdit.gridheight*ROW_HEIGHTS));
+		add(btnEdit, gbc_btnEdit);
+		
+		
+		order.add(btnEdit);
+		
+		btnSave = new JButton("Save");
+		btnSave.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				savePressed(e);
+			}
+		});
+		GridBagConstraints gbc_btnSave = new GridBagConstraints();
+		gbc_btnSave.anchor = GridBagConstraints.WEST;
+		gbc_btnSave.fill = GridBagConstraints.VERTICAL;
+		gbc_btnSave.insets = defaultPadding;
+		gbc_btnSave.gridx = 3;
+		gbc_btnSave.gridy = 1;
+		
+		btnSave.setPreferredSize(new Dimension(gbc_btnEdit.gridwidth*COL_WIDTHS,gbc_btnEdit.gridheight*ROW_HEIGHTS));
+		add(btnSave, gbc_btnSave);
+		order.add(btnSave);
+		
+		JButton btnFileExplorer = new JButton("File Explorer");
+		btnFileExplorer.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				fileExplorerPressed(arg0);
+			}
+		});
+		GridBagConstraints gbc_btnFileExplorer = new GridBagConstraints();
+		gbc_btnFileExplorer.anchor = GridBagConstraints.WEST;
+		gbc_btnFileExplorer.fill = GridBagConstraints.VERTICAL;
+		gbc_btnFileExplorer.insets = defaultPadding;
+		gbc_btnFileExplorer.gridx = 5;
+		gbc_btnFileExplorer.gridy = 1;
+		//gbc_btnFileExplorer.gridwidth=2;
+		
+		//btnFileExplorer.setPreferredSize(new Dimension(gbc_btnEdit.gridwidth*COL_WIDTHS,gbc_btnEdit.gridheight*ROW_HEIGHTS));
+		add(btnFileExplorer, gbc_btnFileExplorer);
+
+		JButton btnAdd = new JButton("Add");
+		btnAdd.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				addPressed(arg0);
+			}
+		});
+		GridBagConstraints gbc_btnAdd = new GridBagConstraints();
+		//gbc_btnAdd.fill = GridBagConstraints.BOTH; 
+		gbc_btnAdd.anchor = GridBagConstraints.WEST;
+		gbc_btnAdd.insets = defaultPadding;
+		gbc_btnAdd.gridx = 1;
+		gbc_btnAdd.gridy = 19;
+		
+		//btnAdd.setPreferredSize(new Dimension(gbc_btnEdit.gridwidth*COL_WIDTHS,gbc_btnEdit.gridheight*ROW_HEIGHTS));
+		add(btnAdd, gbc_btnAdd);
+		
+		tableScrollPane = new JScrollPane();
+		tableScrollPane.setFocusTraversalKeysEnabled(false);
+		GridBagConstraints gbc_tableScrollPane = new GridBagConstraints();
+		gbc_tableScrollPane.insets = defaultPadding;
+		gbc_tableScrollPane.gridx = 1;
+		gbc_tableScrollPane.gridwidth = 10;
+		gbc_tableScrollPane.gridheight = 15;
+		gbc_tableScrollPane.gridy = 20;
+		gbc_tableScrollPane.fill = GridBagConstraints.BOTH;
+		tableScrollPane.setPreferredSize(new Dimension(COL_WIDTHS*gbc_tableScrollPane.gridwidth,ROW_HEIGHTS*gbc_tableScrollPane.gridheight));
+		add(tableScrollPane, gbc_tableScrollPane);
 		
 
 		//CustomComponents myComponents = new CustomComponents();
@@ -109,18 +269,6 @@ public class ContactDetail extends JPanel {
 		Map<String, Map<String, Object>> metaData = ConfigFileData.getInstance().getItemMetaData();
 		List<String> fields = ConfigFileData.getInstance().getColumns(false);
 		
-		Vector<Component> order = new Vector<Component>();
-		
-		Map<Integer, Integer[]> columnStartingPositionsMap = new HashMap<>();
-		Integer[] col1 = {25,150};
-		Integer[] col2 = {400,75};
-		Integer[] col3 = {775,75};
-		
-		columnStartingPositionsMap.put(1, col1);
-		columnStartingPositionsMap.put(2, col2);
-		columnStartingPositionsMap.put(3, col3);
-		
-		Integer maxY = 0;
 		
 		List<Map<Integer, JTextField>> tabOrder = new LinkedList<Map<Integer, JTextField>>();
 		
@@ -137,126 +285,112 @@ public class ContactDetail extends JPanel {
 			gridPlacement[0] = Integer.parseInt(placementsAsString[0]);
 			gridPlacement[1] = Integer.parseInt(placementsAsString[1]);
 			
-			Integer startX = columnStartingPositionsMap.get(gridPlacement[0])[0]; 
-			Integer startY = columnStartingPositionsMap.get(gridPlacement[0])[1]; 
-			
-			Integer currentX = startX;
-			Integer currentY = startY + ySpacingBetweenElements*gridPlacement[1];
-			
-			if(currentY>maxY) {maxY = currentY;}
-			
-			label.setBounds(currentX, currentY, LabelWidth, 20);
-			add(label);
+			GridBagConstraints gbc_label = new GridBagConstraints();
+			gbc_label.fill = GridBagConstraints.HORIZONTAL;
+			gbc_label.insets = defaultPadding;
+			gbc_label.gridx = 3*gridPlacement[0]-2;
+			gbc_label.gridy = gridPlacement[1];
+			add(label,gbc_label);
 			
 			
 			JTextField textField = new JTextField();//myComponents.createFilteredField(dataItem.getRegex(),dataItem.getMaxLength() );
-			textField.setBounds(currentX + LabelWidth,currentY,textFieldWidth,20);
-			add(textField);
+			GridBagConstraints gbc_txtField = new GridBagConstraints();
+			gbc_txtField.anchor = GridBagConstraints.WEST;
+			gbc_txtField.insets = defaultPadding;
+			gbc_txtField.gridx = 3*gridPlacement[0]-1;
+			gbc_txtField.gridy = gridPlacement[1];
+			gbc_txtField.gridwidth = 2;
+			gbc_txtField.fill = GridBagConstraints.HORIZONTAL;
+			
+			Boolean isEditable =  !dataItemMetaData.containsKey(DataItemHandler.IS_EDITABLE_FIELD) || Boolean.parseBoolean(dataItemMetaData.get(DataItemHandler.IS_EDITABLE_FIELD).toString());
+			
+			if(isEditable) {
+				if(dataItemMetaData.get(DataItemHandler.DATA_TYPE_ID).equals(DataType.DATE.toString())) {
+					nonEditable.add(field);
+					textField.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent ae) {
+							if(ae.getButton() == MouseEvent.BUTTON1) {
+								if(isInEditMode) {
+									String date = new CustomDatePicker(mainFrame).setPickedDate();
+									if(date.equals("")) return;
+									
+									textField.setText(date);
+								}
+							}
+						}
+					});
+				}
+				else {
+					Map<Integer,JTextField> yMap = new TreeMap<Integer,JTextField>();
+					while(tabOrder.size()<=gridPlacement[0]-1) {
+						tabOrder.add(gridPlacement[0]-1, yMap);
+					}
+					tabOrder.get(gridPlacement[0]-1).put(gridPlacement[1], textField);	
+				}
+			}
+			else {
+				nonEditable.add(field);
+			}
+			textField.setPreferredSize(new Dimension(COL_WIDTHS*gbc_txtField.gridwidth,ROW_HEIGHTS));
+			add(textField,gbc_txtField);
 			allTextFields.put(field, textField);
 			
 			if (dataItemMetaData.get(DataItemHandler.DATA_TYPE_ID).equals(DataType.LINK.toString())) {
 				JLabel linkLabel = new JLabel(labelString);
 				linkLabel.setVisible(false);
 				linkLabel.setEnabled(false);
-				linkLabel.setBounds(currentX + LabelWidth, currentY, textFieldWidth, 20);
 				linkLabel.setForeground(Color.BLUE.darker());
 				linkLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				linkLabel.addMouseListener(new MouseAdapter() {
 					@Override
-					public void mouseReleased(MouseEvent e) {
-						callURL(textField.getText());
+					public void mousePressed(MouseEvent e) {
+						if(e.getButton() == MouseEvent.BUTTON1) {
+							callURL(field);
+						}
+						
 					}
 				});
-				add(linkLabel);
+				add(linkLabel,gbc_txtField);
 				allClickableLinks.put(field, linkLabel);
 			}
-			Boolean isEditable =  !dataItemMetaData.containsKey(DataItemHandler.IS_EDITABLE_FIELD) || Boolean.parseBoolean(dataItemMetaData.get(DataItemHandler.IS_EDITABLE_FIELD).toString());
 			
-			if(isEditable) {
-				
-				Map<Integer,JTextField> yMap = new TreeMap<Integer,JTextField>();
-				while(tabOrder.size()<=gridPlacement[0]-1) {
-					tabOrder.add(gridPlacement[0]-1, yMap);
-				}
-				tabOrder.get(gridPlacement[0]-1).put(gridPlacement[1], textField);	
-				
-				if (!dataItemMetaData.get(DataItemHandler.DATA_TYPE_ID).equals(DataType.DATE.toString())) {
-					continue;
-				}
-				
-				textField.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mousePressed(MouseEvent ae) {
-						if(isInEditMode) {
-							String date = new DatePicker(mainFrame).setPickedDate();
-							if(date.equals("")) return;
-							
-							textField.setText(date);
-						}
-					}
-				});
-			}
-			nonEditable.add(field);
+			
 			
 		}
 		
-		btnEdit = new JButton("Edit");
-		btnEdit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				editPressed(arg0);
-			}
-		});		
-		btnEdit.setBounds(150, 25, 75, 25);
-		add(btnEdit);
 		
-		btnSave = new JButton("Save");
-		btnSave.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				savePressed(e);
-			}
-		});
-		btnSave.setBounds(250, 25, 75, 25);
-		add(btnSave);
+		GridBagConstraints gbc_notes = new GridBagConstraints();
+		gbc_notes.gridx = 10;
+		gbc_notes.gridy = 1;
+		gbc_notes.insets = defaultPadding;
+		gbc_notes.fill = GridBagConstraints.HORIZONTAL; 
+		gbc_notes.fill = GridBagConstraints.VERTICAL; 
 		
-		JButton btnFileExplorer = new JButton("FIle Explorer");
-		btnFileExplorer.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				fileExplorerPressed(arg0);
-			}
-		});
-		btnFileExplorer.setBounds(355, 25, 125, 25);
-		add(btnFileExplorer);
-		
-		JButton btnAdd = new JButton("Add");
-		btnAdd.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				addPressed(arg0);
-			}
-		});
-		Integer addY = maxY < 350? 350 : maxY + ySpacingBetweenElements; 
-		btnAdd.setBounds(25, addY, 65, 25);
-		add(btnAdd);
-		
-		tableScrollPane = new JScrollPane();
-		tableScrollPane.setFocusTraversalKeysEnabled(false);
-		tableScrollPane.setBounds(25, addY + ySpacingBetweenElements, 950, 250);
-		add(tableScrollPane);
-		
-		
+		JLabel notes = new JLabel("Notes:");
+		add(notes,gbc_notes);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setFocusTraversalKeysEnabled(false);
-		scrollPane.setBounds(1250, 75, 750, 750);
-		add(scrollPane);
 		
+		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.gridx = 11;
+		gbc_scrollPane.gridy = 1;
+		gbc_scrollPane.gridwidth = 7;
+		gbc_scrollPane.gridheight = 34;
+		gbc_scrollPane.insets = defaultPadding;
+		gbc_scrollPane.fill = GridBagConstraints.BOTH;
+		
+		scrollPane.setPreferredSize(new Dimension(COL_WIDTHS*gbc_scrollPane.gridwidth,ROW_HEIGHTS*gbc_scrollPane.gridheight));
+		JPanel notesPanel = new JPanel();
+		notesPanel.setLayout(new BorderLayout());
 		notesTextPane = new JTextPane();
-		notesTextPane.setFocusCycleRoot(false);
-		scrollPane.setViewportView(notesTextPane);
+		notesPanel.add(notesTextPane, BorderLayout.CENTER);
+		
+		scrollPane.setViewportView(notesPanel);
 		notesTextPane.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
+		add(scrollPane, gbc_scrollPane);
 		Document doc = notesTextPane.getDocument();
 		
 		InputMap inputMap = notesTextPane.getInputMap(JComponent.WHEN_FOCUSED);
@@ -301,11 +435,15 @@ public class ContactDetail extends JPanel {
 		    }
 		});
 		
-		addGlobalEventListener();
+		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Escape");
+	    getActionMap().put("Escape", new AbstractAction() {
+	        @Override
+	        public void actionPerformed(ActionEvent ae) {
+	        	escPressed();
+	        }
+	    });
 		
-		
-		order.add(btnEdit);
-		order.add(btnSave);
+		//addGlobalEventListener(this);
 		
 		for (Map<Integer, JTextField> map : tabOrder) {
 			for (JTextField field : map.values()) {
@@ -326,6 +464,18 @@ public class ContactDetail extends JPanel {
 	public void exitPoint() {
 		contactInfo.clear();
 		clearLoadedDetails();
+	}
+	
+	public void escPressed() {
+		if(isInEditMode && id != null) {
+			contactInfo.getContact().loadContactDataFromDatamodel(allTextFields);
+			String notes = contactInfo.getNotes();
+			notesTextPane.setText(notes);
+			toggleEdit(false);
+		}
+		else {
+			pointerMainFrame.changePage(MainFrame.CONTACT_LIST);
+		}
 	}
 	
 	public boolean validateURL(String url) {
@@ -357,46 +507,49 @@ public class ContactDetail extends JPanel {
 		}
 	}
 	
-	public void addGlobalEventListener() {
-		KeyListener listener = new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-				if(arg0.getKeyChar() == KeyEvent.VK_ESCAPE) {
-					if(isInEditMode && id != null) {
-						contactInfo.getContact().loadContactDataFromDatamodel(allTextFields);
-						toggleEdit(false);
-					}
-					else {
-						pointerMainFrame.changePage(MainFrame.CONTACT_LIST);
-					}
-				}	
-			}
-		};
-		for (Component component: getComponents()) {
-			component.addKeyListener(listener);
-		}
-		this.addKeyListener(listener);
-	}
-
 	public void loadImage() {
-		BufferedImage image = (BufferedImage)contactInfo.getImage();
-	
-		Dimension original = new Dimension(image.getHeight(),image.getWidth());
-		Dimension boundary = new Dimension(profilePictureLabel.getHeight(),profilePictureLabel.getWidth());
+	    
+		ImageIcon imageIcon = new ImageIcon(getScaledImage(contactInfo.getImage(), profilePictureLabel));
+		profilePictureLabel.setIcon(imageIcon);
+	}
+	private Image getScaledImage(Image rawImage, JLabel container) {
+		BufferedImage image = (BufferedImage)rawImage;
 		
+		Dimension original = new Dimension(image.getHeight(),image.getWidth());
+		Dimension boundary = new Dimension(container.getHeight(),container.getWidth());
+	
 		double widthRatio = boundary.getWidth() / original.getWidth();
 	    double heightRatio = boundary.getHeight() / original.getHeight();
 	    double ratio = Math.min(widthRatio, heightRatio);
 		
 	    Image scaledImage = image.getScaledInstance((int) (original.height*ratio),(int)(original.width*ratio), Image.SCALE_SMOOTH);
 	    
-	    
-		ImageIcon imageIcon = new ImageIcon(scaledImage);
-		profilePictureLabel.setIcon(imageIcon);
-
-	
+	    return scaledImage;
 	}
 
+	private Image imageChooser() {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		JFileChooser chooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Images", DataStorageHandler.IMAGE_EXTENSIONS);
+        chooser.setFileFilter(filter);
+        int returnValue = chooser.showOpenDialog(null);
+        
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = chooser.getSelectedFile();
+            try {
+				Image selectedImage = ImageIO.read(selectedFile);
+				return selectedImage;
+			} 
+            catch (IOException e) {e.printStackTrace();}
+        }
+        return null;
+	}
+	
 	public void loadDetail(int id) {
 		this.id = id;
 		contactInfo.loadContactInfo(id);
@@ -446,7 +599,7 @@ public class ContactDetail extends JPanel {
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2 && table.getSelectedRow() != -1) {
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && table.getSelectedRow() != -1) {
 					getLogToSet();
 		        }
 			}
@@ -499,6 +652,35 @@ public class ContactDetail extends JPanel {
 		
 		toggleEdit(false);
 		
+	}
+	
+	private void showImageBig() {
+		JDialog d = new JDialog();
+		d.setTitle("Profile Picture");
+		
+		
+		JLabel bigImage = new JLabel();
+		bigImage.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Escape");
+		bigImage.getActionMap().put("Escape", new AbstractAction() {
+	        @Override
+	        public void actionPerformed(ActionEvent ae) {
+	        	d.dispose();
+	        }
+	    });
+		int scale = 5;
+		bigImage.setPreferredSize(new Dimension(profilePictureLabel.getWidth()*scale,profilePictureLabel.getHeight()*scale));
+		bigImage.setSize(bigImage.getPreferredSize());
+	
+		ImageIcon imageIcon = new ImageIcon(getScaledImage(contactInfo.getImage(), bigImage));
+		
+		bigImage.setIcon(imageIcon);
+		bigImage.setHorizontalAlignment(JLabel.CENTER);
+		d.add(bigImage);
+		
+		d.pack();
+	        //set location
+	    d.setLocationRelativeTo(pointerMainFrame);
+		d.setVisible(true);
 	}
 	
 	public void toggleEdit(Boolean activateEditModeIfTrue) {

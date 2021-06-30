@@ -85,6 +85,12 @@ public class CurrentContactInfo {
 		pointerContacts.save();
 		pointerDataStorage.saveLogs(id, logs.getLogsAsList());
 		pointerDataStorage.saveNotes(id, notes);
+		pointerDataStorage.saveProfileImage(id, image);
+	}
+
+	public void setImage(Image image) {
+		this.image = image;
+		
 	}
 	
 }
