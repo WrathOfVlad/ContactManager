@@ -616,22 +616,30 @@ public class ContactDetail extends JPanel {
 		save();
 	}
 	
+	private String[] getVisibleLogs(String[] row) {
+		List<String> visibleColumns = ConfigFileData.getInstance().getLogVisibleColumns();
+		List<String> columns = Log.getColumns();
+		
+		String[] result = new String[visibleColumns.size()];
+		Log log = contactInfo.getLogs().getLogFromDate(row[columns.indexOf(Log.LAST_DATE_FIELD)]);
+		for(int j = 0; j<visibleColumns.size();j++) {
+			result[j] = log.getItemInfo(visibleColumns.get(j)).getDataValue();
+		}
+		return result;
+	}
 	private void loadLogs() {
 		List<String> visibleColumns = ConfigFileData.getInstance().getLogVisibleColumns();
 		
 		List<String[]> rawData = contactInfo.getLogs().getLogsAsList();
-		List<String> columns = Log.getColumns();
+		
 		
 		String[][] visibleData = new String[rawData.size()][visibleColumns.size()];
 		
 		for(int i = 0; i<visibleData.length;i++) {
-			Log log = contactInfo.getLogs().getLogFromDate(rawData.get(i)[columns.indexOf(Log.LAST_DATE_FIELD)]);
-			for(int j = 0; j<visibleData[0].length;j++) {
-				visibleData[i][j] = log.getItemInfo(visibleColumns.get(i)).getDataValue();
-			}
+			visibleData[i] = getVisibleLogs(rawData.get(i));
 		}
 		
-		tableModel =  new DefaultTableModel(visibleData, visibleColumns.toArray(new String[columns.size()]));
+		tableModel =  new DefaultTableModel(visibleData, visibleColumns.toArray(new String[visibleColumns.size()]));
 		table = new JTable(tableModel);
 		
 		table.setDefaultEditor(Object.class, null);
@@ -787,11 +795,8 @@ public class ContactDetail extends JPanel {
 			for(int i =0; i<tableModel.getColumnCount();i++) {
 				cols[i] = tableModel.getColumnName(i);
 			}
-			String[] data = new String[cols.length];
-			
-			for (int i=0; i<cols.length;i++) {
-				data[i] = log.getItemInfo(cols[i]).getDataValue();
-			}
+			String[] data = getVisibleLogs(log.getLog());
+
 			
 			tableModel.addRow(data);
 			contactInfo.save(id);
@@ -799,7 +804,7 @@ public class ContactDetail extends JPanel {
 		}
 		else {
 			contactInfo.getLogs().changeLog(log.getItemInfo(Log.LAST_DATE_FIELD).getDataValue(),log);
-			String[] row = log.getLog();
+			String[] row = getVisibleLogs(log.getLog());
 			//There's no need to add one here, as the column name row is only on mainTable, not on the actual displayed table
 			int rowNumber = contactInfo.getLogs().getRowIndexByDate(log.getItemInfo(Log.LAST_DATE_FIELD).getDataValue());
 			

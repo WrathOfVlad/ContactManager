@@ -12,7 +12,7 @@ import com.contactmanager.datamodel.items.ItemFactory;
 import com.contactmanager.utils.io.ConfigFileData;
 
 public class Log {	
-	public static final String LAST_DATE_FIELD = "Next Contact";
+	public static final String LAST_DATE_FIELD = "Last Contact";
 	
 	private Map<String, DataItemHandler> dataMap = new LinkedHashMap<String, DataItemHandler>();
 	
