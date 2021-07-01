@@ -12,13 +12,14 @@ import javax.swing.table.TableColumn;
 
 public class CustomComponents {
 	
-	public JTextField createFilteredField(String regex,int maxCharacters) {
+	public JTextField createFilteredField(String regex,Integer maxChars) {
+			
 		   JTextField field = new JTextField(10);
 		   
 		   if(regex == null) {
 			   return field;
 		   }
-		   
+		   final Integer maxCharacters = maxChars == null? field.getText().length() + 10:maxChars;
 		   
 		   AbstractDocument document = (AbstractDocument) field.getDocument();
 		   document.setDocumentFilter(new DocumentFilter() {
@@ -32,7 +33,7 @@ public class CustomComponents {
 		         }
 		      }
 
-		      public void replace(FilterBypass fb, int offset, int length,
+		      public void replace(FilterBypass fb, int offset, int  length,
 		                          String _text, AttributeSet attrs) throws BadLocationException {
 
 		         String text = fb.getDocument().getText(0, fb.getDocument().getLength());

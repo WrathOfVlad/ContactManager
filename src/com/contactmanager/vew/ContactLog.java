@@ -1,28 +1,28 @@
 package com.contactmanager.vew;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;
 
@@ -139,7 +139,7 @@ public class ContactLog extends JPanel {
 		
 		JScrollPane scrollPane= new JScrollPane(textPane);
 		gbc = new GridBagConstraints();
-		gbc.insets = defaultPadding;
+		gbc.insets = new Insets(5, 5, 20, 20);
 		gbc.gridx = 4;
 		gbc.gridy = 0;
 		gbc.gridwidth = 6;
@@ -174,24 +174,17 @@ public class ContactLog extends JPanel {
 		gbc.gridy = 0;
 		add(btnSave,gbc);
 		
-		addGlobalEventListener();
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Escape");
+	    getActionMap().put("Escape", new AbstractAction() {
+	        @Override
+	        public void actionPerformed(ActionEvent ae) {
+	        	escPressed();
+	        }
+	    });
 	}
 	
-	public void addGlobalEventListener() {
-		KeyListener listener = new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-				if(arg0.getKeyChar() == KeyEvent.VK_ESCAPE) {
-					clear();
-					exit();
-				}	
-			}
-		};
-		
-		for (Component component: getComponents()) {
-			component.addKeyListener(listener);
-		}
-		this.addKeyListener(listener);
+	private void escPressed() {
+		exit();
 	}
 	
 	public void clear() {

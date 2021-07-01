@@ -12,7 +12,7 @@ public class LinkItem extends DataItemHandler{
 	}
 	
 	public Boolean setValue(String value) {
-		if (value == null) {this.dataValue = value; return true;};
+		if (value == null || value.equals("")) {this.dataValue = value; return true;};
 		try {
             new URL(value).toURI();
             this.dataValue = value;

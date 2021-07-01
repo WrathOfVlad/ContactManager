@@ -29,6 +29,7 @@ public class ConfigFileData {
 	
 	//Second Level Fields
 	private static final String VISIBLE_COLUMNS = "visibleColumns";
+	private static final String VISIBLE_LOG_COLUMNS = "visibleLogColumns";
 	private static final String STORING_TYPE = "storageType";
 	private static final String PATH = "path";
 	private static final String BACKUP_TIME_LIMIT = "backupTimeLimit";
@@ -39,6 +40,7 @@ public class ConfigFileData {
 	
 	private JSONObject configJsonData;
 	private List<String> visibleColumns = new ArrayList<String>();
+	private List<String> visibleLogColumns = new ArrayList<String>();
 	private List<String> columns = new ArrayList<String>();
 	
 	
@@ -66,6 +68,7 @@ public class ConfigFileData {
 			}
 		}
 		loadVisibleColumns();
+		loadLogVisibleColumns();
 	}
 	public static ConfigFileData getInstance() {
 		if(instance == null) {
@@ -151,9 +154,22 @@ public class ConfigFileData {
 	}
 	
 	public List<String> getVisibleColumns(){
-		return visibleColumns;
+		return new ArrayList<String>(visibleColumns);
 	}
 
+	private void loadLogVisibleColumns() {
+		String visibleColumnsString = ((JSONObject)configJsonData.get(USER_SETTINGS)).get(VISIBLE_LOG_COLUMNS).toString();
+		String[] visibleColumnsArray = visibleColumnsString.split(",");
+		
+		List<String> visibleList = new ArrayList<>(Arrays.asList(visibleColumnsArray));
+		visibleLogColumns = visibleList;
+	}
+	
+	public List<String> getLogVisibleColumns(){
+		return new ArrayList<String>(visibleLogColumns);
+	}
+	
+	
 	public void setColumns(List<String> cols) {
 		Map<String, Map<String, Object>> itemMetaData = getItemMetaData();
 		columns = new ArrayList<String>();

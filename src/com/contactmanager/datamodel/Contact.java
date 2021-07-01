@@ -70,11 +70,18 @@ public class Contact {
 
 	
 
-	public void saveFromContactDetailView(Map<String, JTextField> textFieldMap) {
+	public Boolean saveFromContactDetailView(Map<String, JTextField> textFieldMap) {
+		Map<String, DataItemHandler> tempDataMap = new HashMap<>(dataMap);
+		List<Boolean> isValidList = new ArrayList<>();
 		for (String textField : textFieldMap.keySet()) {
-			dataMap.get(textField).setValue(textFieldMap.get(textField).getText());
+			isValidList.add(tempDataMap.get(textField).setValue(textFieldMap.get(textField).getText()));
+		
 		}
+		if(isValidList.contains(false)) {return false;}
+		
+		dataMap = tempDataMap;
 		setFullName();
+		return true;
 	}
 
 	public void loadContactDataFromDatamodel(Map<String, JTextField> textFieldMap) {

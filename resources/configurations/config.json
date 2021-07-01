@@ -31,6 +31,7 @@
   },
   "USER_SETTINGS" : {
     "visibleColumns" : "Full Name,",
+    "visibleLogColumns" : "Last Contact,Next Contact,Type,Actions,Contact Status,notes",
     "backupTimeLimit" : 5
   },
   "itemMetaData" : {

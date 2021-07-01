@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -50,10 +52,13 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import javax.swing.text.Document;
 import javax.swing.undo.UndoManager;
 
@@ -77,7 +82,7 @@ public class ContactDetail extends JPanel {
 	
 	private MainFrame pointerMainFrame;
 	private Integer id = null;
-	public boolean isInEditMode;
+	private boolean isInEditMode;
 
 	private Map<String, JTextField> allTextFields = new HashMap<String, JTextField>();
 	private Map<String, JLabel> allClickableLinks = new HashMap<String, JLabel>();
@@ -108,7 +113,7 @@ public class ContactDetail extends JPanel {
 		int[] colWidths = new int[NUM_COLS+1];
 		int[] rowHeights = new int[NUM_ROWS];
 		
-		Arrays.fill(colWidths,0);
+		Arrays.fill(colWidths,COL_WIDTHS);
 		Arrays.fill(rowHeights, ROW_HEIGHTS);
 		
 		colWidths[0] = 10;
@@ -254,7 +259,7 @@ public class ContactDetail extends JPanel {
 		tableScrollPane = new JScrollPane();
 		tableScrollPane.setFocusTraversalKeysEnabled(false);
 		GridBagConstraints gbc_tableScrollPane = new GridBagConstraints();
-		gbc_tableScrollPane.insets = defaultPadding;
+		gbc_tableScrollPane.insets = new Insets(5, 5, 10, 10);
 		gbc_tableScrollPane.gridx = 1;
 		gbc_tableScrollPane.gridwidth = 10;
 		gbc_tableScrollPane.gridheight = 15;
@@ -262,9 +267,6 @@ public class ContactDetail extends JPanel {
 		gbc_tableScrollPane.fill = GridBagConstraints.BOTH;
 		tableScrollPane.setPreferredSize(new Dimension(COL_WIDTHS*gbc_tableScrollPane.gridwidth,ROW_HEIGHTS*gbc_tableScrollPane.gridheight));
 		add(tableScrollPane, gbc_tableScrollPane);
-		
-
-		//CustomComponents myComponents = new CustomComponents();
 		
 		Map<String, Map<String, Object>> metaData = ConfigFileData.getInstance().getItemMetaData();
 		List<String> fields = ConfigFileData.getInstance().getColumns(false);
@@ -292,8 +294,28 @@ public class ContactDetail extends JPanel {
 			gbc_label.gridy = gridPlacement[1];
 			add(label,gbc_label);
 			
+			String regex = DataItemHandler.getRegex(dataItemMetaData.get(DataItemHandler.DATA_TYPE_ID).toString());
 			
-			JTextField textField = new JTextField();//myComponents.createFilteredField(dataItem.getRegex(),dataItem.getMaxLength() );
+			JTextField textField =	new JTextField(); //myComponents.createFilteredField(regex,null);
+			textField.getDocument().addDocumentListener(new DocumentListener()
+		    {
+		      @Override
+		      public void removeUpdate(DocumentEvent e)
+		      {
+		        validateInput(regex,textField);
+		      }
+
+		      @Override
+		      public void insertUpdate(DocumentEvent e)
+		      {
+		        validateInput(regex,textField);
+		      }
+
+		      @Override
+		      public void changedUpdate(DocumentEvent e) {
+		    	  validateInput(regex,textField);
+		      } // Not needed for plain-text fields
+		  });
 			GridBagConstraints gbc_txtField = new GridBagConstraints();
 			gbc_txtField.anchor = GridBagConstraints.WEST;
 			gbc_txtField.insets = defaultPadding;
@@ -332,7 +354,8 @@ public class ContactDetail extends JPanel {
 			else {
 				nonEditable.add(field);
 			}
-			textField.setPreferredSize(new Dimension(COL_WIDTHS*gbc_txtField.gridwidth,ROW_HEIGHTS));
+			textField.setMinimumSize(new Dimension(COL_WIDTHS*gbc_txtField.gridwidth,ROW_HEIGHTS));
+			textField.setMaximumSize(new Dimension((int) (COL_WIDTHS*gbc_txtField.gridwidth+COL_WIDTHS*0.5),ROW_HEIGHTS));
 			add(textField,gbc_txtField);
 			allTextFields.put(field, textField);
 			
@@ -378,7 +401,7 @@ public class ContactDetail extends JPanel {
 		gbc_scrollPane.gridy = 1;
 		gbc_scrollPane.gridwidth = 7;
 		gbc_scrollPane.gridheight = 34;
-		gbc_scrollPane.insets = defaultPadding;
+		gbc_scrollPane.insets = new Insets(5, 5, 10, 10);
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		
 		scrollPane.setPreferredSize(new Dimension(COL_WIDTHS*gbc_scrollPane.gridwidth,ROW_HEIGHTS*gbc_scrollPane.gridheight));
@@ -457,6 +480,22 @@ public class ContactDetail extends JPanel {
 
 	}
 	
+	private void validateInput(String regex,JTextField field) {
+		if(regex == null) {
+			field.setForeground(Color.BLACK);
+			return;
+		}
+		String text = field.getText();
+	    Pattern r = Pattern.compile(regex);
+	    Matcher m = r.matcher(text);
+	    if (m.matches())
+	    {
+	    	field.setForeground(Color.BLACK);
+	    }
+	    else {
+	    	field.setForeground(Color.RED);
+	    }
+	}
 	
 	public void entryPoint() {
 		profilePictureLabel.requestFocus();
@@ -578,23 +617,27 @@ public class ContactDetail extends JPanel {
 	}
 	
 	private void loadLogs() {
-
-		List<String[]> allLogsList = contactInfo.getLogs().getLogsAsList();
+		List<String> visibleColumns = ConfigFileData.getInstance().getLogVisibleColumns();
+		
+		List<String[]> rawData = contactInfo.getLogs().getLogsAsList();
 		List<String> columns = Log.getColumns();
 		
-		String[][] allLogsArray = new String[allLogsList.size()][];
+		String[][] visibleData = new String[rawData.size()][visibleColumns.size()];
 		
-		for (int i = 0; i < allLogsArray.length; i++) {
-			allLogsArray[i] = allLogsList.get(i);
+		for(int i = 0; i<visibleData.length;i++) {
+			Log log = contactInfo.getLogs().getLogFromDate(rawData.get(i)[columns.indexOf(Log.LAST_DATE_FIELD)]);
+			for(int j = 0; j<visibleData[0].length;j++) {
+				visibleData[i][j] = log.getItemInfo(visibleColumns.get(i)).getDataValue();
+			}
 		}
 		
-		tableModel =  new DefaultTableModel(allLogsArray, columns.toArray(new String[columns.size()]));
+		tableModel =  new DefaultTableModel(visibleData, visibleColumns.toArray(new String[columns.size()]));
 		table = new JTable(tableModel);
 		
 		table.setDefaultEditor(Object.class, null);
 		//table.setPreferredSize(new Dimension(getWidth(),getHeight()));
 		table.setAutoCreateRowSorter(true);
-		table.getTableHeader().setReorderingAllowed(false);
+		table.getTableHeader().setReorderingAllowed(true);
 		tableScrollPane.setViewportView(table);
 		table.addMouseListener(new MouseAdapter() {
 			@Override
@@ -604,6 +647,10 @@ public class ContactDetail extends JPanel {
 		        }
 			}
 		});
+		
+		TableColumnModel colModel = table.getColumnModel();
+		colModel.moveColumn(colModel.getColumnIndex(Log.LAST_DATE_FIELD),0);
+		
 		
 	}
 	
@@ -637,12 +684,18 @@ public class ContactDetail extends JPanel {
 	public void save() {
 		
 		if (id != null) {
-			contactInfo.getContact().saveFromContactDetailView(allTextFields);
+			if(!contactInfo.getContact().saveFromContactDetailView(allTextFields)) {
+				invalidRegexMessage();
+				return;
+			}
 			pointerMainFrame.updateRowInTable(id);
 		}
 		else {
 			id = contactInfo.addNewContact();
-			contactInfo.getContact().saveFromContactDetailView(allTextFields);
+			if(!contactInfo.getContact().saveFromContactDetailView(allTextFields)) {
+				invalidRegexMessage();
+				return;
+			}
 			pointerMainFrame.addRowToTable(id);
 		}
 		
@@ -652,6 +705,9 @@ public class ContactDetail extends JPanel {
 		
 		toggleEdit(false);
 		
+	}
+	private void invalidRegexMessage() {
+		JOptionPane.showMessageDialog(null, "One of the values is invalid, please check that all the data is correct before saving");
 	}
 	
 	private void showImageBig() {
@@ -708,6 +764,7 @@ public class ContactDetail extends JPanel {
 			}
 			
 		}
+		if(!activateEditModeIfTrue) {profilePictureLabel.requestFocus();}
 		
 		notesTextPane.setEditable(activateEditModeIfTrue);
 		
