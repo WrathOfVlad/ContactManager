@@ -9,10 +9,10 @@ public class MultiPlatformSupportFactory {
 			multiPlatformSupport = new LinuxSupport();
 		}
 		if(OPERATING_SYSTEM.contains("Mac")) {
-			multiPlatformSupport = new LinuxSupport();
+			multiPlatformSupport = new MacSupport();
 		}
 		if(OPERATING_SYSTEM.contains("Windows")) {
-			multiPlatformSupport = new LinuxSupport();
+			multiPlatformSupport = new WindowsSupport();
 		}
 		return multiPlatformSupport;
 		
