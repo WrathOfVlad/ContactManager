@@ -2,6 +2,7 @@ package com.contactmanager.utils.io;
 
 import java.awt.Desktop;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -140,14 +141,14 @@ public class DataStorageFile extends DataStorageHandler{
 		String idPath = path + File.separator + parsedId;
 		checkIfDirExists(idPath);
 		String fileName =  idPath + File.separator + FILENAME_PROFILE_PICTURE;
-		String[] allExtensions = {".png", ".jpg"};
+		String[] allExtensions = DataStorageHandler.IMAGE_EXTENSIONS;
 		
 		File profilePictureFile = null;
 		URL noImageStream = null;	
 		
 		try {			
 			for (String extension: allExtensions) {
-				profilePictureFile = new File(fileName + extension);
+				profilePictureFile = new File(fileName +"."+ extension);
 				if (profilePictureFile.exists()) {
 					Image profilePictureImage = ImageIO.read(profilePictureFile);
 					return profilePictureImage;
@@ -168,7 +169,17 @@ public class DataStorageFile extends DataStorageHandler{
 	}
 	@Override
 	public void saveProfileImage(int id, Image image) {
-		// TODO Auto-generated method stub
+		String parsedId = String.format(MAX_ID_FORMATTING, id);
+		String idPath = path + File.separator + parsedId;
+		checkIfDirExists(idPath);
+		
+		try {
+			ImageIO.write((BufferedImage)image, "png", new File(idPath+"/"+FILENAME_PROFILE_PICTURE+".png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
 		
 	}
 

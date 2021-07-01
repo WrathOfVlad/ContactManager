@@ -18,7 +18,7 @@ public class PhoneItem extends DataItemHandler{
 
 	@Override
 	public Boolean setValue(String value) {
-		if (value == null) {this.dataValue = value; return true;};
+		if (value == null || value.equals("")) {this.dataValue = value; return true;};
 		PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
 		
 		try {

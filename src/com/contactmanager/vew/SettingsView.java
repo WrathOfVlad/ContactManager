@@ -1,34 +1,52 @@
 package com.contactmanager.vew;
 
-import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 
 import com.contactmanager.datamodel.Contact;
 import com.contactmanager.utils.io.ConfigFileData;
+import com.contactmanager.utils.viewutils.CustomComponents;
 
 public class SettingsView extends JPanel {
 	private JTable table;
 	private DefaultTableModel tableModel;
 	
 	private MainFrame pointerMainFrame;
+	
+	private JScrollPane scrollPane;
 
 	
 	public SettingsView(MainFrame mainFrame) {
 		pointerMainFrame = mainFrame;
+		
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		
+		gridBagLayout.columnWidths =  new int[] {100,100,0};
+		gridBagLayout.rowHeights = new int[] {20,20,0};
+		
+		gridBagLayout.rowWeights = new double[] {0,0,1};
+		gridBagLayout.columnWeights = new double[] {0,0,1};
+		setLayout(gridBagLayout);
+		
+		Insets defaultPadding = new Insets(5,5,0,0);
+		
 		
 		table = new JTable();
 		table.setDefaultEditor(Object.class, null);
@@ -37,7 +55,7 @@ public class SettingsView extends JPanel {
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2 && table.getSelectedRow() != -1) {
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && table.getSelectedRow() != -1) {
 					int row = table.getSelectedRow();
 					String field = table.getValueAt(row, 0).toString();
 					if (field != "Id") {
@@ -52,21 +70,18 @@ public class SettingsView extends JPanel {
 			}
 		});
 		
-		JButton btnNewButton = new JButton("Save");
-		btnNewButton.setBounds(120, 50, 75, 20);
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton saveButton = new JButton("Save");		
+		saveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				save();
 			}
 		});
-		setLayout(null);
-		add(btnNewButton);
-		
-		JScrollPane scrollPane = new JScrollPane(table);
-		scrollPane.setBorder(null);
-		scrollPane.setBounds(200, 50, 400, 800);
-		add(scrollPane);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 1;
+		gbc.gridy = 0;
+		gbc.insets = defaultPadding;		
+		add(saveButton,gbc);
 		
 		JButton btnExit = new JButton("Exit");
 		btnExit.addActionListener(new ActionListener() {
@@ -74,26 +89,38 @@ public class SettingsView extends JPanel {
 				exitPressed(arg0);
 			}
 		});
-		btnExit.setBounds(25, 50, 75, 20);
-		add(btnExit);
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.insets = defaultPadding;	
+		add(btnExit,gbc);
+		
+		
+		scrollPane = new JScrollPane();
+		scrollPane.setBorder(null);
+		gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.BOTH;		
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.gridheight = 2;
+		gbc.gridwidth =3;
+		gbc.insets = defaultPadding;
+		add(scrollPane,gbc);
+	
 		createTable();
-		addGlobalEventListener();
+		getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Escape");
+	    getActionMap().put("Escape", new AbstractAction() {
+	        @Override
+	        public void actionPerformed(ActionEvent ae) {
+	        	escPressed();
+	        }
+	    });
+	    btnExit.setFocusable(true);
+	    btnExit.requestFocus();
 	}
 	
-	public void addGlobalEventListener() {
-		KeyListener listener = new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-				if(arg0.getKeyChar() == KeyEvent.VK_ESCAPE) {
-					exit();
-				}
-			}
-		};
-		
-		for (Component component: getComponents()) {
-			component.addKeyListener(listener);
-		}
-		this.addKeyListener(listener);
+	private void escPressed() {
+		exit();
 	}
 	
 	private void exit() {
@@ -109,6 +136,7 @@ public class SettingsView extends JPanel {
 				values.add(table.getValueAt(i, 0).toString());
 			}
 		}
+		values.add(0,Contact.ID_FIELD);
 		ConfigFileData.getInstance().setVisibleColumns(values);
 		ConfigFileData.getInstance().saveVisibleColumns();
 		pointerMainFrame.isContactListViewerUpToDate = false;
@@ -130,8 +158,14 @@ public class SettingsView extends JPanel {
 			if (displayedColumns.contains(columns.get(i))) {
 				tableModel.setValueAt("X", i, 1);
 			}
-
 		}
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		CustomComponents.resizeAllColumns(table);
+		scrollPane.setViewportView(table);
+		
+		setFocusable(true);
+		requestFocus();
+		
 	}
 	
 	public void exitPressed(ActionEvent e) {

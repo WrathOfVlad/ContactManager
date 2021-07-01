@@ -14,7 +14,7 @@ public class EmailItem extends DataItemHandler{
 
 	@Override
 	public Boolean setValue(String value) {
-		if (value == null) {this.dataValue = value; return true;};
+		if (value == null || value.equals("")) {this.dataValue = value; return true;};
 		Pattern pattern = Pattern.compile(EMAIL_REGEX);
 		Matcher matcher = pattern.matcher(value);
 		

@@ -10,6 +10,8 @@ public abstract class DataStorageHandler {
 	static final String MAX_ID_FORMATTING = "%05d";
 	public static final String ICON_PATH = "/images/icon.png";
 	public static final String NO_PROFILE_IMAGE_PATH = "/images/NoProfilePicture.png";
+	public static final String[] IMAGE_EXTENSIONS = new String[] {"png","jpeg","jpg"};
+	
 	static final String PATH_OF_PROGRAM = System.getProperty("user.dir");	
 	
 	public abstract String getNotes(int id);

@@ -39,7 +39,24 @@ public abstract class DataItemHandler {
 	public ExternalLoading getExternalLoading() {
 		return loadingLocation;
 	}
-
+	
+	public static String getRegex(String dataType) {
+		if(DataType.valueOf(dataType) == DataType.DATE) {
+			return DATE_REGEX;
+		}
+		else if(DataType.valueOf(dataType) == DataType.EMAIL) {
+			return EMAIL_REGEX;
+		}
+		else if(DataType.valueOf(dataType) == DataType.NAME) {
+			return NAME_REGEX;
+		}
+		else if(DataType.valueOf(dataType) == DataType.PHONE) {
+			return PHONE_REGEX;
+		}
+		else {
+			return null;
+		}
+	}
 	
 	protected void addGeneralInfo(String dataId, Map<String, Object> metaData) throws Exception {
 		this.dataId = dataId;

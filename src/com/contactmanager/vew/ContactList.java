@@ -1,6 +1,5 @@
 package com.contactmanager.vew;
 
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -24,14 +23,13 @@ import javax.swing.KeyStroke;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import com.contactmanager.datamodel.Contact;
 import com.contactmanager.datamodel.Contacts;
 import com.contactmanager.utils.io.ConfigFileData;
+import com.contactmanager.utils.viewutils.CustomComponents;
 
 
 public class ContactList extends JPanel{
@@ -46,36 +44,36 @@ public class ContactList extends JPanel{
 	
 	
 	private JTextField searchField;
-	private int padding = 15;
-	private JPanel panel;
 	
 	public ContactList(MainFrame mainFrame, Contacts contacts) {
 		this.pointerContacts = contacts;
 		this.pointerMainFrame = mainFrame;
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] {100};
-		gridBagLayout.rowHeights = new int[] {30, 387, 0};
-		gridBagLayout.columnWeights = new double[]{1.0};
-		gridBagLayout.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.columnWidths = new int[] {100,500,0};
+		gridBagLayout.rowHeights = new int[] {20,0};
 		setLayout(gridBagLayout);
 		
-		panel = new JPanel();
-		panel.setLayout(null);
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.insets = new Insets(0, 0, 5, 0);
-		gbc_panel.gridx = 0;
-		gbc_panel.gridy = 0;
-		add(panel, gbc_panel);
-		//scrollPane.setPreferredSize(new Dimension(1910, 900));
+
+		
+		
 		JLabel lblSearch = new JLabel("Search:");
-		lblSearch.setBounds(25, 5, 67, 15);
-		panel.add(lblSearch);
+		GridBagConstraints gbc_search = new GridBagConstraints();
+		gbc_search.fill = GridBagConstraints.HORIZONTAL;
+		gbc_search.insets = new Insets(5,5, 0, 0);
+		gbc_search.gridx = 0;
+		gbc_search.gridy = 0;
+		
+		add(lblSearch,gbc_search);
+		
 		
 		searchField = new JTextField();
-		searchField.setBounds(100, 5, 472, 20);
-		panel.add(searchField);
+		GridBagConstraints gbc_searchField = new GridBagConstraints();
+		gbc_searchField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_searchField.insets = new Insets(5, 5, 0, 0);
+		gbc_searchField.gridx = 1;
+		gbc_searchField.gridy = 0;
+		add(searchField,gbc_searchField);
 		
 		searchField.addKeyListener(new KeyAdapter() {
 			@Override
@@ -87,14 +85,14 @@ public class ContactList extends JPanel{
 			
 		});
 		
-		searchField.setColumns(10);
-		
 		scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane.gridwidth = 2;
+		gbc_scrollPane.gridwidth = 3;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 1;
+		gbc_scrollPane.weightx = 1;
+		gbc_scrollPane.weighty = 1;
 		add(scrollPane, gbc_scrollPane);
 		
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -116,7 +114,7 @@ public class ContactList extends JPanel{
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2 && table.getSelectedRow() != -1) {
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && table.getSelectedRow() != -1) {
 					enterContactDetail();
 		        }
 			}
@@ -126,44 +124,7 @@ public class ContactList extends JPanel{
 	} 
 	
 	public void resizeAllColumns() {
-		for (int column = 0; column < table.getColumnCount(); column++)
-		{
-		    TableColumn tableColumn = table.getColumnModel().getColumn(column);
-		    int preferredWidth = tableColumn.getMinWidth();
-		    int maxWidth = tableColumn.getMaxWidth();
-		    
-		    TableCellRenderer headerRenderer = tableColumn.getHeaderRenderer();
-		    Object headerValue = tableColumn.getHeaderValue();
-		    if (headerRenderer == null) {
-		      headerRenderer = table.getTableHeader().getDefaultRenderer();
-		    }
-		    Component headerComp =
-		            headerRenderer.getTableCellRendererComponent(table, headerValue, false, false, 0, column);
-		    
-		    int width = headerComp.getPreferredSize().width + table.getIntercellSpacing().width + padding;
-	    	width = Math.max(width, headerComp.getPreferredSize().width + 10);
-	        preferredWidth = Math.max(preferredWidth, width);
-
-		    
-		    for (int row = 0; row < table.getRowCount(); row++)
-		    {
-		        TableCellRenderer cellRenderer = table.getCellRenderer(row, column);
-		        Component c = table.prepareRenderer(cellRenderer, row, column);
-		        
-	        	width = c.getPreferredSize().width + table.getIntercellSpacing().width + padding;
-		        preferredWidth = Math.max(preferredWidth, width);
-
-		        //  We've exceeded the maximum width, no need to check other rows
-		 
-		        if (preferredWidth >= maxWidth)
-		        {
-		            preferredWidth = maxWidth;
-		            break;
-		        }
-		    }
-		 
-		    tableColumn.setPreferredWidth( preferredWidth );
-		}
+		CustomComponents.resizeAllColumns(table);
 	}
 	
 	public void addTableToScrollPane(){
