@@ -6,13 +6,13 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import com.contactmanager.datamodel.itemstypes.Contact;
 import com.contactmanager.utils.io.DataStorageFile;
 import com.contactmanager.utils.io.DataStorageHandler;
 
 public class CurrentContactInfo {
 	private Logs logs = new Logs();
 	private String notes;
-	//private int id;
 	private Image image;
 	
 	private Contact contact = new Contact(null);
@@ -74,16 +74,16 @@ public class CurrentContactInfo {
 		return id;
 	}
 	public void loadContactInfo(int id) {
-		logs.loadLogsFromFile(id);
+		logs.loadLogs(id);
 		notes = pointerDataStorage.getNotes(id);
-		contact = pointerContacts.getContactById(id);
+		contact = (Contact) pointerContacts.getWrapperById(id);
 		image = pointerDataStorage.getProfileImage(id);
 	}
 	public void save(int id) {
 		pointerDataStorage.createBackup(id);
 		
 		pointerContacts.save();
-		pointerDataStorage.saveLogs(id, logs.getLogsAsList());
+		pointerDataStorage.saveLogs(id, logs);
 		pointerDataStorage.saveNotes(id, notes);
 		pointerDataStorage.saveProfileImage(id, image);
 	}

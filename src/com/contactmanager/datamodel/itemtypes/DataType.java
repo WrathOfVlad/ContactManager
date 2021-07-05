@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.items;
+package com.contactmanager.datamodel.itemtypes;
 
 public enum DataType {
 	EMAIL,
@@ -6,5 +6,6 @@ public enum DataType {
 	DATE,
 	PHONE,
 	NAME,
+	COMBO,
 	DEFAULT
 }

@@ -1,21 +1,28 @@
-package com.contactmanager.datamodel.items;
+package com.contactmanager.datamodel.itemtypes;
 
 import java.net.URL;
 import java.util.Map;
 
-public class LinkItem extends DataItemHandler{
+public class LinkItem extends DefaultItem{
 
+	
 	public LinkItem(String dataId, Map<String, Object> metaData) throws Exception {
-		addGeneralInfo(dataId,metaData);
+		super(dataId, metaData);
 		this.dataType = DataType.LINK;
-		this.maxValueLenght = 150;
 	}
 	
 	public Boolean setValue(String value) {
 		if (value == null || value.equals("")) {this.dataValue = value; return true;};
+		if(validateURL(value)) {
+			this.dataValue = value;
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean validateURL(String url) {
 		try {
-            new URL(value).toURI();
-            this.dataValue = value;
+            new URL(url).toURI();
             return true;
         }
         catch (Exception e) {

@@ -24,8 +24,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
 
-import com.contactmanager.datamodel.Contact;
-import com.contactmanager.datamodel.Log;
+import com.contactmanager.datamodel.ItemsWrapper;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
@@ -39,7 +38,6 @@ public class DataStorageFile extends DataStorageHandler{
 	
 	private String path = ConfigFileData.getInstance().getPath();
 	
-
 	private File checkIfFileExistsInIdDir(int id, String fileName) {
 		String idPath= path + File.separator + String.format(MAX_ID_FORMATTING, id);
 		String filePath = idPath + File.separator + fileName;
@@ -65,6 +63,54 @@ public class DataStorageFile extends DataStorageHandler{
 		if(!directory.isDirectory()) {
 			directory.mkdir();
 		}
+	}
+	private List<String[]> readCSV(File file){
+		List<String[]> allRows = new ArrayList<String[]>();
+		
+		try (Reader fr = new FileReader(file, StandardCharsets.UTF_8)){
+			
+			var reader = new CSVReader(fr);
+			allRows = reader.readAll();
+			reader.close();		
+			return allRows;
+			
+		} catch (IOException |CsvException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private void writeCSV(File file, ItemsWrapper rawData) {
+		List<String[]> data = new ArrayList<String[]>();
+		
+		data.add(rawData.columnList().toArray(new String[rawData.columnList().size()]));
+		
+		for (List<String> row : rawData.getAllData()) {
+			data.add(row.toArray(new String[row.size()]));
+		}
+		try ( var osw = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)){
+			var writer = new CSVWriter(osw);
+			
+			writer.writeNext(data.get(0));
+	        for (int i = 1; i < data.size(); i++) {
+				writer.writeNext(data.get(i));
+			} 
+	        writer.close();
+		}
+		catch (Exception e) {
+			
+		}
+	}
+	
+	@Override
+	public List<String[]> loadContacts(){
+		String file = path + File.separator + FILENAME_MAIN;
+		return readCSV(new File(file));
+	}
+	@Override
+	public List<String[]> loadLogs(int id){
+		File file = checkIfFileExistsInIdDir(id, FILENAME_LOGS);
+		return readCSV(file);
 	}
 	
 	@Override
@@ -94,45 +140,11 @@ public class DataStorageFile extends DataStorageHandler{
 		}	
 	}
 
-	@Override
-	public List<String[]> getLogs(int id) {
-		File file = checkIfFileExistsInIdDir(id, FILENAME_LOGS);		
-		List<String[]> allLogs = new ArrayList<>();
-		
-		try (Reader fr = new FileReader(file, StandardCharsets.UTF_8)){
-			
-			var reader = new CSVReader(fr);
-			allLogs = reader.readAll();
-			reader.close();		
-			
-		} catch (IOException |CsvException e) {
-			e.printStackTrace();
-			
-		}
-		if (allLogs.size() != 0) {
-			//allLogs.remove(0);
-		}
-		return allLogs;
-	}
 
 	@Override
-	public void saveLogs(int id, List<String[]> logs) {
+	public void saveLogs(int id, ItemsWrapper logs) {
 		File file = checkIfFileExistsInIdDir(id, FILENAME_LOGS);
-		
-		try (var fos = new FileOutputStream(file)){
-			var osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-	        var writer = new CSVWriter(osw);
-	        List<String> columnsList = Log.getColumns();
-	        String[] columns = columnsList.toArray(new String[columnsList.size()]);
-	        writer.writeNext(columns);
-			for (String[] log : logs) {
-				writer.writeNext(log);
-			}
-			writer.close();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		writeCSV(file, logs);
 	}
 
 	@Override
@@ -184,45 +196,10 @@ public class DataStorageFile extends DataStorageHandler{
 	}
 
 	@Override
-	public List<String[]> getContactData() {
-		String file = path + File.separator + FILENAME_MAIN;
-		List<String[]> allRows = new ArrayList<String[]>();
-		
-		try (Reader fr = new FileReader(file, StandardCharsets.UTF_8)){
-			
-			var reader = new CSVReader(fr);
-			allRows = reader.readAll();
-			reader.close();		
-			return allRows;
-			
-		} catch (IOException |CsvException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	@Override
-	public void saveContactData(List<Contact> data) {
+	public void saveContactData(ItemsWrapper rawData) {
 		String file = path + File.separator + FILENAME_MAIN;
 		
-		try (var fos = new FileOutputStream(file)){			
-	        var osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-	        var writer = new CSVWriter(osw);
-	        List<String> columnsList = ConfigFileData.getInstance().getColumns(true);
-	        String[] columns = columnsList.toArray(new String[columnsList.size()]);
-	        writer.writeNext(columns);
-	        for (int i = 0; i < data.size(); i++) {
-	        	Contact contact = data.get(i);
-	        	List<String> rowList = contact.getElementsAsList(false);
-				String[] row = rowList.toArray(new String[rowList.size()]);
-				writer.writeNext(row);
-			} 
-	        writer.close();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		//System.out.println(data.get(0).toString());
-		
+		writeCSV(new File(file), rawData);		
 	}
 	
 	@Override
@@ -297,7 +274,7 @@ public class DataStorageFile extends DataStorageHandler{
 	    }
 	    catch (IOException e){  }
 	}
-	
+
 	
 
 	

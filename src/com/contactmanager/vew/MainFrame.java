@@ -15,11 +15,11 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import com.contactmanager.datamodel.Contact;
 import com.contactmanager.datamodel.Contacts;
 import com.contactmanager.datamodel.CurrentContactInfo;
-import com.contactmanager.datamodel.Log;
-import com.contactmanager.datamodel.Logs;
+import com.contactmanager.datamodel.itemstypes.Contact;
+import com.contactmanager.datamodel.itemstypes.Items;
+import com.contactmanager.datamodel.itemstypes.Log;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.utils.multiplatform.MultiPlatformSupportHandler;
 
@@ -31,11 +31,11 @@ public class MainFrame extends JFrame {
 	public static final String CONTACT_LOG = "ContactLog";
 	public static final String SETTINGS = "Settings";
 	public static final String EMPTY = "empty";
-	public static final String VERSION = "2.4.3";
+	public static final String VERSION = "2.4.4";
 	
 	public boolean isContactListViewerUpToDate = true;
 	
-	private Contacts pointerContacts;
+	private Contacts contacts;
 	private ContactList pointerContactList;
 	private ContactDetail pointerContactDetail;
 	private SettingsView pointerSettingsView;
@@ -48,14 +48,13 @@ public class MainFrame extends JFrame {
 	
 	public MainFrame(DataStorageHandler dataStorage, MultiPlatformSupportHandler multiPlatformSupport) {
 		
-		pointerContacts = new Contacts(dataStorage,this);
-		pointerContacts.loadContacts();	
-		Logs.setDataStorageHandler(dataStorage);
+		contacts = new Contacts(dataStorage, this);
+		contacts.loadDataSpecific();
 		
 		pointerMultiPlatformSupport = multiPlatformSupport;
 		
-		pointerContactList = new ContactList(this, pointerContacts);
-		CurrentContactInfo contactInfo = new CurrentContactInfo(pointerContacts,dataStorage);
+		pointerContactList = new ContactList(this, contacts);
+		CurrentContactInfo contactInfo = new CurrentContactInfo(contacts,dataStorage);
 		pointerContactDetail= new ContactDetail(this,contactInfo);
 		pointerSettingsView = new SettingsView(this);
 		pointerContactLog = new ContactLog(this);
@@ -133,8 +132,8 @@ public class MainFrame extends JFrame {
 	public void clear() {
 		pointerContactLog.clear();
 	}
-	public void setContactLog(Log log) {
-		pointerContactLog.setContactLog(log);
+	public void setContactLog(Items items) {
+		pointerContactLog.setContactLog((Log)items);
 	}
 	
 
@@ -237,7 +236,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	private void notificationReminder() {
-		pointerContacts.getReminders();
+		contacts.getReminders();
 	}
 	
 	

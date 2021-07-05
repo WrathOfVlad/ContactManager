@@ -10,16 +10,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.contactmanager.datamodel.items.DateItem;
+import org.apache.commons.lang3.ArrayUtils;
+
+import com.contactmanager.datamodel.itemtypes.DateItem;
 
 public class CustomDatePicker {
 		
@@ -34,7 +33,7 @@ public class CustomDatePicker {
     //create object of JButton
     JButton[] button = new JButton[49];
 	
-	public CustomDatePicker(JFrame parent) {
+	public CustomDatePicker(/*JFrame parent*/) {
 		d = new JDialog();
         //set modal true
         d.setModal(true);
@@ -120,7 +119,7 @@ public class CustomDatePicker {
         
         d.pack();
         //set location
-        d.setLocationRelativeTo(parent);
+        //d.setLocationRelativeTo(parent);
         //call method
         displayDate();
         //set visible true

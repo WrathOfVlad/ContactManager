@@ -3,7 +3,7 @@ package com.contactmanager.utils.io;
 import java.awt.Image;
 import java.util.List;
 
-import com.contactmanager.datamodel.Contact;
+import com.contactmanager.datamodel.ItemsWrapper;
 
 public abstract class DataStorageHandler {
 	
@@ -17,17 +17,20 @@ public abstract class DataStorageHandler {
 	public abstract String getNotes(int id);
 	public abstract void saveNotes(int id,String notes);
 	
-	public abstract List<String[]> getLogs(int id);
-	public abstract void saveLogs(int id, List<String[]> logs);
+	public abstract void saveLogs(int id, ItemsWrapper logs);
 	
 	public abstract Image getProfileImage(int id);
 	public abstract void saveProfileImage(int id, Image image);
 	
-	public abstract List<String[]> getContactData();
-	public abstract void saveContactData(List<Contact> data);
+
+
 	
 	public abstract void createBackup(int id);
 	public abstract void deleteOldBackups();
 
+	public abstract List<String[]> loadContacts();
+	public abstract List<String[]> loadLogs(int id);
 	
+	public abstract void saveContactData(ItemsWrapper data);
+
 }

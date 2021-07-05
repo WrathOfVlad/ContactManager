@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.items;
+package com.contactmanager.datamodel.itemtypes;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DateItem extends DataItemHandler{
+public class DateItem extends DefaultItem{
 	
 	public static final String dateFormat = "yyyy-MM-dd";
 	
@@ -22,12 +22,10 @@ public class DateItem extends DataItemHandler{
 	private String reminderContent;
 	
 	public DateItem(String dataId,Map<String, Object> metaData) throws Exception {
-		addGeneralInfo(dataId,metaData);
+		super(dataId,metaData);
 		
 		this.dataType = DataType.DATE;
-		this.regex = DATE_REGEX;
-		this.isEditable = false;
-		
+		this.regex = DATE_REGEX;		
 		
 		if(!metaData.containsKey(IS_REMINDER_FIELD)) {return;}
 		if(!metaData.containsKey(NOTIFICATION_HEADER_FIELD)) {throw new IOException("Notification Header is missing");}
@@ -70,7 +68,7 @@ public class DateItem extends DataItemHandler{
 		
 		String[] titleAndContent = {this.reminderHeader,this.reminderContent};
 		
-		if(isYearIncludedInReminder) {
+		if(!isYearIncludedInReminder) {
 			if (todayAsString.equals(dateAsString)) {
 				return titleAndContent;
 			}
@@ -84,6 +82,4 @@ public class DateItem extends DataItemHandler{
 		return null;
 
 	}
-
-
 }

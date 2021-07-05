@@ -1,13 +1,12 @@
 package com.contactmanager.utils.viewutils;
 
-import javax.swing.text.*;
-
-import java.awt.Component;
 import java.awt.Toolkit;
 
-import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
+import javax.swing.JTextField;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 
 
 public class CustomComponents {
@@ -61,44 +60,4 @@ public class CustomComponents {
 		   return field;
 		}
 
-	public static void resizeAllColumns(JTable table) {
-		for (int column = 0; column < table.getColumnCount(); column++)
-		{
-		    TableColumn tableColumn = table.getColumnModel().getColumn(column);
-		    int preferredWidth = tableColumn.getMinWidth();
-		    int maxWidth = tableColumn.getMaxWidth();
-		    
-		    TableCellRenderer headerRenderer = tableColumn.getHeaderRenderer();
-		    Object headerValue = tableColumn.getHeaderValue();
-		    if (headerRenderer == null) {
-		      headerRenderer = table.getTableHeader().getDefaultRenderer();
-		    }
-		    Component headerComp =
-		            headerRenderer.getTableCellRendererComponent(table, headerValue, false, false, 0, column);
-		    
-		    int width = headerComp.getPreferredSize().width + table.getIntercellSpacing().width + 15;
-	    	width = Math.max(width, headerComp.getPreferredSize().width + 10);
-	        preferredWidth = Math.max(preferredWidth, width);
-
-		    
-		    for (int row = 0; row < table.getRowCount(); row++)
-		    {
-		        TableCellRenderer cellRenderer = table.getCellRenderer(row, column);
-		        Component c = table.prepareRenderer(cellRenderer, row, column);
-		        
-	        	width = c.getPreferredSize().width + table.getIntercellSpacing().width + 15;
-		        preferredWidth = Math.max(preferredWidth, width);
-
-		        //  We've exceeded the maximum width, no need to check other rows
-		 
-		        if (preferredWidth >= maxWidth)
-		        {
-		            preferredWidth = maxWidth;
-		            break;
-		        }
-		    }
-		 
-		    tableColumn.setPreferredWidth( preferredWidth );
-		}
 	}
-}

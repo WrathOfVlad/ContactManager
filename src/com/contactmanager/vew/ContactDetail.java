@@ -3,7 +3,6 @@ package com.contactmanager.vew;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -18,17 +17,11 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -40,37 +33,28 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
 import javax.swing.text.Document;
 import javax.swing.undo.UndoManager;
 
-import com.contactmanager.datamodel.Contact;
 import com.contactmanager.datamodel.CurrentContactInfo;
-import com.contactmanager.datamodel.Log;
-import com.contactmanager.datamodel.items.DataItemHandler;
-import com.contactmanager.datamodel.items.DataType;
-import com.contactmanager.datamodel.items.ExternalLoading;
-import com.contactmanager.utils.io.ConfigFileData;
+import com.contactmanager.datamodel.itemstypes.Contact;
+import com.contactmanager.datamodel.itemstypes.Log;
+import com.contactmanager.datamodel.itemtypes.ExternalLoading;
+import com.contactmanager.datamodel.itemtypes.Item;
 import com.contactmanager.utils.io.DataStorageHandler;
-import com.contactmanager.utils.viewutils.CustomDatePicker;
+import com.contactmanager.utils.viewutils.CustomJTable;
 import com.contactmanager.utils.viewutils.TraversalPolicy;
 
 
@@ -84,25 +68,30 @@ public class ContactDetail extends JPanel {
 	private Integer id = null;
 	private boolean isInEditMode;
 
-	private Map<String, JTextField> allTextFields = new HashMap<String, JTextField>();
-	private Map<String, JLabel> allClickableLinks = new HashMap<String, JLabel>();
-	private List<String> nonEditable = new ArrayList<String>();
-	//List<String> readOnly = List.of(Contact.LASTCONTACT_FIELD, Contact.NEXTCONTACT_FIELD,Contact.CONTACTSTATUS_FIELD);
-	
 	private JLabel profilePictureLabel;
 	private JButton btnEdit;
 	private JButton btnSave;
 	private JTextPane notesTextPane;
 	
-	private JTable table;
+	private CustomJTable table;
+
 	private JScrollPane tableScrollPane;
-	private DefaultTableModel tableModel;
 	
 	private CurrentContactInfo contactInfo;
 
 	public ContactDetail(MainFrame mainFrame, CurrentContactInfo contactInfo) {
 		pointerMainFrame = mainFrame;
 		this.contactInfo = contactInfo;
+		
+		table = new CustomJTable(contactInfo.getLogs());
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && table.getSelectedRow() != -1) {
+					getLogToSet();
+		        }
+			}
+		});
 		
 		setFocusTraversalKeysEnabled(false);
 		
@@ -154,6 +143,7 @@ public class ContactDetail extends JPanel {
 		gbc_ppl.gridy = 1;
 		gbc_ppl.gridheight = 6;
 		gbc_ppl.gridwidth = 1;
+		
 		
 		profilePictureLabel = new JLabel();
 		profilePictureLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -268,119 +258,13 @@ public class ContactDetail extends JPanel {
 		tableScrollPane.setPreferredSize(new Dimension(COL_WIDTHS*gbc_tableScrollPane.gridwidth,ROW_HEIGHTS*gbc_tableScrollPane.gridheight));
 		add(tableScrollPane, gbc_tableScrollPane);
 		
-		Map<String, Map<String, Object>> metaData = ConfigFileData.getInstance().getItemMetaData();
-		List<String> fields = ConfigFileData.getInstance().getColumns(false);
+		tableScrollPane.setViewportView(table);		
 		
+		List<Map<Integer, JComponent>> tabOrder = new LinkedList<Map<Integer, JComponent>>();
 		
-		List<Map<Integer, JTextField>> tabOrder = new LinkedList<Map<Integer, JTextField>>();
+		Contact emptyContact = new Contact(null);
 		
-		for (String field:fields) {
-			Map<String,Object> dataItemMetaData = metaData.get(field);
-			
-			if(!dataItemMetaData.containsKey(DataItemHandler.DATA_LABEL_FIELD)) {continue;};
-			
-			String labelString = dataItemMetaData.get(DataItemHandler.DATA_LABEL_FIELD).toString();
-			JLabel label = new JLabel( labelString+ ":");
-			
-			Integer[] gridPlacement = new Integer[2];
-			String[] placementsAsString = dataItemMetaData.get(DataItemHandler.PLACEMENT_ON_DETAILS).toString().split(",");
-			gridPlacement[0] = Integer.parseInt(placementsAsString[0]);
-			gridPlacement[1] = Integer.parseInt(placementsAsString[1]);
-			
-			GridBagConstraints gbc_label = new GridBagConstraints();
-			gbc_label.fill = GridBagConstraints.HORIZONTAL;
-			gbc_label.insets = defaultPadding;
-			gbc_label.gridx = 3*gridPlacement[0]-2;
-			gbc_label.gridy = gridPlacement[1];
-			add(label,gbc_label);
-			
-			String regex = DataItemHandler.getRegex(dataItemMetaData.get(DataItemHandler.DATA_TYPE_ID).toString());
-			
-			JTextField textField =	new JTextField(); //myComponents.createFilteredField(regex,null);
-			textField.getDocument().addDocumentListener(new DocumentListener()
-		    {
-		      @Override
-		      public void removeUpdate(DocumentEvent e)
-		      {
-		        validateInput(regex,textField);
-		      }
-
-		      @Override
-		      public void insertUpdate(DocumentEvent e)
-		      {
-		        validateInput(regex,textField);
-		      }
-
-		      @Override
-		      public void changedUpdate(DocumentEvent e) {
-		    	  validateInput(regex,textField);
-		      } // Not needed for plain-text fields
-		  });
-			GridBagConstraints gbc_txtField = new GridBagConstraints();
-			gbc_txtField.anchor = GridBagConstraints.WEST;
-			gbc_txtField.insets = defaultPadding;
-			gbc_txtField.gridx = 3*gridPlacement[0]-1;
-			gbc_txtField.gridy = gridPlacement[1];
-			gbc_txtField.gridwidth = 2;
-			gbc_txtField.fill = GridBagConstraints.HORIZONTAL;
-			
-			Boolean isEditable =  !dataItemMetaData.containsKey(DataItemHandler.IS_EDITABLE_FIELD) || Boolean.parseBoolean(dataItemMetaData.get(DataItemHandler.IS_EDITABLE_FIELD).toString());
-			
-			if(isEditable) {
-				if(dataItemMetaData.get(DataItemHandler.DATA_TYPE_ID).equals(DataType.DATE.toString())) {
-					nonEditable.add(field);
-					textField.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mousePressed(MouseEvent ae) {
-							if(ae.getButton() == MouseEvent.BUTTON1) {
-								if(isInEditMode) {
-									String date = new CustomDatePicker(mainFrame).setPickedDate();
-									if(date.equals("")) return;
-									
-									textField.setText(date);
-								}
-							}
-						}
-					});
-				}
-				else {
-					Map<Integer,JTextField> yMap = new TreeMap<Integer,JTextField>();
-					while(tabOrder.size()<=gridPlacement[0]-1) {
-						tabOrder.add(gridPlacement[0]-1, yMap);
-					}
-					tabOrder.get(gridPlacement[0]-1).put(gridPlacement[1], textField);	
-				}
-			}
-			else {
-				nonEditable.add(field);
-			}
-			textField.setMinimumSize(new Dimension(COL_WIDTHS*gbc_txtField.gridwidth,ROW_HEIGHTS));
-			textField.setMaximumSize(new Dimension((int) (COL_WIDTHS*gbc_txtField.gridwidth+COL_WIDTHS*0.5),ROW_HEIGHTS));
-			add(textField,gbc_txtField);
-			allTextFields.put(field, textField);
-			
-			if (dataItemMetaData.get(DataItemHandler.DATA_TYPE_ID).equals(DataType.LINK.toString())) {
-				JLabel linkLabel = new JLabel(labelString);
-				linkLabel.setVisible(false);
-				linkLabel.setEnabled(false);
-				linkLabel.setForeground(Color.BLUE.darker());
-				linkLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				linkLabel.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mousePressed(MouseEvent e) {
-						if(e.getButton() == MouseEvent.BUTTON1) {
-							callURL(field);
-						}
-						
-					}
-				});
-				add(linkLabel,gbc_txtField);
-				allClickableLinks.put(field, linkLabel);
-			}
-			
-			
-			
-		}
+		emptyContact.displayItems(this, tabOrder);
 		
 		
 		GridBagConstraints gbc_notes = new GridBagConstraints();
@@ -468,33 +352,15 @@ public class ContactDetail extends JPanel {
 		
 		//addGlobalEventListener(this);
 		
-		for (Map<Integer, JTextField> map : tabOrder) {
-			for (JTextField field : map.values()) {
+		for (Map<Integer, JComponent> map : tabOrder) {
+			for (JComponent field : map.values()) {
 				order.add(field);
 			}
 		}
 		
-	    //order.add(table);
 		this.setFocusCycleRoot(true);
 	    this.setFocusTraversalPolicy(new TraversalPolicy(order));
 
-	}
-	
-	private void validateInput(String regex,JTextField field) {
-		if(regex == null) {
-			field.setForeground(Color.BLACK);
-			return;
-		}
-		String text = field.getText();
-	    Pattern r = Pattern.compile(regex);
-	    Matcher m = r.matcher(text);
-	    if (m.matches())
-	    {
-	    	field.setForeground(Color.BLACK);
-	    }
-	    else {
-	    	field.setForeground(Color.RED);
-	    }
 	}
 	
 	public void entryPoint() {
@@ -507,7 +373,7 @@ public class ContactDetail extends JPanel {
 	
 	public void escPressed() {
 		if(isInEditMode && id != null) {
-			contactInfo.getContact().loadContactDataFromDatamodel(allTextFields);
+			contactInfo.getContact().loadFromDataModel();
 			String notes = contactInfo.getNotes();
 			notesTextPane.setText(notes);
 			toggleEdit(false);
@@ -517,34 +383,7 @@ public class ContactDetail extends JPanel {
 		}
 	}
 	
-	public boolean validateURL(String url) {
-		try {
-            new URL(url).toURI();
-            return true;
-        }
-        catch (Exception e) {
-            return false;
-        }
-	}
 	
-	public void callURL(String field) {
-		if(!allClickableLinks.get(field).isEnabled()) {
-			return;
-		}
-		
-		String url = allTextFields.get(field).getText();
-		boolean isValid = validateURL(url);
-		if (isValid) {
-			try {
-				pointerMainFrame.openURL(url);
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(pointerMainFrame, "Something went wrong");
-			}
-		}
-		else {
-			JOptionPane.showMessageDialog(pointerMainFrame, "Invalid Link");
-		}
-	}
 	
 	public void loadImage() {
 	    
@@ -593,7 +432,7 @@ public class ContactDetail extends JPanel {
 		this.id = id;
 		contactInfo.loadContactInfo(id);
 		
-		contactInfo.getContact().loadContactDataFromDatamodel(allTextFields);
+		contactInfo.getContact().loadFromDataModel();
 		String notes = contactInfo.getNotes();
 		notesTextPane.setText(notes);
 		
@@ -607,83 +446,28 @@ public class ContactDetail extends JPanel {
 		if(latestLog == null) return;
 		
 		Contact contact = contactInfo.getContact();
-		for (String field : allTextFields.keySet()) {
-			if(contact.getItemInfo(field).getExternalLoading() == ExternalLoading.LOGS) {
-				allTextFields.get(field).setText(latestLog.getItemInfo(field).getDataValue());
+		for (String field : contact.getItemIds()) {
+			Item item = contact.getItemInfo(field); 
+			if(item.getExternalLoading() == ExternalLoading.LOGS) {
+				item.setTextFieldText(latestLog.getItemInfo(field).getDataValue());
 			}
 		}
-		
 		save();
 	}
 	
-	private String[] getVisibleLogs(String[] row) {
-		List<String> visibleColumns = ConfigFileData.getInstance().getLogVisibleColumns();
-		List<String> columns = Log.getColumns();
-		
-		String[] result = new String[visibleColumns.size()];
-		Log log = contactInfo.getLogs().getLogFromDate(row[columns.indexOf(Log.LAST_DATE_FIELD)]);
-		for(int j = 0; j<visibleColumns.size();j++) {
-			result[j] = log.getItemInfo(visibleColumns.get(j)).getDataValue();
-		}
-		return result;
-	}
 	private void loadLogs() {
-		List<String> visibleColumns = ConfigFileData.getInstance().getLogVisibleColumns();
-		
-		List<String[]> rawData = contactInfo.getLogs().getLogsAsList();
-		
-		
-		String[][] visibleData = new String[rawData.size()][visibleColumns.size()];
-		
-		for(int i = 0; i<visibleData.length;i++) {
-			visibleData[i] = getVisibleLogs(rawData.get(i));
-		}
-		
-		tableModel =  new DefaultTableModel(visibleData, visibleColumns.toArray(new String[visibleColumns.size()]));
-		table = new JTable(tableModel);
-		
-		table.setDefaultEditor(Object.class, null);
-		//table.setPreferredSize(new Dimension(getWidth(),getHeight()));
-		table.setAutoCreateRowSorter(true);
-		table.getTableHeader().setReorderingAllowed(true);
-		tableScrollPane.setViewportView(table);
-		table.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && table.getSelectedRow() != -1) {
-					getLogToSet();
-		        }
-			}
-		});
-		
-		TableColumnModel colModel = table.getColumnModel();
-		colModel.moveColumn(colModel.getColumnIndex(Log.LAST_DATE_FIELD),0);
-		
-		
+		table.loadData();		
 	}
 	
 	private void getLogToSet() {
-		int rowIndex = table.getSelectedRow();
-		
-		int correctedIndex = table.convertRowIndexToModel(rowIndex);
-    	String date = table.getModel().getValueAt(correctedIndex, table.getColumn(Log.LAST_DATE_FIELD).getModelIndex()).toString();
-    	
-        pointerMainFrame.setContactLog(contactInfo.getLogs().getLogFromDate(date));
+		int logId = table.getSelectedId();
+        pointerMainFrame.setContactLog(contactInfo.getLogs().getWrapperById(logId));
         pointerMainFrame.changePage(MainFrame.CONTACT_LOG);
 	}
 	
 	public void clearLoadedDetails() {
 		this.id = null;
-
-		for (String field : allTextFields.keySet()) {
-			JTextField textField = allTextFields.get(field);
-			if( textField instanceof JFormattedTextField) {
-				((JFormattedTextField) textField).setValue(null);
-			}
-			else {
-				textField.setText(null);
-			}
-		}
+		
 		notesTextPane.setText("");
 		loadImage();
 		toggleEdit(true);
@@ -692,7 +476,7 @@ public class ContactDetail extends JPanel {
 	public void save() {
 		
 		if (id != null) {
-			if(!contactInfo.getContact().saveFromContactDetailView(allTextFields)) {
+			if(!contactInfo.getContact().saveToDataModel()) {
 				invalidRegexMessage();
 				return;
 			}
@@ -700,7 +484,7 @@ public class ContactDetail extends JPanel {
 		}
 		else {
 			id = contactInfo.addNewContact();
-			if(!contactInfo.getContact().saveFromContactDetailView(allTextFields)) {
+			if(!contactInfo.getContact().saveToDataModel()) {
 				invalidRegexMessage();
 				return;
 			}
@@ -748,31 +532,10 @@ public class ContactDetail extends JPanel {
 	}
 	
 	public void toggleEdit(Boolean activateEditModeIfTrue) {
-
-		//Toggle editablity of textboxes (if they aren't in the readonly list)
-		
-		//foreach field, if it's editable, set the textbox to editable, and if it's a link, set it to visible when it needs to be edited
-		for (String field : allTextFields.keySet()) {
-			JTextField textBox = allTextFields.get(field);
-			textBox.setEditable(activateEditModeIfTrue);
-			
-			Boolean nonEditableBool = nonEditable.contains(field);
-			
-			Boolean isLink = allClickableLinks.keySet().contains(field);
-			
-			if(textBox != null && nonEditableBool) {
-				textBox.setEditable(false);
-			}
-			
-			if(textBox != null && isLink) {	
-				allTextFields.get(field).setVisible(activateEditModeIfTrue);
-				allClickableLinks.get(field).setVisible(!activateEditModeIfTrue);
-				allClickableLinks.get(field).setEnabled(validateURL(allTextFields.get(field).getText()));
-				
-			}
-			
+		Contact contact = contactInfo.getContact();
+		for (String contactId: contact.getItemIds()) {
+			contact.getItemInfo(contactId).toggleEdit(activateEditModeIfTrue);
 		}
-		if(!activateEditModeIfTrue) {profilePictureLabel.requestFocus();}
 		
 		notesTextPane.setEditable(activateEditModeIfTrue);
 		
@@ -789,29 +552,14 @@ public class ContactDetail extends JPanel {
 	}
 	public void newLog(Log log, Boolean isNewLog) {
 		if(isNewLog) {
-			contactInfo.getLogs().addLog(log);
-			
-			String[] cols = new String[tableModel.getColumnCount()];
-			for(int i =0; i<tableModel.getColumnCount();i++) {
-				cols[i] = tableModel.getColumnName(i);
-			}
-			String[] data = getVisibleLogs(log.getLog());
-
-			
-			tableModel.addRow(data);
+			contactInfo.getLogs().addItem(log);
+			table.addRowToTable(log);
 			contactInfo.save(id);
-			setFieldsFromLogs();
 		}
 		else {
-			contactInfo.getLogs().changeLog(log.getItemInfo(Log.LAST_DATE_FIELD).getDataValue(),log);
-			String[] row = getVisibleLogs(log.getLog());
-			//There's no need to add one here, as the column name row is only on mainTable, not on the actual displayed table
-			int rowNumber = contactInfo.getLogs().getRowIndexByDate(log.getItemInfo(Log.LAST_DATE_FIELD).getDataValue());
-			
-			for(int i = 0; i < row.length; i++) {
-				tableModel.setValueAt(row[i], rowNumber, i);
-			}
+			table.updateRowInTable(log);
 		}
+		setFieldsFromLogs();
 		contactInfo.save(id);
 	}
 	
@@ -846,5 +594,5 @@ public class ContactDetail extends JPanel {
 		
 	}
 	
-    }
+}
 

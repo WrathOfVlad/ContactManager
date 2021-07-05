@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.items;
+package com.contactmanager.datamodel.itemtypes;
 
 public enum ExternalLoading {
 	LOGS

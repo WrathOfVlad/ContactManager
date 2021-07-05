@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.items;
+package com.contactmanager.datamodel.itemtypes;
 
 import java.util.Map;
 
@@ -7,10 +7,10 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber.CountryCodeSource;
 
-public class PhoneItem extends DataItemHandler{
+public class PhoneItem extends DefaultItem{
 
 	public PhoneItem(String dataId, Map<String, Object> metaData) throws Exception {
-		addGeneralInfo(dataId,metaData);
+		super(dataId,metaData);
 		this.dataType = DataType.PHONE;
 		this.regex = PHONE_REGEX;
 	}
@@ -20,6 +20,7 @@ public class PhoneItem extends DataItemHandler{
 	public Boolean setValue(String value) {
 		if (value == null || value.equals("")) {this.dataValue = value; return true;};
 		PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+		
 		
 		try {
 			PhoneNumber phone = phoneNumberUtil.parse(value, CountryCodeSource.UNSPECIFIED.name());

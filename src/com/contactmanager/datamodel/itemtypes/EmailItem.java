@@ -1,13 +1,13 @@
-package com.contactmanager.datamodel.items;
+package com.contactmanager.datamodel.itemtypes;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class EmailItem extends DataItemHandler{
+public class EmailItem extends DefaultItem{
 
 	public EmailItem(String dataId, Map<String,Object> metaData) throws Exception {
-		addGeneralInfo(dataId,metaData);
+		super(dataId, metaData);
 		this.dataType = DataType.EMAIL;
 		this.regex = EMAIL_REGEX;
 	}

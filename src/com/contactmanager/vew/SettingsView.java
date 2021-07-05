@@ -20,9 +20,8 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 
-import com.contactmanager.datamodel.Contact;
+import com.contactmanager.datamodel.itemstypes.Contact;
 import com.contactmanager.utils.io.ConfigFileData;
-import com.contactmanager.utils.viewutils.CustomComponents;
 
 public class SettingsView extends JPanel {
 	private JTable table;
@@ -48,7 +47,7 @@ public class SettingsView extends JPanel {
 		Insets defaultPadding = new Insets(5,5,0,0);
 		
 		
-		table = new JTable();
+		table = new JTable();//CustomJTable();
 		table.setDefaultEditor(Object.class, null);
 		table.getTableHeader().setReorderingAllowed(false);
 		
@@ -148,7 +147,7 @@ public class SettingsView extends JPanel {
 		
 		
 		List<String> columns = ConfigFileData.getInstance().getColumns(false);
-		columns.add(0,Contact.FULL_NAME_FIELD);
+		//columns.add(0,Contact.FULL_NAME_FIELD);
 		List<String> displayedColumns = ConfigFileData.getInstance().getVisibleColumns();
 		tableModel.addColumn("Column Names", columns.toArray());
 		
@@ -160,7 +159,7 @@ public class SettingsView extends JPanel {
 			}
 		}
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		CustomComponents.resizeAllColumns(table);
+		//CustomComponents.resizeAllColumns(table);
 		scrollPane.setViewportView(table);
 		
 		setFocusable(true);

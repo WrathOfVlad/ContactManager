@@ -1,15 +1,15 @@
-package com.contactmanager.datamodel.items;
+package com.contactmanager.datamodel.itemtypes;
 
 import java.util.Map;
 
 public class ItemFactory {
 	
-	public DataItemHandler getDataItem( String dataId,Map<String, Object> map ) throws Exception{
+	public Item getDataItem( String dataId,Map<String, Object> map ) throws Exception{
 		
 		String errorMsg = String.format("Data Type is missing for field %s", dataId);
-		if(!map.containsKey(DataItemHandler.DATA_TYPE_ID)) {throw new Exception(errorMsg);};
+		if(!map.containsKey(Item.DATA_TYPE_ID)) {throw new Exception(errorMsg);};
 		
-		String dataTypeString = map.get(DataItemHandler.DATA_TYPE_ID).toString();
+		String dataTypeString = map.get(Item.DATA_TYPE_ID).toString();
 		DataType dataType = DataType.valueOf(dataTypeString);
 		
 		
@@ -28,6 +28,9 @@ public class ItemFactory {
 		}
 		case PHONE: {
 			return new PhoneItem(dataId,map);
+		}
+		case COMBO:{
+			return new ComboBoxItem(dataId, map);
 		}
 		case DEFAULT: {
 			return new DefaultItem(dataId,map);
