@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.itemtypes;
+package com.contactmanager.datamodel.singleitem;
 
 public abstract class Item {
 	public static final String DATA_TYPE_ID = "dataType";	
@@ -18,12 +18,16 @@ public abstract class Item {
 	
 	protected String dataId;
 	
-	protected Boolean isVisibleInRow = false;
+
 	
 	protected String dataValue = "";
 	protected String regex = null;
 	
 	protected ExternalLoading loadingLocation = null;
 	
-	
+	public abstract String getDataValue(); 
+	public abstract Boolean setDataValue(String value);
+
+	public abstract DataType getDataType();
+	public abstract ExternalLoading getExternalLoading();
 }

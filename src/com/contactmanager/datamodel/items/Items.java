@@ -1,24 +1,26 @@
-package com.contactmanager.datamodel.itemstypes;
+package com.contactmanager.datamodel.items;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-
-import com.contactmanager.datamodel.itemtypes.Item;
-import com.contactmanager.datamodel.itemtypes.ItemFactory;
+import com.contactmanager.datamodel.ItemsWrapper;
+import com.contactmanager.datamodel.Logs;
+import com.contactmanager.datamodel.itemwiewers.ItemViews;
+import com.contactmanager.datamodel.singleitem.ExternalLoading;
+import com.contactmanager.datamodel.singleitem.Item;
+import com.contactmanager.datamodel.singleitem.ItemFactory;
 
 public abstract class Items {
 	public static final String ID_FIELD = "Id";
+	public static final String NAME_PLACEHOLDER = "pLaCdehoewledr";
 	
 	protected String id;
 
 	protected Map<String, Item> dataMap = new LinkedHashMap<String, Item>();
 	protected Map<String, Map<String, Object>> metaData; 
+	
 	
 	protected abstract void initializeMetaData();
 	
@@ -33,9 +35,9 @@ public abstract class Items {
 
 		for (String textField : rowData.keySet()) {
 			if(textField.equals(ID_FIELD)) {continue;}
-			dataMap.get(textField).setValue(rowData.get(textField));
+			dataMap.get(textField).setDataValue(rowData.get(textField));
 		}
-		return true;
+		return true; 
 	}
 	
 	protected void initializeDataMap() {
@@ -55,27 +57,30 @@ public abstract class Items {
 		dataMap.put(dataId, dataItem);
 	}
 
-	public Boolean saveToDataModel() {
-		if(dataMap.isEmpty()) {
-			initializeDataMap();
-		}
-		Map<String, Item> tempDataMap = new HashMap<>(dataMap);
-		List<Boolean> isValidList = new ArrayList<>();
-		for (String dataId : dataMap.keySet()) {
-			Item item = tempDataMap.get(dataId);
-			isValidList.add(item.setValue(item.getTextFieldText()));
+	public Boolean saveToDataModel(ItemViews itemViews) {
+		Map<String, Item> tempDataMap = new LinkedHashMap<String,Item>(dataMap);
+		if(itemViews.saveToDataModel(tempDataMap,this)) {
+			dataMap = tempDataMap;
+			return true;
 			
 		}
-		if(isValidList.contains(false)) {return false;}
-		
-		dataMap = tempDataMap;
-		return true;
+		return false;
 	}
-	public void loadFromDataModel() {
-		for (String key : dataMap.keySet()) {
-			Item dataItem = dataMap.get(key);
-			dataItem.setTextFieldText(dataItem.getDataValue());
+	public void getFromExternalLocation(ItemViews itemViews,ItemsWrapper items) {
+		for (String field : dataMap.keySet()) {
+			Item item = dataMap.get(field);
+			if(item.getExternalLoading() == ExternalLoading.LOGS) {
+				Log latestLog = ((Logs)items).getLatestLog(); 
+				if(latestLog == null) {continue;}
+				
+				itemViews.getItemView(field).setTextFieldText(latestLog.getItemInfo(field).getDataValue());
+			}
 		}
+		saveToDataModel(itemViews);
+	}
+	
+	public void loadFromDataModel(ItemViews itemViews) {
+		itemViews.loadFromDataModel(this);
 	}
 	
 	public List<String> getElementsAsList() {
@@ -88,15 +93,17 @@ public abstract class Items {
 		return listElements;
 	}
 	
-	public String[] getVisibleRow(){
-		List<String> visibleRow = new ArrayList<>();
-		visibleRow.add(getIdAsString());
-		for(Item item : dataMap.values()) {
-			if(item.getIsVisible()) {
-				visibleRow.add(item.getDataValue());
+	protected List<String> getVisibleRow(List<String> visibleCols, List<String>visibleRow){
+		for(int i =0; i<visibleCols.size();i++ ) {
+			if(visibleCols.get(i).equals(ID_FIELD)) {
+				visibleRow.set(i,id);
+			}
+			else if(visibleCols.get(i).equals(NAME_PLACEHOLDER)) {	}
+			else {
+				visibleRow.set(i,dataMap.get(visibleCols.get(i)).getDataValue());
 			}
 		}
-		return visibleRow.toArray(new String[visibleRow.size()]);
+		return visibleRow;
 	}
 	
 	
@@ -119,9 +126,6 @@ public abstract class Items {
 		this.id = String.format("%05d", id);
 	}
 
-	public void displayItems(JPanel panel, List<Map<Integer,JComponent>> tabOrder) {
-		for (Item item : dataMap.values()) {
-			item.putItemOnPanel(panel, tabOrder);
-		}
-	}
+	public abstract String[] getVisibleRowSpecific();
+
 }

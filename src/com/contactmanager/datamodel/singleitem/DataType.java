@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.itemtypes;
+package com.contactmanager.datamodel.singleitem;
 
 public enum DataType {
 	EMAIL,

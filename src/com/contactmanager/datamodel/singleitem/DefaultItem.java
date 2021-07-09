@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.itemtypes;
+package com.contactmanager.datamodel.singleitem;
 
 import java.util.Map;
 
@@ -12,14 +12,12 @@ public class DefaultItem extends Item{
 	}
 	
 	
-	
-	public String getDataValue() {
-		return dataValue;
-	}
+	@Override
 	public DataType getDataType() {
 		return dataType;
 	}
 
+	@Override
 	public ExternalLoading getExternalLoading() {
 		return loadingLocation;
 	}
@@ -45,9 +43,6 @@ public class DefaultItem extends Item{
 		if(metaData.containsKey(LOADING_LOCATION)) {
 			this.loadingLocation = ExternalLoading.valueOf(metaData.get(LOADING_LOCATION).toString());
 		}
-		if(metaData.containsKey(IS_VISIBLE)) {
-			this.isVisibleInRow = Boolean.parseBoolean(metaData.get(IS_VISIBLE).toString());
-		}
 		
 	}
 	
@@ -55,10 +50,14 @@ public class DefaultItem extends Item{
 		this.dataValue = value;
 		return true;
 	};
-	
-	public Boolean getIsVisible() {
-		return isVisibleInRow;
-	}
 
-	
+	@Override
+	public String getDataValue() {
+		return this.dataValue;
+	}
+	@Override
+	public Boolean setDataValue(String value) {
+		this.dataValue = value;
+		return true;
+	}
 }

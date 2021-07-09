@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.itemtypes;
+package com.contactmanager.datamodel.singleitem;
 
 import java.net.URL;
 import java.util.Map;

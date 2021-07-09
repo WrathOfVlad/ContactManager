@@ -11,13 +11,14 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-public class ComboBoxView extends ItemView{
+public class ComboBoxView extends DefaultView{
 	
 	private JComboBox<String> comboBox;
 	
 	private String[] comboItems;
 	
-	public ComboBoxView(String dataId, Map<String,Object> metaData) {
+	public ComboBoxView(String dataId, Map<String,Object> metaData) throws Exception {
+		super(dataId, metaData);
 		this.comboItems = metaData.get(COMBO_FIELD).toString().split(",");
 	}
 

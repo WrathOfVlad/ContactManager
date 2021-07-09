@@ -15,7 +15,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.contactmanager.datamodel.itemstypes.Contact;
+import com.contactmanager.datamodel.items.Contact;
 
 
 public class ConfigFileData {

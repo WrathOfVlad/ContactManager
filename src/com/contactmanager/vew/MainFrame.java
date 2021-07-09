@@ -17,9 +17,9 @@ import javax.swing.border.EmptyBorder;
 
 import com.contactmanager.datamodel.Contacts;
 import com.contactmanager.datamodel.CurrentContactInfo;
-import com.contactmanager.datamodel.itemstypes.Contact;
-import com.contactmanager.datamodel.itemstypes.Items;
-import com.contactmanager.datamodel.itemstypes.Log;
+import com.contactmanager.datamodel.items.Contact;
+import com.contactmanager.datamodel.items.Items;
+import com.contactmanager.datamodel.items.Log;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.utils.multiplatform.MultiPlatformSupportHandler;
 

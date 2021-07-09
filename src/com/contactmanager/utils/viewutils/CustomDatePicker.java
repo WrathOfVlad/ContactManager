@@ -18,7 +18,7 @@ import javax.swing.JPanel;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import com.contactmanager.datamodel.itemtypes.DateItem;
+import com.contactmanager.datamodel.singleitem.DateItem;
 
 public class CustomDatePicker {
 		

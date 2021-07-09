@@ -6,19 +6,21 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-import com.contactmanager.datamodel.itemstypes.Contact;
+import com.contactmanager.datamodel.items.Contact;
 import com.contactmanager.utils.io.DataStorageFile;
 import com.contactmanager.utils.io.DataStorageHandler;
 
 public class CurrentContactInfo {
-	private Logs logs = new Logs();
+	
+	private DataStorageHandler pointerDataStorage;
+	
+	private Logs logs = new Logs(pointerDataStorage);
 	private String notes;
 	private Image image;
 	
 	private Contact contact = new Contact(null);
 	
 	private Contacts pointerContacts;
-	private DataStorageHandler pointerDataStorage;
 
 	public CurrentContactInfo(Contacts contacts, DataStorageHandler dataStorageHandler) {
 		this.pointerContacts = contacts;
@@ -26,7 +28,7 @@ public class CurrentContactInfo {
 	}
 	
 	public void clear(){
-		logs = new Logs();
+		logs = new Logs(pointerDataStorage);
 		notes = "";
 		
 		contact = new Contact(null);

@@ -1,22 +1,23 @@
-package com.contactmanager.datamodel.itemstypes;
+package com.contactmanager.datamodel.items;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.contactmanager.datamodel.itemtypes.DataType;
-import com.contactmanager.datamodel.itemtypes.Item;
-import com.contactmanager.datamodel.itemtypes.NameItem;
+import com.contactmanager.datamodel.itemwiewers.ItemViews;
+import com.contactmanager.datamodel.singleitem.DataType;
+import com.contactmanager.datamodel.singleitem.Item;
+import com.contactmanager.datamodel.singleitem.NameItem;
 import com.contactmanager.utils.io.ConfigFileData;
 
 public class Contact extends Items{
+
+	private static final String FULL_NAME_LABEL = "Full Name";
 	
 	private String fullName;
 
-	private Map<String, Item> dataMap = new LinkedHashMap<String, Item>();
 	
 	public Contact(Map<String, String> rowData){
 		if(!initializeItemWrapper(rowData)) {return;};
@@ -40,8 +41,8 @@ public class Contact extends Items{
 
 	
 	@Override
-	public Boolean saveToDataModel() {
-		if(!super.saveToDataModel()) {return false;}
+	public Boolean saveToDataModel(ItemViews itemViews) {
+		if(!super.saveToDataModel(itemViews)) {return false;}
 		setFullName();
 		return true;
 	}
@@ -70,5 +71,26 @@ public class Contact extends Items{
 		this.fullName = fullNameTemp;
 
 	}
+
+	@Override
+	public String[] getVisibleRowSpecific() {
+		
+		List<String> visibleCols = ConfigFileData.getInstance().getVisibleColumns();
+		
+		List<String> visibleRowContentList  = new ArrayList<>();
+		for (int i=0;i<visibleCols.size();i++) {
+			visibleRowContentList.add("");
+		}
+		
+		if(visibleCols.contains(FULL_NAME_LABEL)) {
+			visibleRowContentList.set(visibleCols.indexOf(FULL_NAME_LABEL),fullName);
+			visibleCols.set(visibleCols.indexOf(FULL_NAME_LABEL),NAME_PLACEHOLDER);
+		}
+		
+		getVisibleRow(visibleCols,visibleRowContentList);
+		
+		return visibleRowContentList.toArray(new String[visibleRowContentList.size()]);
+	}
+	
 
 }

@@ -24,9 +24,9 @@ import javax.swing.KeyStroke;
 import javax.swing.border.LineBorder;
 import javax.swing.text.JTextComponent;
 
-import com.contactmanager.datamodel.itemstypes.Items;
-import com.contactmanager.datamodel.itemstypes.Log;
-import com.contactmanager.datamodel.itemtypes.Item;
+import com.contactmanager.datamodel.items.Log;
+import com.contactmanager.datamodel.itemwiewers.ItemViews;
+import com.contactmanager.utils.io.ConfigFileData;
 
 public class ContactLog extends JPanel {
 	
@@ -38,6 +38,8 @@ public class ContactLog extends JPanel {
 	private Boolean isNewLog = true;
 	private MainFrame pointerMainFrame;
 	private Log log;
+	
+	private ItemViews itemViews;
 
 	public ContactLog(MainFrame mainFrame) {
 		pointerMainFrame = mainFrame;
@@ -69,9 +71,10 @@ public class ContactLog extends JPanel {
 		Insets defaultPadding = new Insets(5,5,0,0);
 		
 		List<Map<Integer, JComponent>> tabOrder = new LinkedList<Map<Integer, JComponent>>();
-		Items items = new Log(null);
 		
-		items.displayItems(this, tabOrder);
+		itemViews = new ItemViews(ConfigFileData.getInstance().getLogsMetaData());
+		
+		itemViews.displayItems(this, tabOrder);
 		
 		
 		
@@ -142,11 +145,8 @@ public class ContactLog extends JPanel {
 	
 	public void setContactLog(Log items) {
 		this.log = items;
-		for (String itemId: items.getItemIds()) {
-			Item item = items.getItemInfo(itemId);
-			item.setTextFieldText(item.getDataValue());
-		}
-		isNewLog = false;;
+		items.loadFromDataModel(itemViews);
+		isNewLog = false;
 	}
 	
 	
@@ -154,7 +154,7 @@ public class ContactLog extends JPanel {
 		pointerMainFrame.changePage(MainFrame.CONTACT_DETAIL);
 	}
 	private void save() {
-		log.saveToDataModel();
+		log.saveToDataModel(itemViews);
 		pointerMainFrame.logToContactDetailView(log,isNewLog);
 		exit();
 	}

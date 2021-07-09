@@ -14,7 +14,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import com.contactmanager.datamodel.ItemsWrapper;
-import com.contactmanager.datamodel.itemstypes.Items;
+import com.contactmanager.datamodel.items.Items;
 
 public class CustomJTable extends JTable {
 	
@@ -32,7 +32,7 @@ public class CustomJTable extends JTable {
 	}
 	
 	private String[] getVisibleDataFromFullRow(Items items) {
-		return items.getVisibleRow();
+		return items.getVisibleRowSpecific();
 	}
 	
 	public void addRowToTable(Items items) {

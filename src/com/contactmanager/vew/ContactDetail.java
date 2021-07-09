@@ -49,10 +49,9 @@ import javax.swing.text.Document;
 import javax.swing.undo.UndoManager;
 
 import com.contactmanager.datamodel.CurrentContactInfo;
-import com.contactmanager.datamodel.itemstypes.Contact;
-import com.contactmanager.datamodel.itemstypes.Log;
-import com.contactmanager.datamodel.itemtypes.ExternalLoading;
-import com.contactmanager.datamodel.itemtypes.Item;
+import com.contactmanager.datamodel.items.Log;
+import com.contactmanager.datamodel.itemwiewers.ItemViews;
+import com.contactmanager.utils.io.ConfigFileData;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.utils.viewutils.CustomJTable;
 import com.contactmanager.utils.viewutils.TraversalPolicy;
@@ -79,6 +78,8 @@ public class ContactDetail extends JPanel {
 	
 	private CurrentContactInfo contactInfo;
 
+	private ItemViews itemViews;
+	
 	public ContactDetail(MainFrame mainFrame, CurrentContactInfo contactInfo) {
 		pointerMainFrame = mainFrame;
 		this.contactInfo = contactInfo;
@@ -262,9 +263,9 @@ public class ContactDetail extends JPanel {
 		
 		List<Map<Integer, JComponent>> tabOrder = new LinkedList<Map<Integer, JComponent>>();
 		
-		Contact emptyContact = new Contact(null);
+		itemViews = new ItemViews(ConfigFileData.getInstance().getItemMetaData());
 		
-		emptyContact.displayItems(this, tabOrder);
+		itemViews.displayItems(this, tabOrder);
 		
 		
 		GridBagConstraints gbc_notes = new GridBagConstraints();
@@ -373,7 +374,7 @@ public class ContactDetail extends JPanel {
 	
 	public void escPressed() {
 		if(isInEditMode && id != null) {
-			contactInfo.getContact().loadFromDataModel();
+			contactInfo.getContact().loadFromDataModel(itemViews);
 			String notes = contactInfo.getNotes();
 			notesTextPane.setText(notes);
 			toggleEdit(false);
@@ -432,7 +433,7 @@ public class ContactDetail extends JPanel {
 		this.id = id;
 		contactInfo.loadContactInfo(id);
 		
-		contactInfo.getContact().loadFromDataModel();
+		contactInfo.getContact().loadFromDataModel(itemViews);
 		String notes = contactInfo.getNotes();
 		notesTextPane.setText(notes);
 		
@@ -442,16 +443,7 @@ public class ContactDetail extends JPanel {
 	}
 	
 	public void setFieldsFromLogs() {
-		Log latestLog = contactInfo.getLogs().getLatestLog();  
-		if(latestLog == null) return;
-		
-		Contact contact = contactInfo.getContact();
-		for (String field : contact.getItemIds()) {
-			Item item = contact.getItemInfo(field); 
-			if(item.getExternalLoading() == ExternalLoading.LOGS) {
-				item.setTextFieldText(latestLog.getItemInfo(field).getDataValue());
-			}
-		}
+		contactInfo.getContact().getFromExternalLocation(itemViews, contactInfo.getLogs());
 		save();
 	}
 	
@@ -476,7 +468,7 @@ public class ContactDetail extends JPanel {
 	public void save() {
 		
 		if (id != null) {
-			if(!contactInfo.getContact().saveToDataModel()) {
+			if(!contactInfo.getContact().saveToDataModel(itemViews)) {
 				invalidRegexMessage();
 				return;
 			}
@@ -484,7 +476,7 @@ public class ContactDetail extends JPanel {
 		}
 		else {
 			id = contactInfo.addNewContact();
-			if(!contactInfo.getContact().saveToDataModel()) {
+			if(!contactInfo.getContact().saveToDataModel(itemViews)) {
 				invalidRegexMessage();
 				return;
 			}
@@ -532,10 +524,7 @@ public class ContactDetail extends JPanel {
 	}
 	
 	public void toggleEdit(Boolean activateEditModeIfTrue) {
-		Contact contact = contactInfo.getContact();
-		for (String contactId: contact.getItemIds()) {
-			contact.getItemInfo(contactId).toggleEdit(activateEditModeIfTrue);
-		}
+		itemViews.toggleEdit(activateEditModeIfTrue);
 		
 		notesTextPane.setEditable(activateEditModeIfTrue);
 		

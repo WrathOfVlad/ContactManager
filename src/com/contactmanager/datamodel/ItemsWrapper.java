@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.contactmanager.datamodel.itemstypes.Items;
+import com.contactmanager.datamodel.items.Items;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.vew.MainFrame;
 
@@ -31,7 +31,7 @@ public abstract class ItemsWrapper {
 	protected abstract void loadDataSpecific();
 	
 	protected void loadData(List<String[]> allContacts) {
-		if (allContacts != null) {
+		if (allContacts != null && !allContacts.isEmpty()) {
 			List<String> columns = new ArrayList<String>(Arrays.asList(allContacts.get(0)));
 			this.columns = columns;
 			
@@ -47,18 +47,8 @@ public abstract class ItemsWrapper {
 		}
 		loadVisibleColumns();
 	}
-	protected void loadVisibleColumns() {
-		Items items = getSpecificItemWrapperClass(null);
-		List<String> tempVisibleColumns = new ArrayList<>();
-		for (String itemId : items.getItemIds()) {
-			if(items.getItemInfo(itemId).getIsVisible()) {
-				tempVisibleColumns.add(itemId);
-			}
-		}
-		if (!tempVisibleColumns.contains(Items.ID_FIELD)) {tempVisibleColumns.add(0,Items.ID_FIELD);}
-		
-		visibleColumns = tempVisibleColumns;
-	}
+	protected abstract void loadVisibleColumns();
+	
 	protected abstract Items getSpecificItemWrapperClass(Map<String, String> dataMap);
 	
 	public void addItem(Items items) {

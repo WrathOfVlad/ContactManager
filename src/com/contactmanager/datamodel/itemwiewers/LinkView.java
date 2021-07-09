@@ -6,16 +6,21 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Map;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.contactmanager.datamodel.itemtypes.LinkItem;
+import com.contactmanager.datamodel.singleitem.LinkItem;
 
-public class LinkView extends ItemView {
+public class LinkView extends DefaultView {
 	
-	JLabel linkLabel;
+	public LinkView(String dataId, Map<String, Object> metaData) throws Exception {
+		super(dataId, metaData);
+	}
+
+	JLabel linkLabel = new JLabel();
 	
 	@Override
 	protected void changedTextbox(JPanel panel ) {

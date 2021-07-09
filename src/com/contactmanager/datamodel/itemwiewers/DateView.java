@@ -8,16 +8,16 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import com.contactmanager.datamodel.itemtypes.DataType;
 import com.contactmanager.utils.viewutils.CustomDatePicker;
 
-public class DateView extends ItemView{
+public class DateView extends DefaultView{
 	
-	public DateView() {
-		this.dataType = DataType.DATE;
-		
+
+	
+	public DateView(String dataId, Map<String, Object> metaData) throws Exception {
+		super(dataId, metaData);
 	}
-	
+
 	@Override
 	protected void changedTextbox(JPanel panel) {
 		textField.addMouseListener(new MouseAdapter() {

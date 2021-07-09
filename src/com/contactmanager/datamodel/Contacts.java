@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.contactmanager.datamodel.itemstypes.Contact;
-import com.contactmanager.datamodel.itemstypes.Items;
-import com.contactmanager.datamodel.itemtypes.DateItem;
-import com.contactmanager.datamodel.itemtypes.Item;
+import com.contactmanager.datamodel.items.Contact;
+import com.contactmanager.datamodel.items.Items;
+import com.contactmanager.datamodel.singleitem.DateItem;
+import com.contactmanager.datamodel.singleitem.Item;
 import com.contactmanager.utils.io.ConfigFileData;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.vew.MainFrame;
@@ -54,6 +54,12 @@ public class Contacts extends ItemsWrapper{
 				}
 			}
 		}
+	}
+
+	@Override
+	protected void loadVisibleColumns() {
+		visibleColumns = ConfigFileData.getInstance().getVisibleColumns();
+		
 	}
 	
 }

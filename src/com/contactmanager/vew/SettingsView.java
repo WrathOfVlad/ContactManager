@@ -20,7 +20,7 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableModel;
 
-import com.contactmanager.datamodel.itemstypes.Contact;
+import com.contactmanager.datamodel.items.Contact;
 import com.contactmanager.utils.io.ConfigFileData;
 
 public class SettingsView extends JPanel {

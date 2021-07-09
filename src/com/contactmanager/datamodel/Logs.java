@@ -5,13 +5,20 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
-import com.contactmanager.datamodel.itemstypes.Items;
-import com.contactmanager.datamodel.itemstypes.Log;
-import com.contactmanager.datamodel.itemtypes.DateItem;
+import com.contactmanager.datamodel.items.Items;
+import com.contactmanager.datamodel.items.Log;
+import com.contactmanager.datamodel.singleitem.DateItem;
+import com.contactmanager.utils.io.ConfigFileData;
+import com.contactmanager.utils.io.DataStorageHandler;
 
 public class Logs extends ItemsWrapper{
 	
 	private Integer id;
+	
+	public Logs(DataStorageHandler dataStorageHandler) {
+		dataStorage = dataStorageHandler;
+	}
+	
 	
 	public Log getLatestLog() {
 		
@@ -53,6 +60,13 @@ public class Logs extends ItemsWrapper{
 	@Override
 	public void save() {
 		dataStorage.saveLogs(id, this);
+	}
+
+
+	@Override
+	protected void loadVisibleColumns() {
+		visibleColumns = ConfigFileData.getInstance().getLogVisibleColumns();
+		
 	}
 	
 }
