@@ -32,7 +32,7 @@ public class Contacts extends ItemsWrapper{
 	
 	@Override
 	protected Items getSpecificItemWrapperClass(Map<String, String> dataMap) {
-		return new Contact(dataMap);
+		return new Contact(dataMap,this);
 	}
 	
 	public int getRowIndexById(int id) {

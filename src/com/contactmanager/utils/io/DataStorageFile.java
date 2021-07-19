@@ -199,7 +199,7 @@ public class DataStorageFile extends DataStorageHandler{
 	public void saveContactData(ItemsWrapper rawData) {
 		String file = path + File.separator + FILENAME_MAIN;
 		
-		writeCSV(new File(file), rawData);		
+		writeCSV(new File(file), rawData);
 	}
 	
 	@Override

@@ -13,14 +13,14 @@ import com.contactmanager.utils.io.DataStorageHandler;
 public class CurrentContactInfo {
 	
 	private DataStorageHandler pointerDataStorage;
+	private Contacts pointerContacts;
 	
 	private Logs logs = new Logs(pointerDataStorage);
 	private String notes;
 	private Image image;
 	
-	private Contact contact = new Contact(null);
+	private Contact contact = new Contact(null,pointerContacts);
 	
-	private Contacts pointerContacts;
 
 	public CurrentContactInfo(Contacts contacts, DataStorageHandler dataStorageHandler) {
 		this.pointerContacts = contacts;
@@ -31,7 +31,7 @@ public class CurrentContactInfo {
 		logs = new Logs(pointerDataStorage);
 		notes = "";
 		
-		contact = new Contact(null);
+		contact = new Contact(null,pointerContacts);
 		URL noImageStream = getClass().getResource(DataStorageHandler.NO_PROFILE_IMAGE_PATH);
 		try {
 			image = ImageIO.read(noImageStream);

@@ -76,6 +76,8 @@ public class ContactLog extends JPanel {
 		
 		itemViews.displayItems(this, tabOrder);
 		
+		itemViews.toggleEdit(true);
+		
 		
 		
 		JLabel lblNotes = new JLabel("Notes:");
@@ -139,7 +141,7 @@ public class ContactLog extends JPanel {
 	}
 	
 	public void clear() {
-		log= new Log(null);
+		log= new Log(null,null);
 		isNewLog = true;
 	}
 	

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import com.contactmanager.utils.viewutils.CustomDatePicker;
 
@@ -38,6 +39,15 @@ public class DateView extends DefaultView{
 	public void toggleEdit(Boolean activateEditModeIfTrue ) {
 		if (isEditable) {
 			isInEditMode = activateEditModeIfTrue;
+			if(activateEditModeIfTrue) {
+				
+				textField.setBackground(new JTextField().getBackground());
+			}
+			else {
+				JTextField temp = new JTextField();
+				temp.setEditable(false);
+				textField.setBackground(temp.getBackground());
+			}
 		}
 	}
 	

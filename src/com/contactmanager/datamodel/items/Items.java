@@ -16,15 +16,17 @@ public abstract class Items {
 	public static final String ID_FIELD = "Id";
 	public static final String NAME_PLACEHOLDER = "pLaCdehoewledr";
 	
-	protected String id;
+	protected String id = null;
 
 	protected Map<String, Item> dataMap = new LinkedHashMap<String, Item>();
 	protected Map<String, Map<String, Object>> metaData; 
 	
+	protected ItemsWrapper itemsWrapper;
 	
 	protected abstract void initializeMetaData();
 	
-	protected Boolean initializeItemWrapper(Map<String, String> rowData) {
+	protected Boolean initializeItems(Map<String, String> rowData, ItemsWrapper parent) {
+		itemsWrapper = parent;
 		initializeMetaData();
 		initializeDataMap();
 		if(rowData == null) {
@@ -85,9 +87,11 @@ public abstract class Items {
 	
 	public List<String> getElementsAsList() {
 		List<String> listElements = new ArrayList<>();
-		listElements.add(id);
+		//listElements.add(id);
 		
-		for (String dataId : dataMap.keySet()) {
+		for (String dataId : itemsWrapper.columnList()) {
+			if(!dataMap.containsKey(dataId)) {continue;};
+			
 			listElements.add(dataMap.get(dataId).getDataValue());
 		}
 		return listElements;

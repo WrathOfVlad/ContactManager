@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.contactmanager.datamodel.ItemsWrapper;
 import com.contactmanager.datamodel.itemwiewers.ItemViews;
 import com.contactmanager.datamodel.singleitem.DataType;
 import com.contactmanager.datamodel.singleitem.Item;
@@ -19,8 +20,8 @@ public class Contact extends Items{
 	private String fullName;
 
 	
-	public Contact(Map<String, String> rowData){
-		if(!initializeItemWrapper(rowData)) {return;};
+	public Contact(Map<String, String> rowData, ItemsWrapper parent){
+		if(!initializeItems(rowData,parent)) {return;};
 		
 		setFullName();
 		

@@ -54,7 +54,7 @@ public class Logs extends ItemsWrapper{
 
 	@Override
 	protected Items getSpecificItemWrapperClass(Map<String, String> dataMap) {
-		return new Log(dataMap);
+		return new Log(dataMap,this);
 	}
 
 	@Override
