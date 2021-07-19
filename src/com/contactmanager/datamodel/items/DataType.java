@@ -6,5 +6,6 @@ public enum DataType {
 	DATE,
 	PHONE,
 	NAME,
-	DEFAULT
+	DEFAULT,
+	COMBO
 }

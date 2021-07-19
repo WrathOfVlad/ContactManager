@@ -1,1 +1,170 @@
-{"logsMetaData":{"Type":{"dataType":"DEFAULT","placementOnDetails":"1,2","dataLabel":"Type"},"notes":{"dataType":"DEFAULT"},"Actions":{"dataType":"DEFAULT","placementOnDetails":"1,4","dataLabel":"Action"},"Last Contact":{"placementOnDetails":"1,1","dataType":"DATE","dataLabel":"Date"},"Next Contact":{"dataType":"DATE","placementOnDetails":"1,3","dataLabel":"Next Time"},"Contact Status":{"dataType":"DEFAULT","placementOnDetails":"1,5","dataLabel":"Status"}},"USER_SETTINGS":{"visibleColumns":"Id,Full Name,Relation,","backupTimeLimit":5,"visibleLogColumns":"Last Contact,Next Contact,Type,Actions,Contact Status,notes"},"itemMetaData":{"Company":{"dataType":"DEFAULT","placementOnDetails":"3,2","dataLabel":"Company"},"Address":{"dataType":"DEFAULT","placementOnDetails":"1,11","dataLabel":"Address"},"Phone 1":{"dataType":"PHONE","placementOnDetails":"2,5","dataLabel":"Phone 1"},"Company URL":{"dataType":"LINK","placementOnDetails":"3,5","dataLabel":"Company URL"},"Birthday":{"isReminder":true,"dataType":"DATE","placementOnDetails":"1,10","dataLabel":"Birthday","notificationHeader":"Birthday Notification","notificationContent":"It's %s's birthday today"},"Middle Name":{"dataType":"NAME","placementOnDetails":"1,8","dataLabel":"Middle Name","order":2},"Contact Status":{"isEditable":false,"dataType":"DEFAULT","placementOnDetails":"1,18","dataLabel":"Contact Status","externalLoading":"LOGS"},"Last Contact":{"isEditable":false,"dataType":"DATE","placementOnDetails":"2,18","dataLabel":"Last Contact","externalLoading":"LOGS"},"Next Contact":{"isReminder":true,"isEditable":false,"dataType":"DATE","placementOnDetails":"3,18","dataLabel":"Next Contact","externalLoading":"LOGS","isYearIncluded":true,"notificationHeader":"Meeting Notification","notificationContent":"You scheduled a meeting with %s today"},"Name":{"dataType":"NAME","placementOnDetails":"1,7","dataLabel":"Name","order":1},"Role":{"dataType":"DEFAULT","placementOnDetails":"3,3","dataLabel":"Role"},"LinkedIn":{"dataType":"LINK","placementOnDetails":"2,9","dataLabel":"LinkedIn"},"Skype":{"dataType":"DEFAULT","placementOnDetails":"2,7","dataLabel":"Skype"},"Relation":{"placementOnDetails":"1,12","dataType":"DEFAULT","dataLabel":"Relationship"},"discord":{"dataType":"DEFAULT","placementOnDetails":"2,8","dataLabel":"Discord"},"Email 2":{"dataType":"EMAIL","placementOnDetails":"2,3","dataLabel":"Email 2"},"Email 3":{"dataType":"EMAIL","placementOnDetails":"2,4","dataLabel":"Email 3"},"Phone 2":{"dataType":"PHONE","placementOnDetails":"2,6","dataLabel":"Phone 2"},"Email 1":{"dataType":"EMAIL","placementOnDetails":"2,2","dataLabel":"Email 1"},"Surname":{"dataType":"NAME","placementOnDetails":"1,9","dataLabel":"Surname","order":3},"Facebook":{"dataType":"LINK","placementOnDetails":"2,10","dataLabel":"Facebook"},"Location":{"dataType":"DEFAULT","placementOnDetails":"3,4","dataLabel":"Location"}},"GENERAL":{"path":"\/home\/tiziano\/Contacts\/Data","storageType":"file"}}
+{
+  "logsMetaData" : {
+    "Type" : {
+      "dataType" : "COMBO",
+      "placementOnDetails" : "1,2",
+      "dataLabel" : "Type",
+      "comboItems":"phone,email,t1,t2"
+    },
+    "notes" : {
+      "dataType" : "DEFAULT"
+    },
+    "Actions" : {
+      "dataType" : "DEFAULT",
+      "placementOnDetails" : "1,4",
+      "dataLabel" : "Action"
+    },
+    "Last Contact" : {
+      "placementOnDetails" : "1,1",
+      "dataType" : "DATE",
+      "dataLabel" : "Date"
+    },
+    "Next Contact" : {
+      "dataType" : "DATE",
+      "placementOnDetails" : "1,3",
+      "dataLabel" : "Next Time"
+    },
+    "Contact Status" : {
+      "dataType" : "DEFAULT",
+      "placementOnDetails" : "1,5",
+      "dataLabel" : "Status"
+    }
+  },
+  "USER_SETTINGS" : {
+    "visibleColumns" : "Id,Full Name,Relation,",
+    "backupTimeLimit" : 5,
+    "visibleLogColumns" : "Last Contact,Next Contact,Type,Actions,Contact Status,notes"
+  },
+  "itemMetaData" : {
+    "Company" : {
+      "dataType" : "DEFAULT",
+      "placementOnDetails" : "3,2",
+      "dataLabel" : "Company"
+    },
+    "Address" : {
+      "dataType" : "DEFAULT",
+      "placementOnDetails" : "1,11",
+      "dataLabel" : "Address"
+    },
+    "Phone 1" : {
+      "dataType" : "PHONE",
+      "placementOnDetails" : "2,5",
+      "dataLabel" : "Phone 1"
+    },
+    "Company URL" : {
+      "dataType" : "LINK",
+      "placementOnDetails" : "3,5",
+      "dataLabel" : "Company URL"
+    },
+    "Birthday" : {
+      "isReminder" : true,
+      "dataType" : "DATE",
+      "placementOnDetails" : "1,10",
+      "dataLabel" : "Birthday",
+      "notificationHeader" : "Birthday Notification",
+      "notificationContent" : "It's %s's birthday today"
+    },
+    "Middle Name" : {
+      "dataType" : "NAME",
+      "placementOnDetails" : "1,8",
+      "dataLabel" : "Middle Name",
+      "order" : 2
+    },
+    "Contact Status" : {
+      "isEditable" : false,
+      "dataType" : "DEFAULT",
+      "placementOnDetails" : "1,18",
+      "dataLabel" : "Contact Status",
+      "externalLoading" : "LOGS"
+    },
+    "Last Contact" : {
+      "isEditable" : false,
+      "dataType" : "DATE",
+      "placementOnDetails" : "2,18",
+      "dataLabel" : "Last Contact",
+      "externalLoading" : "LOGS"
+    },
+    "Next Contact" : {
+      "isReminder" : true,
+      "isEditable" : false,
+      "dataType" : "DATE",
+      "placementOnDetails" : "3,18",
+      "dataLabel" : "Next Contact",
+      "externalLoading" : "LOGS",
+      "isYearIncluded" : true,
+      "notificationHeader" : "Meeting Notification",
+      "notificationContent" : "You scheduled a meeting with %s today"
+    },
+    "Name" : {
+      "dataType" : "NAME",
+      "placementOnDetails" : "1,7",
+      "dataLabel" : "Name",
+      "order" : 1
+    },
+    "Role" : {
+      "dataType" : "DEFAULT",
+      "placementOnDetails" : "3,3",
+      "dataLabel" : "Role"
+    },
+    "LinkedIn" : {
+      "dataType" : "LINK",
+      "placementOnDetails" : "2,9",
+      "dataLabel" : "LinkedIn"
+    },
+    "Skype" : {
+      "dataType" : "DEFAULT",
+      "placementOnDetails" : "2,7",
+      "dataLabel" : "Skype"
+    },
+    "Relation" : {
+      "placementOnDetails" : "1,12",
+      "dataType" : "DEFAULT",
+      "dataLabel" : "Relationship"
+    },
+    "discord" : {
+      "dataType" : "DEFAULT",
+      "placementOnDetails" : "2,8",
+      "dataLabel" : "Discord"
+    },
+    "Email 2" : {
+      "dataType" : "EMAIL",
+      "placementOnDetails" : "2,3",
+      "dataLabel" : "Email 2"
+    },
+    "Email 3" : {
+      "dataType" : "EMAIL",
+      "placementOnDetails" : "2,4",
+      "dataLabel" : "Email 3"
+    },
+    "Phone 2" : {
+      "dataType" : "PHONE",
+      "placementOnDetails" : "2,6",
+      "dataLabel" : "Phone 2"
+    },
+    "Email 1" : {
+      "dataType" : "EMAIL",
+      "placementOnDetails" : "2,2",
+      "dataLabel" : "Email 1"
+    },
+    "Surname" : {
+      "dataType" : "NAME",
+      "placementOnDetails" : "1,9",
+      "dataLabel" : "Surname",
+      "order" : 3
+    },
+    "Facebook" : {
+      "dataType" : "LINK",
+      "placementOnDetails" : "2,10",
+      "dataLabel" : "Facebook"
+    },
+    "Location" : {
+      "dataType" : "DEFAULT",
+      "placementOnDetails" : "3,4",
+      "dataLabel" : "Location"
+    }
+  },
+  "GENERAL" : {
+    "path" : "/home/tiziano/Contacts/Data_Backup",
+    "storageType" : "file"
+  }
+}

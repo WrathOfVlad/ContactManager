@@ -29,6 +29,9 @@ public class ItemFactory {
 		case PHONE: {
 			return new PhoneItem(dataId,map);
 		}
+		case COMBO:{
+			return new ComboBoxItem(dataId, map);
+		}
 		case DEFAULT: {
 			return new DefaultItem(dataId,map);
 		}

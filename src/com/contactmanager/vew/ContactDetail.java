@@ -378,8 +378,6 @@ public class ContactDetail extends JPanel {
 				allClickableLinks.put(field, linkLabel);
 			}
 			
-			
-			
 		}
 		
 		

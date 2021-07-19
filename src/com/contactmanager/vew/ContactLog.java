@@ -16,6 +16,7 @@ import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -105,23 +106,36 @@ public class ContactLog extends JPanel {
 			add(textField,gbc);
 			textFieldMap.put(dataId, textField);
 
-			if (!metaData.get(dataId).get(DataItemHandler.DATA_TYPE_ID).equals(DataType.DATE.toString())) {
-				continue;
-			}
-			
-			textField.setEditable(false);
-			textField.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent ae) {
-					if(ae.getButton() == MouseEvent.BUTTON1) {
-						String date = new CustomDatePicker(mainFrame).setPickedDate();
-						if(date.equals("")) return;
+			if (metaData.get(dataId).get(DataItemHandler.DATA_TYPE_ID).equals(DataType.DATE.toString())) {
+				textField.setEditable(false);
+				textField.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent ae) {
+						if(ae.getButton() == MouseEvent.BUTTON1) {
+							String date = new CustomDatePicker(mainFrame).setPickedDate();
+							if(date.equals("")) return;
+							
+							textField.setText(date);
+						}
 						
-						textField.setText(date);
 					}
-					
-				}
-			});
+				});
+			}
+			else if(metaData.get(dataId).get(DataItemHandler.DATA_TYPE_ID).equals(DataType.COMBO.toString())) {
+				JComboBox<String> comboBox = new JComboBox<String>(metaData.get(dataId).get("comboItems").toString().split(","));
+				textField.setVisible(false);
+				comboBox.addActionListener(new ActionListener() {	
+					@Override
+					public void actionPerformed(ActionEvent e) {
+				        @SuppressWarnings("unchecked")
+						JComboBox<String> cb = (JComboBox<String>)e.getSource();
+				        String string = (String)cb.getSelectedItem();
+				        textField.setText(string);
+				    }
+				});
+				comboBox.setEditable(true);
+				add(comboBox,gbc);
+			}
 			
 			
 		}
