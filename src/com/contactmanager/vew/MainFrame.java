@@ -2,14 +2,11 @@ package com.contactmanager.vew;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -50,7 +47,7 @@ public class MainFrame extends JFrame {
 	private JPanel screenLayout = new JPanel(new CardLayout());
 	public String currentCard;
 	
-	public MainFrame(Contacts contacts, DataStorageHandler dataStorage, ConfigFileData configFileData, MultiPlatformSupportHandler multiPlatformSupport) throws IOException {
+	public MainFrame(Contacts contacts, DataStorageHandler dataStorage, ConfigFileData configFileData, MultiPlatformSupportHandler multiPlatformSupport) {
 		pointerContacts = contacts;
 		pointerConfigFileData = configFileData;
 		pointerMultiPlatformSupport = multiPlatformSupport;
@@ -61,8 +58,7 @@ public class MainFrame extends JFrame {
 		pointerSettingsView = new SettingsView(this, pointerConfigFileData);
 		pointerContactLog = new ContactLog(this);
 		
-		Image icon = ImageIO.read(getClass().getResource(DataStorageHandler.ICON_PATH));
-		setIconImage(icon);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(DataStorageHandler.ICON_PATH)));
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -178,10 +174,9 @@ public class MainFrame extends JFrame {
 	
 	public void changePage(String pageName){
 		//before switching the page
-		/*if(currentCard == CONTACT_DETAIL) {
-			
+		if(currentCard == CONTACT_DETAIL) {
+			pointerContactDetail.exitPoint();
 		}
-		*/
 		
 		
 		//switch the page
@@ -194,7 +189,6 @@ public class MainFrame extends JFrame {
 			pointerContactDetail.requestFocus();
 		}
 		else if(pageName == CONTACT_LIST) {
-			pointerContactDetail.exitPoint();
 			if(!isContactListViewerUpToDate) {
 				pointerContactList.loadData();
 				isContactListViewerUpToDate = true;
