@@ -25,7 +25,6 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 
 import com.contactmanager.datamodel.ItemsWrapper;
-import com.contactmanager.datamodel.items.Items;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
@@ -85,7 +84,6 @@ public class DataStorageFile extends DataStorageHandler{
 		List<String[]> data = new ArrayList<String[]>();
 		
 		List<String> cols = rawData.columnList();
-		cols.add(0,Items.ID_FIELD);
 		
 		data.add(cols.toArray(new String[cols.size()]));
 		
@@ -110,7 +108,7 @@ public class DataStorageFile extends DataStorageHandler{
 	@Override
 	public List<String[]> loadContacts(){
 		String file = path + File.separator + FILENAME_MAIN;
-		return readCSV(new File(file));
+		return readCSV(checkIfFileExists(file));
 	}
 	@Override
 	public List<String[]> loadLogs(int id){

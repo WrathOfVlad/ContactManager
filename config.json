@@ -31,7 +31,7 @@
     }
   },
   "USER_SETTINGS" : {
-    "visibleColumns" : "Id,Full Name",
+    "visibleColumns" : "Id,Full Name,Relation",
     "backupTimeLimit" : 5,
     "visibleLogColumns" : "Id,Last Contact,Next Contact,Type,Actions,Contact Status,notes"
   },

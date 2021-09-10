@@ -29,7 +29,7 @@ public class Contacts extends ItemsWrapper{
 		List<String[]> allContacts = dataStorage.loadContacts();
 		metaDataMap = ConfigFileData.getInstance().getItemMetaData();
 		columns = new ArrayList<String>(metaDataMap.keySet());
-		
+		columns.add(0,Items.ID_FIELD);
 		
 		super.loadData(allContacts);
 		

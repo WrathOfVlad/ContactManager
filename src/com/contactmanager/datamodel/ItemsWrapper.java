@@ -37,6 +37,29 @@ public abstract class ItemsWrapper {
 	
 	protected abstract void loadDataSpecific();
 	
+	private String[] loadSingleElement(Integer j, List<String> tempCols, String[] row) {
+		
+		String[] output = new String[2];
+		
+		if(tempCols.contains(columns.get(j))) {
+			int tempIndex = tempCols.indexOf(columns.get(j));
+			output[0] = tempCols.get(tempIndex);
+			output[1] = "";
+			
+			if(row.length > tempIndex) {
+				output[1] = row[tempIndex];
+			}
+			
+		}
+		else {
+			output[0] = columns.get(j);
+			output[1] = "";
+		}
+		
+		return output;
+		
+	}
+	
 	public void loadData(List<String[]> allContacts) {
 		if (allContacts != null && !allContacts.isEmpty()) {
 			List<String> tempCols = new ArrayList<String>(Arrays.asList(allContacts.get(0)));
@@ -44,8 +67,12 @@ public abstract class ItemsWrapper {
 			for (Integer i=1; i < allContacts.size(); i++) {
 				String[] row = allContacts.get(i);
 				Map<String,String > dataMap = new HashMap<>();
+				
 				for (int j=0;j<columns.size();j++) {
-					dataMap.put(tempCols.get(j),row[j]);
+					
+					String[] element = loadSingleElement(j, tempCols,row);
+					dataMap.put(element[0], element[1]);
+					
 				}
 				
 				Items newContact = getSpecificItemWrapperClass(dataMap);
@@ -82,9 +109,14 @@ public abstract class ItemsWrapper {
 		for (Items wrapper : wrapperMap.values()) {
 			Map<String, String> dataMap = wrapper.getElementsAsMap();
 			List<String> tempList = new ArrayList<String>();
-			tempList.add(0,wrapper.getIdAsString());
 			for(Integer i = 0; i<dataMap.size();i++) {
-				tempList.add(dataMap.get(columns.get(i)));
+				if(columns.get(i).equals(Items.ID_FIELD)) {
+					tempList.add(wrapper.getIdAsString());
+				}
+				else {
+					tempList.add(dataMap.get(columns.get(i)));
+				}
+				
 			}
 			dataList.add(tempList);
 		}

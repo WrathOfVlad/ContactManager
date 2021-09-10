@@ -54,6 +54,7 @@ public class Logs extends ItemsWrapper{
 		List<String[]> allContacts = dataStorage.loadLogs(id);
 		metaDataMap = ConfigFileData.getInstance().getLogsMetaData();
 		columns = new ArrayList<String>(metaDataMap.keySet());
+		columns.add(0,Items.ID_FIELD);
 		loadData(allContacts);
 	}
 
