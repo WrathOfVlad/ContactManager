@@ -10,12 +10,12 @@ import com.contactmanager.datamodel.singleitem.DateItem;
 import com.contactmanager.datamodel.singleitem.Item;
 import com.contactmanager.utils.io.ConfigFileData;
 import com.contactmanager.utils.io.DataStorageHandler;
-import com.contactmanager.vew.MainFrame;
+import com.contactmanager.view.MainFrame;
 
 public class Contacts extends ItemsWrapper{
 	
 	public Contacts(DataStorageHandler dataStorage, MainFrame mainFrame) {
-		this.dataStorage = dataStorage;
+		super(dataStorage);
 		this.mainFrame = mainFrame;
 	}
 	
@@ -27,12 +27,18 @@ public class Contacts extends ItemsWrapper{
 	@Override
 	public void loadDataSpecific() {
 		List<String[]> allContacts = dataStorage.loadContacts();
-		loadData(allContacts);
+		metaDataMap = ConfigFileData.getInstance().getItemMetaData();
+		columns = new ArrayList<String>(metaDataMap.keySet());
+		
+		
+		super.loadData(allContacts);
+		
+		
 	}
 	
 	@Override
-	protected Items getSpecificItemWrapperClass(Map<String, String> dataMap) {
-		return new Contact(dataMap,this);
+	public Items getSpecificItemWrapperClass(Map<String, String> dataMap) {
+		return new Contact(dataMap,metaDataMap);
 	}
 	
 	public int getRowIndexById(int id) {
@@ -63,4 +69,3 @@ public class Contacts extends ItemsWrapper{
 	}
 	
 }
-

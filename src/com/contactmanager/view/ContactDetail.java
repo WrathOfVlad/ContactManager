@@ -1,4 +1,4 @@
-package com.contactmanager.vew;
+package com.contactmanager.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -50,11 +50,11 @@ import javax.swing.undo.UndoManager;
 
 import com.contactmanager.datamodel.CurrentContactInfo;
 import com.contactmanager.datamodel.items.Log;
-import com.contactmanager.datamodel.itemwiewers.ItemViews;
 import com.contactmanager.utils.io.ConfigFileData;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.utils.viewutils.CustomJTable;
 import com.contactmanager.utils.viewutils.TraversalPolicy;
+import com.contactmanager.view.itemwiewers.ItemViews;
 
 
 public class ContactDetail extends JPanel {
@@ -448,7 +448,7 @@ public class ContactDetail extends JPanel {
 	}
 	
 	private void loadLogs() {
-		table.loadData();		
+		table.loadData();
 	}
 	
 	private void getLogToSet() {
@@ -541,9 +541,7 @@ public class ContactDetail extends JPanel {
 	}
 	public void newLog(Log log, Boolean isNewLog) {
 		if(isNewLog) {
-			contactInfo.getLogs().addItem(log);
 			table.addRowToTable(log);
-			contactInfo.save(id);
 		}
 		else {
 			table.updateRowInTable(log);
@@ -554,8 +552,8 @@ public class ContactDetail extends JPanel {
 	
 	private void add() {
 		if (id != null) {
-			pointerMainFrame.changePage(MainFrame.CONTACT_LOG);
 			pointerMainFrame.clear();
+			pointerMainFrame.changePage(MainFrame.CONTACT_LOG);
 		}
 		
 		else {

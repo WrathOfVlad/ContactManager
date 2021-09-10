@@ -4,20 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.contactmanager.datamodel.ItemsWrapper;
 import com.contactmanager.utils.io.ConfigFileData;
 
 public class Log extends Items{	
-	
-	public Log(Map<String,String> rowData,ItemsWrapper parent) {
-		initializeItems(rowData,parent);
+		
+	public Log(Map<String, String> rowData,Map<String, Map<String, Object>> metaData){
+		super(rowData,metaData);
+		
 	}
-	
-	@Override
-	protected void initializeMetaData() {
-		metaData = ConfigFileData.getInstance().getLogsMetaData();
-	}
-	
 
 	@Override
 	public String[] getVisibleRowSpecific() {
@@ -30,5 +24,6 @@ public class Log extends Items{
 		getVisibleRow(visibleCols,visibleRow);
  		return visibleRow.toArray(new String[visibleRow.size()]);
 	}
+
 
 }

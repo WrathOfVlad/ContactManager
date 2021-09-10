@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.itemwiewers;
+package com.contactmanager.view.itemwiewers;
 
 import java.util.Map;
 
@@ -19,6 +19,9 @@ public class ItemViewFactory {
 		}
 		case COMBO:{
 			return new ComboBoxView(dataId, metaDataMap);
+		}
+		case FIELD:{
+			return new TextPaneView(dataId, metaDataMap);
 		}
 		default:
 			return new DefaultView(dataId, metaDataMap);

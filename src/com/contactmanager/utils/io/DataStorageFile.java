@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 
 import com.contactmanager.datamodel.ItemsWrapper;
+import com.contactmanager.datamodel.items.Items;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvException;
@@ -83,9 +84,13 @@ public class DataStorageFile extends DataStorageHandler{
 	private void writeCSV(File file, ItemsWrapper rawData) {
 		List<String[]> data = new ArrayList<String[]>();
 		
-		data.add(rawData.columnList().toArray(new String[rawData.columnList().size()]));
+		List<String> cols = rawData.columnList();
+		cols.add(0,Items.ID_FIELD);
 		
-		for (List<String> row : rawData.getAllData()) {
+		data.add(cols.toArray(new String[cols.size()]));
+		
+		for (int i=0; i< rawData.getAllData().size();i++) {
+			List<String> row = rawData.getAllData().get(i);
 			data.add(row.toArray(new String[row.size()]));
 		}
 		try ( var osw = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)){

@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.itemwiewers;
+package com.contactmanager.view.itemwiewers;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

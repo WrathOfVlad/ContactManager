@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.itemwiewers;
+package com.contactmanager.view.itemwiewers;
 
 import java.awt.Color;
 import java.awt.Dimension;

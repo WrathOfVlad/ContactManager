@@ -2,6 +2,8 @@ package com.contactmanager.datamodel;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +18,8 @@ public class Logs extends ItemsWrapper{
 	private Integer id;
 	
 	public Logs(DataStorageHandler dataStorageHandler) {
-		dataStorage = dataStorageHandler;
+		super(dataStorageHandler);
+		loadVisibleColumns();
 	}
 	
 	
@@ -49,12 +52,14 @@ public class Logs extends ItemsWrapper{
 	@Override
 	protected void loadDataSpecific() {
 		List<String[]> allContacts = dataStorage.loadLogs(id);
+		metaDataMap = ConfigFileData.getInstance().getLogsMetaData();
+		columns = new ArrayList<String>(metaDataMap.keySet());
 		loadData(allContacts);
 	}
 
 	@Override
-	protected Items getSpecificItemWrapperClass(Map<String, String> dataMap) {
-		return new Log(dataMap,this);
+	public Items getSpecificItemWrapperClass(Map<String, String> dataMap) {
+		return new Log(dataMap,metaDataMap);
 	}
 
 	@Override
@@ -63,6 +68,11 @@ public class Logs extends ItemsWrapper{
 	}
 
 
+	public void clear() {
+		id = null;
+		wrapperMap = new LinkedHashMap<Integer, Items>();
+		
+	}
 	@Override
 	protected void loadVisibleColumns() {
 		visibleColumns = ConfigFileData.getInstance().getLogVisibleColumns();

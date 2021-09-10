@@ -15,23 +15,26 @@ public class CurrentContactInfo {
 	private DataStorageHandler pointerDataStorage;
 	private Contacts pointerContacts;
 	
-	private Logs logs = new Logs(pointerDataStorage);
+	private Logs logs = null;
 	private String notes;
 	private Image image;
 	
-	private Contact contact = new Contact(null,pointerContacts);
+	private Contact contact = null;
 	
 
 	public CurrentContactInfo(Contacts contacts, DataStorageHandler dataStorageHandler) {
 		this.pointerContacts = contacts;
 		this.pointerDataStorage = dataStorageHandler;
+		logs = new Logs(pointerDataStorage);
+		
+		contact = (Contact) pointerContacts.getSpecificItemWrapperClass(null);
 	}
 	
 	public void clear(){
-		logs = new Logs(pointerDataStorage);
+		
 		notes = "";
 		
-		contact = new Contact(null,pointerContacts);
+		contact = (Contact) pointerContacts.getSpecificItemWrapperClass(null);
 		URL noImageStream = getClass().getResource(DataStorageHandler.NO_PROFILE_IMAGE_PATH);
 		try {
 			image = ImageIO.read(noImageStream);

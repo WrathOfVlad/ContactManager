@@ -1,4 +1,4 @@
-package com.contactmanager.vew;
+package com.contactmanager.view;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,11 +22,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.border.LineBorder;
-import javax.swing.text.JTextComponent;
 
+import com.contactmanager.datamodel.CurrentContactInfo;
 import com.contactmanager.datamodel.items.Log;
-import com.contactmanager.datamodel.itemwiewers.ItemViews;
 import com.contactmanager.utils.io.ConfigFileData;
+import com.contactmanager.view.itemwiewers.ItemViews;
 
 public class ContactLog extends JPanel {
 	
@@ -39,10 +39,15 @@ public class ContactLog extends JPanel {
 	private MainFrame pointerMainFrame;
 	private Log log;
 	
+	private JTextPane textPane;
+	
 	private ItemViews itemViews;
-
-	public ContactLog(MainFrame mainFrame) {
+	private CurrentContactInfo contactInfo;
+	
+	
+	public ContactLog(MainFrame mainFrame, CurrentContactInfo contactInfo) {
 		pointerMainFrame = mainFrame;
+		this.contactInfo = contactInfo;
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		
@@ -87,7 +92,7 @@ public class ContactLog extends JPanel {
 		gbc.gridy = 0;
 		add(lblNotes,gbc);
 		
-		JTextComponent textPane = new JTextPane();
+		textPane = new JTextPane();
 		textPane.setBorder(new LineBorder(new Color(0, 0, 0)));
 		
 		
@@ -141,13 +146,16 @@ public class ContactLog extends JPanel {
 	}
 	
 	public void clear() {
-		log= new Log(null,null);
+		log= (Log)contactInfo.getLogs().getSpecificItemWrapperClass(null);
+		log.loadFromDataModel(itemViews);
+		textPane.setText("");
 		isNewLog = true;
 	}
 	
 	public void setContactLog(Log items) {
 		this.log = items;
 		items.loadFromDataModel(itemViews);
+		textPane.setText(items.getItemInfo("notes").getDataValue());
 		isNewLog = false;
 	}
 	
@@ -157,6 +165,10 @@ public class ContactLog extends JPanel {
 	}
 	private void save() {
 		log.saveToDataModel(itemViews);
+		log.getItemInfo("notes").setDataValue(textPane.getText());
+		if(isNewLog){
+			contactInfo.getLogs().addItem(log);
+		}
 		pointerMainFrame.logToContactDetailView(log,isNewLog);
 		exit();
 	}

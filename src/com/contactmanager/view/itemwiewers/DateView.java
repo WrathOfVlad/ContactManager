@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.itemwiewers;
+package com.contactmanager.view.itemwiewers;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

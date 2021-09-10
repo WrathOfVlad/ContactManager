@@ -7,7 +7,7 @@ import com.contactmanager.utils.io.DataStorageFactory;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.utils.multiplatform.MultiPlatformSupportFactory;
 import com.contactmanager.utils.multiplatform.MultiPlatformSupportHandler;
-import com.contactmanager.vew.MainFrame;
+import com.contactmanager.view.MainFrame;
 
 public class Main 
 {

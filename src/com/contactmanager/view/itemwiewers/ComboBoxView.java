@@ -1,9 +1,10 @@
-package com.contactmanager.datamodel.itemwiewers;
+package com.contactmanager.view.itemwiewers;
 
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,13 +14,23 @@ import javax.swing.JPanel;
 
 public class ComboBoxView extends DefaultView{
 	
+	private static final String DEFAULT_ITEM = "Select an Item or write a new one";
+	
 	private JComboBox<String> comboBox;
 	
 	private String[] comboItems;
-	
+
+	private Integer selectedIndex = 0;
 	public ComboBoxView(String dataId, Map<String,Object> metaData) throws Exception {
 		super(dataId, metaData);
-		this.comboItems = metaData.get(COMBO_FIELD).toString().split(",");
+		
+		List<String> tempItems = new ArrayList<>();
+		tempItems.add(DEFAULT_ITEM);
+		for (String option : metaData.get(COMBO_FIELD).toString().split(",")) {
+			tempItems.add(option);
+		}
+		
+		this.comboItems = tempItems.toArray(new String[tempItems.size()]);
 	}
 
 	public String[] getComboItems() {
@@ -42,11 +53,19 @@ public class ComboBoxView extends DefaultView{
 			public void actionPerformed(ActionEvent e) {
 		        @SuppressWarnings("unchecked")
 				JComboBox<String> cb = (JComboBox<String>)e.getSource();
-		        String selected= (String)cb.getSelectedItem();
-		        textField.setText(selected);
+		        String selected= cb.getSelectedItem().toString();
+		        if(!selected.equals(DEFAULT_ITEM)) {
+		        	textField.setText(selected);
+		        	selectedIndex = cb.getSelectedIndex();
+		        }
+		        else {
+		        	cb.setSelectedIndex(selectedIndex);
+		        }
+		        
 		        
 		    }
 		});
+		
 		comboBox.setVisible(false);
 		comboBox.setEnabled(false);
 		comboBox.setEditable(true);

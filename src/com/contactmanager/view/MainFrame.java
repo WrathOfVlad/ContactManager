@@ -1,4 +1,4 @@
-package com.contactmanager.vew;
+package com.contactmanager.view;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Font;
@@ -31,7 +31,7 @@ public class MainFrame extends JFrame {
 	public static final String CONTACT_LOG = "ContactLog";
 	public static final String SETTINGS = "Settings";
 	public static final String EMPTY = "empty";
-	public static final String VERSION = "2.4.4";
+	public static final String VERSION = "2.5.1";
 	
 	public boolean isContactListViewerUpToDate = true;
 	
@@ -57,7 +57,7 @@ public class MainFrame extends JFrame {
 		CurrentContactInfo contactInfo = new CurrentContactInfo(contacts,dataStorage);
 		pointerContactDetail= new ContactDetail(this,contactInfo);
 		pointerSettingsView = new SettingsView(this);
-		pointerContactLog = new ContactLog(this);
+		pointerContactLog = new ContactLog(this,contactInfo);
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(DataStorageHandler.ICON_PATH)));
 
@@ -127,7 +127,7 @@ public class MainFrame extends JFrame {
 	
 	/**
 	 * 
-	 * @see com.contactmanager.vew.ContactLog#clear()
+	 * @see com.contactmanager.view.ContactLog#clear()
 	 */
 	public void clear() {
 		pointerContactLog.clear();

@@ -1,4 +1,4 @@
-package com.contactmanager.datamodel.itemwiewers;
+package com.contactmanager.view.itemwiewers;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 
 import com.contactmanager.datamodel.singleitem.DataType;
 import com.contactmanager.datamodel.singleitem.Item;
-import com.contactmanager.vew.MainFrame;
+import com.contactmanager.view.MainFrame;
 
 public abstract class ItemView {
 	public static final String IS_EDITABLE_FIELD = "isEditable";

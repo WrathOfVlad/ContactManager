@@ -31,9 +31,9 @@
     }
   },
   "USER_SETTINGS" : {
-    "visibleColumns" : "Id,Full Name,Relation,",
+    "visibleColumns" : "Id,Full Name",
     "backupTimeLimit" : 5,
-    "visibleLogColumns" : "Last Contact,Next Contact,Type,Actions,Contact Status,notes"
+    "visibleLogColumns" : "Id,Last Contact,Next Contact,Type,Actions,Contact Status,notes"
   },
   "itemMetaData" : {
     "Company" : {
@@ -164,7 +164,7 @@
     }
   },
   "GENERAL" : {
-    "path" : "/home/tiziano/Contacts/Data_Backup",
+    "path" : "/home/tiziano/OneDrive/Contacts/Data_Backup",
     "storageType" : "file"
   }
 }

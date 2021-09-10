@@ -11,18 +11,24 @@ import java.util.Map;
 
 import com.contactmanager.datamodel.items.Items;
 import com.contactmanager.utils.io.DataStorageHandler;
-import com.contactmanager.vew.MainFrame;
+import com.contactmanager.view.MainFrame;
 
 public abstract class ItemsWrapper {
 	
 	protected Map<Integer, Items> wrapperMap = new LinkedHashMap<Integer, Items>();
+	
+	
 	protected List<String> columns = new LinkedList<String>();
+	protected Map<String, Map<String, Object>> metaDataMap = new HashMap<>();
 	
 	protected List<String> visibleColumns = new ArrayList<>();
 	
 	protected DataStorageHandler dataStorage;
 	protected MainFrame mainFrame;
 	
+	protected ItemsWrapper(DataStorageHandler dataStorage) {
+		this.dataStorage = dataStorage;
+	}
 	
 	
 	protected void addToMaps(Items newContact) {
@@ -31,16 +37,15 @@ public abstract class ItemsWrapper {
 	
 	protected abstract void loadDataSpecific();
 	
-	protected void loadData(List<String[]> allContacts) {
+	public void loadData(List<String[]> allContacts) {
 		if (allContacts != null && !allContacts.isEmpty()) {
-			List<String> columns = new ArrayList<String>(Arrays.asList(allContacts.get(0)));
-			this.columns = columns;
+			List<String> tempCols = new ArrayList<String>(Arrays.asList(allContacts.get(0)));
 			
 			for (Integer i=1; i < allContacts.size(); i++) {
 				String[] row = allContacts.get(i);
 				Map<String,String > dataMap = new HashMap<>();
 				for (int j=0;j<columns.size();j++) {
-					dataMap.put(columns.get(j),row[j]);
+					dataMap.put(tempCols.get(j),row[j]);
 				}
 				
 				Items newContact = getSpecificItemWrapperClass(dataMap);
@@ -72,11 +77,18 @@ public abstract class ItemsWrapper {
 		return wrapperMap.get(id);
 	}
 	public List<List<String>> getAllData(){
-		List<List<String>> data = new ArrayList<>();
+		List<List<String>> dataList = new ArrayList<>();
+		
 		for (Items wrapper : wrapperMap.values()) {
-			data.add(wrapper.getElementsAsList());
+			Map<String, String> dataMap = wrapper.getElementsAsMap();
+			List<String> tempList = new ArrayList<String>();
+			tempList.add(0,wrapper.getIdAsString());
+			for(Integer i = 0; i<dataMap.size();i++) {
+				tempList.add(dataMap.get(columns.get(i)));
+			}
+			dataList.add(tempList);
 		}
-		return data;
+		return dataList;
 	}
 	public List<Integer> getIds(){
 		return new ArrayList<Integer>(wrapperMap.keySet());

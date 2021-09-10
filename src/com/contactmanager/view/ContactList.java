@@ -1,4 +1,4 @@
-package com.contactmanager.vew;
+package com.contactmanager.view;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

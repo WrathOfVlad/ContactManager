@@ -6,38 +6,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.contactmanager.datamodel.ItemsWrapper;
-import com.contactmanager.datamodel.itemwiewers.ItemViews;
 import com.contactmanager.datamodel.singleitem.DataType;
 import com.contactmanager.datamodel.singleitem.Item;
 import com.contactmanager.datamodel.singleitem.NameItem;
 import com.contactmanager.utils.io.ConfigFileData;
+import com.contactmanager.view.itemwiewers.ItemViews;
 
 public class Contact extends Items{
 
 	private static final String FULL_NAME_LABEL = "Full Name";
 	
 	private String fullName;
-
 	
-	public Contact(Map<String, String> rowData, ItemsWrapper parent){
-		if(!initializeItems(rowData,parent)) {return;};
-		
+	
+	public Contact(Map<String, String> rowData,Map<String, Map<String, Object>> metaData){
+		super(rowData,metaData);
+				
 		setFullName();
 		
-	}
-	
-	@Override
-	protected void initializeMetaData() {
-		metaData = ConfigFileData.getInstance().getItemMetaData();
-	}
-	public List<String> getElementAsList(Boolean isFullNameIncluded){
-		List<String> elementList = super.getElementsAsList();
-		
-		if(!isFullNameIncluded) {return elementList;};
-		elementList.add(1,fullName);
-		
-		return elementList;
 	}
 
 	
@@ -92,6 +78,6 @@ public class Contact extends Items{
 		
 		return visibleRowContentList.toArray(new String[visibleRowContentList.size()]);
 	}
-	
+
 
 }
