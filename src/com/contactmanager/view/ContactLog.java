@@ -161,6 +161,7 @@ public class ContactLog extends JPanel {
 	
 	
 	private void exit() {
+		clear();
 		pointerMainFrame.changePage(MainFrame.CONTACT_DETAIL);
 	}
 	private void save() {
@@ -169,7 +170,7 @@ public class ContactLog extends JPanel {
 		if(isNewLog){
 			contactInfo.getLogs().addItem(log);
 		}
-		pointerMainFrame.logToContactDetailView(log,isNewLog);
+		pointerMainFrame.getContactDetail().newLog(log, isNewLog);
 		exit();
 	}
 	

@@ -55,8 +55,7 @@ public class DefaultView extends ItemView{
 	      } // Not needed for plain-text fields
 	    });
 		
-		textField.setMinimumSize(new Dimension(100*2,20));
-		textField.setMaximumSize(new Dimension((int) (100*2+100*0.5),20));
+		textField.setPreferredSize(new Dimension(100*gbc_txtField.gridwidth,20));
 		panel.add(textField,gbc_txtField);
 		textField.setEditable(false);
 	}

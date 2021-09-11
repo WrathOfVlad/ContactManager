@@ -71,7 +71,7 @@ public class Contact extends Items{
 		
 		if(visibleCols.contains(FULL_NAME_LABEL)) {
 			visibleRowContentList.set(visibleCols.indexOf(FULL_NAME_LABEL),fullName);
-			visibleCols.set(visibleCols.indexOf(FULL_NAME_LABEL),NAME_PLACEHOLDER);
+			visibleCols.set(visibleCols.indexOf(FULL_NAME_LABEL),FULL_NAME_FIELD);
 		}
 		
 		getVisibleRow(visibleCols,visibleRowContentList);

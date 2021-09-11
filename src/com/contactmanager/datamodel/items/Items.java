@@ -15,7 +15,7 @@ import com.contactmanager.view.itemwiewers.ItemViews;
 
 public abstract class Items {
 	public static final String ID_FIELD = "Id";
-	public static final String NAME_PLACEHOLDER = "pLaCdehoewledr";
+	public static final String FULL_NAME_FIELD = "Full Name";
 	
 	protected String id = null;
 
@@ -126,7 +126,7 @@ public abstract class Items {
 			if(visibleCols.get(i).equals(ID_FIELD)) {
 				visibleRow.set(i,id);
 			}
-			else if(visibleCols.get(i).equals(NAME_PLACEHOLDER)) {	}
+			else if(visibleCols.get(i).equals(FULL_NAME_FIELD)) {	}
 			else {
 				visibleRow.set(i,dataMap.get(visibleCols.get(i)).getDataValue());
 			}

@@ -14,18 +14,16 @@ import javax.swing.JPanel;
 
 public class ComboBoxView extends DefaultView{
 	
-	private static final String DEFAULT_ITEM = "Select an Item or write a new one";
-	
 	private JComboBox<String> comboBox;
 	
 	private String[] comboItems;
 
-	private Integer selectedIndex = 0;
+	//private Integer selectedIndex = 0;
+	
 	public ComboBoxView(String dataId, Map<String,Object> metaData) throws Exception {
 		super(dataId, metaData);
 		
 		List<String> tempItems = new ArrayList<>();
-		tempItems.add(DEFAULT_ITEM);
 		for (String option : metaData.get(COMBO_FIELD).toString().split(",")) {
 			tempItems.add(option);
 		}
@@ -54,13 +52,8 @@ public class ComboBoxView extends DefaultView{
 		        @SuppressWarnings("unchecked")
 				JComboBox<String> cb = (JComboBox<String>)e.getSource();
 		        String selected= cb.getSelectedItem().toString();
-		        if(!selected.equals(DEFAULT_ITEM)) {
-		        	textField.setText(selected);
-		        	selectedIndex = cb.getSelectedIndex();
-		        }
-		        else {
-		        	cb.setSelectedIndex(selectedIndex);
-		        }
+		        textField.setText(selected);
+	        	//selectedIndex = cb.getSelectedIndex();
 		        
 		        
 		    }
@@ -70,6 +63,12 @@ public class ComboBoxView extends DefaultView{
 		comboBox.setEnabled(false);
 		comboBox.setEditable(true);
 		panel.add(comboBox,gbc_txtField);
+	}
+	
+	@Override
+	public void setTextFieldText(String text) {
+		textField.setText(text);
+		comboBox.setSelectedItem(text);
 	}
 	
 	@Override

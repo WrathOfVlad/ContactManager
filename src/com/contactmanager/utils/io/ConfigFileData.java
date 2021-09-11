@@ -41,7 +41,6 @@ public class ConfigFileData {
 	private JSONObject configJsonData;
 	private List<String> visibleColumns = new ArrayList<String>();
 	private List<String> visibleLogColumns = new ArrayList<String>();
-	private List<String> columns = new ArrayList<String>();
 	
 	
 	@SuppressWarnings("unchecked")
@@ -168,24 +167,5 @@ public class ConfigFileData {
 	public List<String> getLogVisibleColumns(){
 		return new ArrayList<String>(visibleLogColumns);
 	}
-	
-	
-	public void setColumns(List<String> cols) {
-		Map<String, Map<String, Object>> itemMetaData = getItemMetaData();
-		columns = new ArrayList<String>();
-		for (String col : cols) {
-			if(!itemMetaData.keySet().contains(col)) {continue;}
-			
-			columns.add(col);
-		}
-	}
-	public List<String> getColumns(Boolean isIdIncluded){
-		ArrayList<String> tempCols = new ArrayList<String>(columns);
-		if(isIdIncluded) {
-			
-			tempCols.add(0,Contact.ID_FIELD);
-			return tempCols;
-		}
-		return tempCols;
-	}
+
 }

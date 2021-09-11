@@ -16,24 +16,26 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.KeyStroke;
-import javax.swing.table.DefaultTableModel;
 
-import com.contactmanager.datamodel.items.Contact;
+import com.contactmanager.datamodel.CurrentContactInfo;
+import com.contactmanager.datamodel.items.Items;
 import com.contactmanager.utils.io.ConfigFileData;
+import com.contactmanager.utils.viewutils.BetterJTable;
 
 public class SettingsView extends JPanel {
-	private JTable table;
-	private DefaultTableModel tableModel;
+	private BetterJTable table;
 	
-	private MainFrame pointerMainFrame;
+	private MainFrame mainFrame;
+	private CurrentContactInfo contactInfo;
 	
 	private JScrollPane scrollPane;
+	
 
 	
-	public SettingsView(MainFrame mainFrame) {
-		pointerMainFrame = mainFrame;
+	public SettingsView(MainFrame mainFrame,CurrentContactInfo contactInfo) {
+		this.mainFrame = mainFrame;
+		this.contactInfo = contactInfo;
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		
@@ -47,7 +49,7 @@ public class SettingsView extends JPanel {
 		Insets defaultPadding = new Insets(5,5,0,0);
 		
 		
-		table = new JTable();//CustomJTable();
+		table = new BetterJTable();//CustomJTable();
 		table.setDefaultEditor(Object.class, null);
 		table.getTableHeader().setReorderingAllowed(false);
 		
@@ -57,7 +59,7 @@ public class SettingsView extends JPanel {
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && table.getSelectedRow() != -1) {
 					int row = table.getSelectedRow();
 					String field = table.getValueAt(row, 0).toString();
-					if (field != "Id") {
+					if (!field.equals(Items.ID_FIELD)) {
 						if (table.getValueAt(row, 1) == "X") {
 							table.setValueAt("", row, 1);
 						}
@@ -123,8 +125,8 @@ public class SettingsView extends JPanel {
 	}
 	
 	private void exit() {
+		mainFrame.changePage(MainFrame.CONTACT_LIST);
 		createTable();
-		pointerMainFrame.changePage(MainFrame.CONTACT_LIST);
 	}
 	
 	private void save() {
@@ -135,31 +137,34 @@ public class SettingsView extends JPanel {
 				values.add(table.getValueAt(i, 0).toString());
 			}
 		}
-		values.add(0,Contact.ID_FIELD);
 		ConfigFileData.getInstance().setVisibleColumns(values);
 		ConfigFileData.getInstance().saveVisibleColumns();
-		pointerMainFrame.isContactListViewerUpToDate = false;
+		contactInfo.getContacts().loadVisibleColumns();
+		mainFrame.isContactListViewerUpToDate = false;
+		exit();
 	}
 	
 	public void createTable() {
-		tableModel = new DefaultTableModel();
-		table.setModel(tableModel);
+		
+		List<String> columns = contactInfo.getContacts().columnList();
+		columns.add(Items.FULL_NAME_FIELD);
+		
+		List<String> displayedColumns = mainFrame.getContactInfo().getContacts().getVisibleColumns();
+		String[][] allData = new String[columns.size()][2];
 		
 		
-		List<String> columns = ConfigFileData.getInstance().getColumns(false);
-		//columns.add(0,Contact.FULL_NAME_FIELD);
-		List<String> displayedColumns = ConfigFileData.getInstance().getVisibleColumns();
-		tableModel.addColumn("Column Names", columns.toArray());
-		
-		tableModel.addColumn("Is Visible");
+		for(int i = 0; i< displayedColumns.size();i++) {
+			allData[i][0] = displayedColumns.get(i);
+			allData[i][1] = "X";
+			columns.remove(displayedColumns.get(i));
+		}
 		
 		for (int i = 0; i < columns.size(); i++) {
-			if (displayedColumns.contains(columns.get(i))) {
-				tableModel.setValueAt("X", i, 1);
-			}
+			allData[displayedColumns.size()+i][0] = columns.get(i);
 		}
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		//CustomComponents.resizeAllColumns(table);
+		String[] cols = {"Column Name", "Is Visible"};
+		table.loadData(cols, allData);
+		
 		scrollPane.setViewportView(table);
 		
 		setFocusable(true);

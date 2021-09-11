@@ -15,11 +15,8 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import com.contactmanager.datamodel.Contacts;
 import com.contactmanager.datamodel.CurrentContactInfo;
 import com.contactmanager.datamodel.items.Contact;
-import com.contactmanager.datamodel.items.Items;
-import com.contactmanager.datamodel.items.Log;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.utils.multiplatform.MultiPlatformSupportHandler;
 
@@ -35,11 +32,11 @@ public class MainFrame extends JFrame {
 	
 	public boolean isContactListViewerUpToDate = true;
 	
-	private Contacts contacts;
-	private ContactList pointerContactList;
-	private ContactDetail pointerContactDetail;
-	private SettingsView pointerSettingsView;
-	private ContactLog pointerContactLog;
+	private CurrentContactInfo contactInfo;
+	private ContactList contactList;
+	private ContactDetail contactDetail;
+	private SettingsView settingsView;
+	private ContactLog contactLog;
 	private MultiPlatformSupportHandler pointerMultiPlatformSupport;
 	
 	private JPanel contentPane;
@@ -48,16 +45,16 @@ public class MainFrame extends JFrame {
 	
 	public MainFrame(DataStorageHandler dataStorage, MultiPlatformSupportHandler multiPlatformSupport) {
 		
-		contacts = new Contacts(dataStorage, this);
-		contacts.loadDataSpecific();
+		contactInfo = new CurrentContactInfo(this,dataStorage);
+
 		
 		pointerMultiPlatformSupport = multiPlatformSupport;
 		
-		pointerContactList = new ContactList(this, contacts);
-		CurrentContactInfo contactInfo = new CurrentContactInfo(contacts,dataStorage);
-		pointerContactDetail= new ContactDetail(this,contactInfo);
-		pointerSettingsView = new SettingsView(this);
-		pointerContactLog = new ContactLog(this,contactInfo);
+		contactList = new ContactList(this);
+		
+		contactDetail= new ContactDetail(this,contactInfo);
+		settingsView = new SettingsView(this,contactInfo);
+		contactLog = new ContactLog(this,contactInfo);
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(DataStorageHandler.ICON_PATH)));
 
@@ -84,7 +81,7 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				changePage(CONTACT_DETAIL);
-				pointerContactDetail.toggleEdit(true);
+				contactDetail.toggleEdit(true);
 			}
 		});
 		mnMenu_1.add(mntmNewContact);
@@ -108,13 +105,13 @@ public class MainFrame extends JFrame {
 		getContentPane().setLayout(new CardLayout(0, 0));
 		
 		JScrollPane contactDetailSP = new JScrollPane();
-		contactDetailSP.setViewportView(pointerContactDetail);
+		contactDetailSP.setViewportView(contactDetail);
 		JScrollPane contactListSP = new JScrollPane();
-		contactListSP.setViewportView(pointerContactList);
+		contactListSP.setViewportView(contactList);
 		JScrollPane contactLogSP = new JScrollPane();
-		contactLogSP.setViewportView(pointerContactLog);
+		contactLogSP.setViewportView(contactLog);
 		JScrollPane settingsSP = new JScrollPane();
-		settingsSP.setViewportView(pointerSettingsView);
+		settingsSP.setViewportView(settingsView);
 
 		
 		getContentPane().add(contactDetailSP, CONTACT_DETAIL);
@@ -125,33 +122,22 @@ public class MainFrame extends JFrame {
 
 	}
 	
-	/**
-	 * 
-	 * @see com.contactmanager.view.ContactLog#clear()
-	 */
-	public void clear() {
-		pointerContactLog.clear();
+	public ContactDetail getContactDetail() {
+		return contactDetail;
 	}
-	public void setContactLog(Items items) {
-		pointerContactLog.setContactLog((Log)items);
+	public ContactList getContactList() {
+		return contactList;
 	}
-	
-
-	public void addRowToTable(int id) {
-		pointerContactList.addRowToTable(id);
+	public ContactLog getContactLog() {
+		return contactLog;
 	}
-
-	public void updateRowInTable(int id) {
-		pointerContactList.updateRowInTable(id);
+	public SettingsView getSettingsView() {
+		return settingsView;
+	}
+	public CurrentContactInfo getContactInfo() {
+		return contactInfo;
 	}
 	
-	public void logToContactDetailView(Log log, Boolean isNewLog) {
-		pointerContactDetail.newLog(log,isNewLog);
-	}
-	public void loadDetailInContactDetailViewer(int id) {
-		pointerContactDetail.loadDetail(id);
-	}
-
 	public void initialize() {
 		UIManager.getLookAndFeelDefaults().put("defaultFont", new Font(Font.SANS_SERIF, Font.PLAIN , 14));
 		//JDesktopIcon icon = new JDesktopIcon(pointerDataSaveLoadHandler.getIcon());
@@ -167,22 +153,22 @@ public class MainFrame extends JFrame {
 		
 		
 		JScrollPane contactDetailSP = new JScrollPane();
-		contactDetailSP.setViewportView(pointerContactDetail);
+		contactDetailSP.setViewportView(contactDetail);
 		contactDetailSP.getHorizontalScrollBar().setUnitIncrement(16);
 		contactDetailSP.getVerticalScrollBar().setUnitIncrement(16);
 		
 		JScrollPane contactListSP = new JScrollPane();
-		contactListSP.setViewportView(pointerContactList);
+		contactListSP.setViewportView(contactList);
 		contactListSP.getHorizontalScrollBar().setUnitIncrement(16);
 		contactListSP.getVerticalScrollBar().setUnitIncrement(16);
 		
 		JScrollPane contactLogSP = new JScrollPane();
-		contactLogSP.setViewportView(pointerContactLog);
+		contactLogSP.setViewportView(contactLog);
 		contactLogSP.getHorizontalScrollBar().setUnitIncrement(16);
 		contactLogSP.getVerticalScrollBar().setUnitIncrement(16);
 		
 		JScrollPane settingsSP = new JScrollPane();
-		settingsSP.setViewportView(pointerSettingsView);
+		settingsSP.setViewportView(settingsView);
 		settingsSP.getHorizontalScrollBar().setUnitIncrement(16);
 		settingsSP.getVerticalScrollBar().setUnitIncrement(16);
 		
@@ -214,16 +200,16 @@ public class MainFrame extends JFrame {
 		
 		//after switching the page
 		if(pageName == CONTACT_DETAIL) {
-			pointerContactDetail.requestFocus();
+			contactDetail.requestFocus();
 		}
 		else if(pageName == CONTACT_LIST) {
-			pointerContactDetail.exitPoint();
+			contactDetail.exitPoint();
 			if(!isContactListViewerUpToDate) {
-				pointerContactList.loadData();
+				contactList.loadData();
 				isContactListViewerUpToDate = true;
 			}
 			
-			pointerContactList.focusSelectedRow();
+			contactList.focusSelectedRow();
 			
 		}
 	}
@@ -236,7 +222,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	private void notificationReminder() {
-		contacts.getReminders();
+		contactInfo.getContacts().getReminders();
 	}
 	
 	

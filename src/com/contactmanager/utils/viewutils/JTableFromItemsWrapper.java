@@ -1,34 +1,23 @@
 package com.contactmanager.utils.viewutils;
 
-import java.awt.Component;
 import java.awt.Font;
 import java.util.List;
 
-import javax.swing.JTable;
-import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import com.contactmanager.datamodel.ItemsWrapper;
 import com.contactmanager.datamodel.items.Items;
 
-public class CustomJTable extends JTable {
+public class JTableFromItemsWrapper extends BetterJTable {
 	
 	private ItemsWrapper itemsWrapper;
-	private DefaultTableModel tableModel;
-	private TableRowSorter<TableModel> sorter;
 	
-	public CustomJTable(ItemsWrapper itemsWrapper) {
+	public JTableFromItemsWrapper(ItemsWrapper itemsWrapper) {
+		super();
 		this.itemsWrapper = itemsWrapper;
-		
-		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		setDefaultEditor(Object.class, null);
-		setAutoCreateRowSorter(true);
-		//getTableHeader().setReorderingAllowed(false);
 	}
 	
 	private String[] getVisibleDataFromFullRow(Items items) {
@@ -42,47 +31,7 @@ public class CustomJTable extends JTable {
 		resizeAllColumns();
 	}
 	
-	private void resizeAllColumns() {
-		for (int column = 0; column < getColumnCount(); column++)
-		{
-		    TableColumn tableColumn = getColumnModel().getColumn(column);
-		    int preferredWidth = tableColumn.getMinWidth();
-		    int maxWidth = tableColumn.getMaxWidth();
-		    
-		    TableCellRenderer headerRenderer = tableColumn.getHeaderRenderer();
-		    Object headerValue = tableColumn.getHeaderValue();
-		    if (headerRenderer == null) {
-		      headerRenderer = getTableHeader().getDefaultRenderer();
-		    }
-		    Component headerComp =
-		            headerRenderer.getTableCellRendererComponent(this, headerValue, false, false, 0, column);
-		    
-		    int width = headerComp.getPreferredSize().width + getIntercellSpacing().width + 15;
-	    	width = Math.max(width, headerComp.getPreferredSize().width + 10);
-	        preferredWidth = Math.max(preferredWidth, width);
-
-		    
-		    for (int row = 0; row < getRowCount(); row++)
-		    {
-		        TableCellRenderer cellRenderer = getCellRenderer(row, column);
-		        Component c = prepareRenderer(cellRenderer, row, column);
-		        
-	        	width = c.getPreferredSize().width + getIntercellSpacing().width + 15;
-		        preferredWidth = Math.max(preferredWidth, width);
-
-		        //  We've exceeded the maximum width, no need to check other rows
-		 
-		        if (preferredWidth >= maxWidth)
-		        {
-		            preferredWidth = maxWidth;
-		            break;
-		        }
-		    }
-		 
-		    tableColumn.setPreferredWidth( preferredWidth );
-		}
-	}
-
+	
 	public void updateRowInTable(Items items) {
 		String[] row = getVisibleDataFromFullRow(items);
 		//There's no need to add one here, as the column name row is only on mainTable, not on the actual displayed table
@@ -118,9 +67,6 @@ public class CustomJTable extends JTable {
 		resizeAllColumns();
 	}
 
-	public void setRowFilter(String filter) {
-		sorter.setRowFilter(RowFilter.regexFilter(filter));
-	}
 	
 	public int getSelectedId() {
 		int rowIndex = getSelectedRow();

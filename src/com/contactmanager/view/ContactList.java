@@ -18,12 +18,12 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import com.contactmanager.datamodel.ItemsWrapper;
-import com.contactmanager.utils.viewutils.CustomJTable;
+import com.contactmanager.utils.viewutils.JTableFromItemsWrapper;
 
 
 public class ContactList extends JPanel{
 	
-	private CustomJTable table;
+	private JTableFromItemsWrapper table;
 	
 	private JScrollPane scrollPane;
 	
@@ -32,10 +32,10 @@ public class ContactList extends JPanel{
 	
 	private ItemsWrapper contacts;
 	
-	public ContactList(MainFrame mainFrame, ItemsWrapper contacts) {
+	public ContactList(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
-		this.contacts = contacts;
-		table = new CustomJTable(contacts);
+		this.contacts = mainFrame.getContactInfo().getContacts();
+		table = new JTableFromItemsWrapper(contacts);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {100,500,0};
@@ -106,7 +106,7 @@ public class ContactList extends JPanel{
 	
 	private void enterContactDetail() {
 		mainFrame.changePage(MainFrame.CONTACT_DETAIL);
-        mainFrame.loadDetailInContactDetailViewer(table.getSelectedId());
+        mainFrame.getContactDetail().loadDetail(table.getSelectedId());
 	}
 	public void focusSelectedRow() {
 		table.requestFocus();

@@ -60,7 +60,9 @@ public abstract class ItemsWrapper {
 		
 	}
 	
-	public void loadData(List<String[]> allContacts) {
+	protected void loadData(List<String[]> allContacts) {
+		wrapperMap = new LinkedHashMap<Integer, Items>();
+		
 		if (allContacts != null && !allContacts.isEmpty()) {
 			List<String> tempCols = new ArrayList<String>(Arrays.asList(allContacts.get(0)));
 			
@@ -78,6 +80,7 @@ public abstract class ItemsWrapper {
 				Items newContact = getSpecificItemWrapperClass(dataMap);
 				addToMaps(newContact);
 			}
+			
 		}
 		loadVisibleColumns();
 	}

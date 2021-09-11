@@ -49,7 +49,7 @@ public class Contacts extends ItemsWrapper{
 	public void getReminders(){
 		
 		for (Items contact : wrapperMap.values()) {
-			for (String dataId: ConfigFileData.getInstance().getColumns(false)) {
+			for (String dataId: columns) {
 				Item item = contact.getItemInfo(dataId);
 				if(item instanceof DateItem) {
 					String[] titleAndContent = ((DateItem) item).isReminderToday();
@@ -63,7 +63,7 @@ public class Contacts extends ItemsWrapper{
 	}
 
 	@Override
-	protected void loadVisibleColumns() {
+	public void loadVisibleColumns() {
 		visibleColumns = ConfigFileData.getInstance().getVisibleColumns();
 		
 	}

@@ -52,7 +52,7 @@ import com.contactmanager.datamodel.CurrentContactInfo;
 import com.contactmanager.datamodel.items.Log;
 import com.contactmanager.utils.io.ConfigFileData;
 import com.contactmanager.utils.io.DataStorageHandler;
-import com.contactmanager.utils.viewutils.CustomJTable;
+import com.contactmanager.utils.viewutils.JTableFromItemsWrapper;
 import com.contactmanager.utils.viewutils.TraversalPolicy;
 import com.contactmanager.view.itemwiewers.ItemViews;
 
@@ -63,7 +63,7 @@ public class ContactDetail extends JPanel {
 	private static final int COL_WIDTHS = 100;
 	private static final int ROW_HEIGHTS = 20;
 	
-	private MainFrame pointerMainFrame;
+	private MainFrame mainFrame;
 	private Integer id = null;
 	private boolean isInEditMode;
 
@@ -72,7 +72,7 @@ public class ContactDetail extends JPanel {
 	private JButton btnSave;
 	private JTextPane notesTextPane;
 	
-	private CustomJTable table;
+	private JTableFromItemsWrapper table;
 
 	private JScrollPane tableScrollPane;
 	
@@ -81,10 +81,10 @@ public class ContactDetail extends JPanel {
 	private ItemViews itemViews;
 	
 	public ContactDetail(MainFrame mainFrame, CurrentContactInfo contactInfo) {
-		pointerMainFrame = mainFrame;
+		this.mainFrame = mainFrame;
 		this.contactInfo = contactInfo;
 		
-		table = new CustomJTable(contactInfo.getLogs());
+		table = new JTableFromItemsWrapper(contactInfo.getLogs());
 		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -380,7 +380,7 @@ public class ContactDetail extends JPanel {
 			toggleEdit(false);
 		}
 		else {
-			pointerMainFrame.changePage(MainFrame.CONTACT_LIST);
+			mainFrame.changePage(MainFrame.CONTACT_LIST);
 		}
 	}
 	
@@ -453,14 +453,15 @@ public class ContactDetail extends JPanel {
 	
 	private void getLogToSet() {
 		int logId = table.getSelectedId();
-        pointerMainFrame.setContactLog(contactInfo.getLogs().getWrapperById(logId));
-        pointerMainFrame.changePage(MainFrame.CONTACT_LOG);
+        mainFrame.getContactLog().setContactLog((Log)contactInfo.getLogs().getWrapperById(logId));
+        mainFrame.changePage(MainFrame.CONTACT_LOG);
 	}
 	
 	public void clearLoadedDetails() {
 		this.id = null;
 		
 		notesTextPane.setText("");
+		table.clear();
 		loadImage();
 		toggleEdit(true);
 	}
@@ -472,7 +473,7 @@ public class ContactDetail extends JPanel {
 				invalidRegexMessage();
 				return;
 			}
-			pointerMainFrame.updateRowInTable(id);
+			mainFrame.getContactList().updateRowInTable(id);
 		}
 		else {
 			id = contactInfo.addNewContact();
@@ -480,7 +481,7 @@ public class ContactDetail extends JPanel {
 				invalidRegexMessage();
 				return;
 			}
-			pointerMainFrame.addRowToTable(id);
+			mainFrame.getContactList().addRowToTable(id);
 		}
 		
 		
@@ -519,7 +520,7 @@ public class ContactDetail extends JPanel {
 		
 		d.pack();
 	        //set location
-	    d.setLocationRelativeTo(pointerMainFrame);
+	    d.setLocationRelativeTo(mainFrame);
 		d.setVisible(true);
 	}
 	
@@ -552,12 +553,11 @@ public class ContactDetail extends JPanel {
 	
 	private void add() {
 		if (id != null) {
-			pointerMainFrame.clear();
-			pointerMainFrame.changePage(MainFrame.CONTACT_LOG);
+			mainFrame.changePage(MainFrame.CONTACT_LOG);
 		}
 		
 		else {
-			JOptionPane.showMessageDialog(pointerMainFrame, "Contact needs to be created before logs can be added.");
+			JOptionPane.showMessageDialog(mainFrame, "Contact needs to be created before logs can be added.");
 		}
 	}
 	
@@ -574,7 +574,7 @@ public class ContactDetail extends JPanel {
 	private void fileExplorerPressed(ActionEvent e) {
 		if(id != null) {
 			if(!contactInfo.fileExplorer(id)) {
-				JOptionPane.showMessageDialog(pointerMainFrame, "Viewing Directory unavailable in your selected storage type.");
+				JOptionPane.showMessageDialog(mainFrame, "Viewing Directory unavailable in your selected storage type.");
 			}
 		}
 		

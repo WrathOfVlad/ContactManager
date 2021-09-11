@@ -9,11 +9,12 @@ import javax.imageio.ImageIO;
 import com.contactmanager.datamodel.items.Contact;
 import com.contactmanager.utils.io.DataStorageFile;
 import com.contactmanager.utils.io.DataStorageHandler;
+import com.contactmanager.view.MainFrame;
 
 public class CurrentContactInfo {
 	
-	private DataStorageHandler pointerDataStorage;
-	private Contacts pointerContacts;
+	private DataStorageHandler dataStorage;
+	private Contacts contacts;
 	
 	private Logs logs = null;
 	private String notes;
@@ -22,19 +23,21 @@ public class CurrentContactInfo {
 	private Contact contact = null;
 	
 
-	public CurrentContactInfo(Contacts contacts, DataStorageHandler dataStorageHandler) {
-		this.pointerContacts = contacts;
-		this.pointerDataStorage = dataStorageHandler;
-		logs = new Logs(pointerDataStorage);
+	public CurrentContactInfo(MainFrame mainFrame, DataStorageHandler dataStorageHandler) {
+		this.contacts = new Contacts(dataStorageHandler,mainFrame);
+		contacts.loadDataSpecific();
 		
-		contact = (Contact) pointerContacts.getSpecificItemWrapperClass(null);
+		this.dataStorage = dataStorageHandler;
+		logs = new Logs(dataStorage);
+		
+		contact = (Contact) contacts.getSpecificItemWrapperClass(null);
 	}
 	
 	public void clear(){
 		
 		notes = "";
 		
-		contact = (Contact) pointerContacts.getSpecificItemWrapperClass(null);
+		contact = (Contact) contacts.getSpecificItemWrapperClass(null);
 		URL noImageStream = getClass().getResource(DataStorageHandler.NO_PROFILE_IMAGE_PATH);
 		try {
 			image = ImageIO.read(noImageStream);
@@ -55,10 +58,14 @@ public class CurrentContactInfo {
 	public Image getImage() {
 		return image;
 	}
-
+	
+	public Contacts getContacts() {
+		return contacts;
+	}
+	
 	public Boolean fileExplorer(int id) {
-		if(pointerDataStorage instanceof DataStorageFile) {
-			DataStorageFile fileStorage = (DataStorageFile)pointerDataStorage;
+		if(dataStorage instanceof DataStorageFile) {
+			DataStorageFile fileStorage = (DataStorageFile)dataStorage;
 			fileStorage.goToPath(id);
 			return true;
 		}
@@ -73,24 +80,24 @@ public class CurrentContactInfo {
 	}
 	
 	public int addNewContact() {
-		int id = pointerContacts.getNextId();
+		int id = contacts.getNextId();
 		contact.setId(id);
-		pointerContacts.addToMaps(contact);
+		contacts.addToMaps(contact);
 		return id;
 	}
 	public void loadContactInfo(int id) {
 		logs.loadLogs(id);
-		notes = pointerDataStorage.getNotes(id);
-		contact = (Contact) pointerContacts.getWrapperById(id);
-		image = pointerDataStorage.getProfileImage(id);
+		notes = dataStorage.getNotes(id);
+		contact = (Contact) contacts.getWrapperById(id);
+		image = dataStorage.getProfileImage(id);
 	}
 	public void save(int id) {
-		pointerDataStorage.createBackup(id);
+		dataStorage.createBackup(id);
 		
-		pointerContacts.save();
-		pointerDataStorage.saveLogs(id, logs);
-		pointerDataStorage.saveNotes(id, notes);
-		pointerDataStorage.saveProfileImage(id, image);
+		contacts.save();
+		dataStorage.saveLogs(id, logs);
+		dataStorage.saveNotes(id, notes);
+		dataStorage.saveProfileImage(id, image);
 	}
 
 	public void setImage(Image image) {
