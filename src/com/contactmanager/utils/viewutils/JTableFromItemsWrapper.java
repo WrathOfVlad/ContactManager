@@ -1,6 +1,7 @@
 package com.contactmanager.utils.viewutils;
 
 import java.awt.Font;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
@@ -55,7 +56,13 @@ public class JTableFromItemsWrapper extends BetterJTable {
 			}
 		}
 		
-		tableModel = new DefaultTableModel(visibleData, visibleColumns.toArray());
+		List<String> visibleLable = new ArrayList<String>();
+		for (String visibleCol : visibleColumns) {
+			visibleLable.add(itemsWrapper.getLabel(visibleCol));
+			
+		}
+		
+		tableModel = new DefaultTableModel(visibleData, visibleLable.toArray());
 		sorter = new TableRowSorter<TableModel>(tableModel);
 		setModel(tableModel);
 		setRowSorter(sorter);
@@ -67,7 +74,6 @@ public class JTableFromItemsWrapper extends BetterJTable {
 		resizeAllColumns();
 	}
 
-	
 	public int getSelectedId() {
 		int rowIndex = getSelectedRow();
 		

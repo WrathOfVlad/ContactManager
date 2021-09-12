@@ -12,7 +12,7 @@ import com.contactmanager.datamodel.items.Items;
 import com.contactmanager.datamodel.singleitem.Item;
 
 public class ItemViews {
-	private static final String LABLE_TYPE = "dataLabel";
+	public static final String LABLE_TYPE = "dataLabel";
 	
 	private Map<String, ItemView> itemViewMap = new LinkedHashMap<>();
 	
@@ -61,11 +61,16 @@ public class ItemViews {
 		}
 	}
 	
+	public void clear() {
+		
+	}
+	
 	public void toggleEdit(Boolean activateEditModeIfTrue) {
 		for (ItemView itemView : itemViewMap.values()) {
 			itemView.toggleEdit(activateEditModeIfTrue);
 		}
 	}
+	
 	
 	public ItemView getItemView(String dataId) {
 		return itemViewMap.get(dataId);

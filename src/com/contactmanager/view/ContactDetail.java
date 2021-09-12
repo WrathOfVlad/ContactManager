@@ -461,6 +461,9 @@ public class ContactDetail extends JPanel {
 		this.id = null;
 		
 		notesTextPane.setText("");
+		contactInfo.clear();
+		
+		contactInfo.getContact().loadFromDataModel(itemViews);
 		table.clear();
 		loadImage();
 		toggleEdit(true);

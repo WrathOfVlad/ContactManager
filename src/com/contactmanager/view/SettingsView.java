@@ -78,6 +78,8 @@ public class SettingsView extends JPanel {
 				save();
 			}
 		});
+		
+		
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.gridy = 0;
@@ -146,21 +148,39 @@ public class SettingsView extends JPanel {
 	
 	public void createTable() {
 		
+		//all Columns
+		
 		List<String> columns = contactInfo.getContacts().columnList();
-		columns.add(Items.FULL_NAME_FIELD);
+		List<String> columnsLabels = new ArrayList<String>();
+		
+		for (String col : columns) {
+			columnsLabels.add(contactInfo.getContacts().getLabel(col));
+		}
+		columnsLabels.add(Items.FULL_NAME_FIELD);
+		
+		columns = null;
+		
+		//displayed columns
 		
 		List<String> displayedColumns = mainFrame.getContactInfo().getContacts().getVisibleColumns();
-		String[][] allData = new String[columns.size()][2];
+		List<String> displayedColumnsLable = new ArrayList<String>();
+		
+		for (String dispCol : displayedColumns) {
+			displayedColumnsLable.add(contactInfo.getContacts().getLabel(dispCol));
+		}
+		displayedColumns= null;
+		
+		String[][] allData = new String[columnsLabels.size()][2];
 		
 		
-		for(int i = 0; i< displayedColumns.size();i++) {
-			allData[i][0] = displayedColumns.get(i);
+		for(int i = 0; i< displayedColumnsLable.size();i++) {
+			allData[i][0] = displayedColumnsLable.get(i);
 			allData[i][1] = "X";
-			columns.remove(displayedColumns.get(i));
+			columnsLabels.remove(displayedColumnsLable.get(i));
 		}
 		
-		for (int i = 0; i < columns.size(); i++) {
-			allData[displayedColumns.size()+i][0] = columns.get(i);
+		for (int i = 0; i < columnsLabels.size(); i++) {
+			allData[displayedColumnsLable.size()+i][0] = columnsLabels.get(i);
 		}
 		String[] cols = {"Column Name", "Is Visible"};
 		table.loadData(cols, allData);

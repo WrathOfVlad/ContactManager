@@ -80,6 +80,7 @@ public class MainFrame extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				contactDetail.clearLoadedDetails();
 				changePage(CONTACT_DETAIL);
 				contactDetail.toggleEdit(true);
 			}

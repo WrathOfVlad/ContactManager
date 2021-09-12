@@ -12,6 +12,7 @@ import java.util.Map;
 import com.contactmanager.datamodel.items.Items;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.view.MainFrame;
+import com.contactmanager.view.itemwiewers.ItemViews;
 
 public abstract class ItemsWrapper {
 	
@@ -132,6 +133,15 @@ public abstract class ItemsWrapper {
 		if (wrapperMap.isEmpty()) {return 1;};
 		
 		return Collections.max(wrapperMap.keySet()) + 1;
+	}
+	
+	public String getLabel(String dataId){
+		if(metaDataMap.containsKey(dataId) &&  metaDataMap.get(dataId).get(ItemViews.LABLE_TYPE) != null) {
+			return metaDataMap.get(dataId).get(ItemViews.LABLE_TYPE).toString();
+		}
+		else {
+			return dataId;
+		}
 	}
 	
 	public abstract void save();
