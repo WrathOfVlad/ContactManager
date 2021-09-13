@@ -16,6 +16,7 @@ public class ItemViews {
 	
 	private Map<String, ItemView> itemViewMap = new LinkedHashMap<>();
 	
+	
 	public ItemViews(Map<String, Map<String,Object>> metaData) {
 		try {
 			initializeMap(metaData);
@@ -61,9 +62,6 @@ public class ItemViews {
 		}
 	}
 	
-	public void clear() {
-		
-	}
 	
 	public void toggleEdit(Boolean activateEditModeIfTrue) {
 		for (ItemView itemView : itemViewMap.values()) {

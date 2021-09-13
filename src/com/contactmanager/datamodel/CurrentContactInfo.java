@@ -3,6 +3,8 @@ package com.contactmanager.datamodel;
 import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -15,12 +17,15 @@ public class CurrentContactInfo {
 	
 	private DataStorageHandler dataStorage;
 	private Contacts contacts;
+
 	
 	private Logs logs = null;
 	private String notes;
 	private Image image;
 	
 	private Contact contact = null;
+	
+	private Map<String, Boolean> isChanged = new HashMap<String, Boolean>();
 	
 
 	public CurrentContactInfo(MainFrame mainFrame, DataStorageHandler dataStorageHandler) {
@@ -29,8 +34,15 @@ public class CurrentContactInfo {
 		
 		this.dataStorage = dataStorageHandler;
 		logs = new Logs(dataStorage);
-		
 		contact = (Contact) contacts.getSpecificItemWrapperClass(null);
+		
+		
+		isChanged.put("notes", false);
+		isChanged.put("contacts", false);
+		isChanged.put("logs", false);
+		isChanged.put("image", false);
+		
+		
 	}
 	
 	public void clear(){
@@ -77,6 +89,8 @@ public class CurrentContactInfo {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
+		isChanged.replace("notes", true);
+		
 	}
 	
 	public int addNewContact() {
@@ -94,14 +108,34 @@ public class CurrentContactInfo {
 	public void save(int id) {
 		dataStorage.createBackup(id);
 		
-		contacts.save();
-		dataStorage.saveLogs(id, logs);
-		dataStorage.saveNotes(id, notes);
-		dataStorage.saveProfileImage(id, image);
+		saveContacts();
+		saveLogs(id);
+		saveNotes(id);
+		saveProfileImage(id);
 	}
+	
+	private void saveContacts() {
+		contacts.save();	
+	}
+	private void saveLogs(int id) {
+		dataStorage.saveLogs(id, logs);
+	}
+	private void saveNotes(int id) {
+		if(isChanged.get("notes")) {
+			dataStorage.saveNotes(id, notes);
+		}
+	}
+	private void saveProfileImage(int id) {
+		if(isChanged.get("image")) {
+			dataStorage.saveProfileImage(id, image);
+		}
+	}
+	
+	
 
 	public void setImage(Image image) {
 		this.image = image;
+		isChanged.replace("image", true);
 		
 	}
 	
