@@ -46,6 +46,13 @@ public class JTableFromItemsWrapper extends BetterJTable {
 	public void loadData() {
 		List<List<String>> rawData = itemsWrapper.getAllData();
 		List<String> visibleColumns = itemsWrapper.getVisibleColumns();
+		Boolean isIdPresent = true;
+		
+		if(!visibleColumns.contains(Items.ID_FIELD)) {
+			visibleColumns.add(Items.ID_FIELD);
+			isIdPresent = false;
+		}
+		
 		String[][] visibleData = new String[rawData.size()][visibleColumns.size()];
 		List<Integer> ids = itemsWrapper.getIds();
 		
@@ -67,11 +74,18 @@ public class JTableFromItemsWrapper extends BetterJTable {
 		setModel(tableModel);
 		setRowSorter(sorter);
 		
+		if(!isIdPresent) {
+			removeColumn(getColumnModel().getColumn(getColumn(Items.ID_FIELD).getModelIndex()));
+			//getColumnModel().getColumn(getColumn(Items.ID_FIELD).getModelIndex()).setMaxWidth(0);
+		}
+		
 		JTableHeader header = getTableHeader();
 		Font newFont = getFont().deriveFont(Font.BOLD);
 		header.setFont(newFont);
 		
+		
 		resizeAllColumns();
+		
 	}
 
 	public int getSelectedId() {
@@ -79,7 +93,9 @@ public class JTableFromItemsWrapper extends BetterJTable {
 		
 		int correctedIndex = convertRowIndexToModel(rowIndex);
     	
-    	int id = Integer.parseInt(getModel().getValueAt(correctedIndex, getColumn(Items.ID_FIELD).getModelIndex()).toString());
+    	int id = Integer.parseInt(getModel().getValueAt(correctedIndex, getColumnFromNameInModel(Items.ID_FIELD)).toString());
         return id;
 	}
+	
+	
 }

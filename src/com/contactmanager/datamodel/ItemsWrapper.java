@@ -143,6 +143,19 @@ public abstract class ItemsWrapper {
 			return dataId;
 		}
 	}
+	public String getDataIdByLabel(String label) {
+		if(label.equals(Items.ID_FIELD) || label.equals(Items.FULL_NAME_FIELD)) {
+			return label;
+		}
+		for (String dataId : columns) {
+			if(metaDataMap.containsKey(dataId) &&  metaDataMap.get(dataId).get(ItemViews.LABLE_TYPE) != null) {
+				if(metaDataMap.get(dataId).get(ItemViews.LABLE_TYPE).toString().equals(label)) {
+					return dataId;
+				}
+			}
+		}	
+		return null;
+	}
 	
 	public abstract void save();
 }

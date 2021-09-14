@@ -65,6 +65,9 @@ public class Contact extends Items{
 		List<String> visibleCols = ConfigFileData.getInstance().getVisibleColumns();
 		
 		List<String> visibleRowContentList  = new ArrayList<>();
+		if(!visibleCols.contains(ID_FIELD)) {
+			visibleCols.add(ID_FIELD);
+		}
 		for (int i=0;i<visibleCols.size();i++) {
 			visibleRowContentList.add("");
 		}

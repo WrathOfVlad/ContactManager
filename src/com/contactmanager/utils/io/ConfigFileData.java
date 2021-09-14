@@ -15,8 +15,6 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.contactmanager.datamodel.items.Contact;
-
 
 public class ConfigFileData {
 	private static ConfigFileData instance = null;
@@ -146,9 +144,9 @@ public class ConfigFileData {
 		String[] visibleColumnsArray = visibleColumnsString.split(",");
 		
 		List<String> visibleList = new ArrayList<>(Arrays.asList(visibleColumnsArray));
-		if (!visibleList.contains(Contact.ID_FIELD)) {
-			visibleList.add(0, Contact.ID_FIELD);
-		}
+		//if (!visibleList.contains(Contact.ID_FIELD)) {
+		//	visibleList.add(0, Contact.ID_FIELD);
+		//}
 		visibleColumns = visibleList;
 	}
 	

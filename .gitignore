@@ -1,5 +1,6 @@
 /bin
-/config.ini
+/config.json
 /wbp-meta/
 /.settings/
 /target/
+/errorLogs.log

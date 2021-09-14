@@ -80,4 +80,14 @@ public class BetterJTable extends JTable{
 		setModel(tableModel);
 		resizeAllColumns();
 	}
+
+	protected Integer getColumnFromNameInModel(String name) {
+		for(int index = 0; index<getModel().getColumnCount(); index ++) {
+			if(getModel().getColumnName(index).equals(name)) {
+				return index;
+			}
+		}
+		
+		return null;
+	}
 }

@@ -58,14 +58,11 @@ public class SettingsView extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && table.getSelectedRow() != -1) {
 					int row = table.getSelectedRow();
-					String field = table.getValueAt(row, 0).toString();
-					if (!field.equals(Items.ID_FIELD)) {
-						if (table.getValueAt(row, 1) == "X") {
-							table.setValueAt("", row, 1);
-						}
-						else {
-							table.setValueAt("X", row, 1);
-						}
+					if (table.getValueAt(row, 1) == "X") {
+						table.setValueAt("", row, 1);
+					}
+					else {
+						table.setValueAt("X", row, 1);
 					}
 				}
 			}
@@ -136,7 +133,7 @@ public class SettingsView extends JPanel {
 		List<String> values = new ArrayList<>();
 		for (int i = 0; i<table.getRowCount();i++) {
 			if(table.getValueAt(i, 1) == "X") {
-				values.add(table.getValueAt(i, 0).toString());
+				values.add(contactInfo.getContacts().getDataIdByLabel(table.getValueAt(i, 0).toString()));
 			}
 		}
 		ConfigFileData.getInstance().setVisibleColumns(values);
