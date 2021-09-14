@@ -14,6 +14,7 @@ import com.contactmanager.view.MainFrame;
 
 public class Main 
 {
+	public static final String VERSION = "2.5.2";
 	public static final  Logger parentLogger = LogManager.getLogger(Main.class.getName());
 
 	public static void main(String[] args) throws SecurityException, IOException{		

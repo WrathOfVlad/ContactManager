@@ -19,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.contactmanager.datamodel.CurrentContactInfo;
 import com.contactmanager.datamodel.items.Contact;
+import com.contactmanager.entrypoint.Main;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.utils.multiplatform.MultiPlatformSupportHandler;
 
@@ -30,7 +31,6 @@ public class MainFrame extends JFrame {
 	public static final String CONTACT_LOG = "ContactLog";
 	public static final String SETTINGS = "Settings";
 	public static final String EMPTY = "empty";
-	public static final String VERSION = "2.5.1";
 	
 	public boolean isContactListViewerUpToDate = true;
 	
@@ -105,7 +105,7 @@ public class MainFrame extends JFrame {
 		});
 		mnHelp.add(mntmSettings);
 		
-		JMenuItem mntmVersion = new JMenuItem("Version:   " + VERSION);
+		JMenuItem mntmVersion = new JMenuItem("Version:   " + Main.VERSION);
 		mnHelp.add(mntmVersion);
 		
 		getContentPane().setLayout(new CardLayout(0, 0));
