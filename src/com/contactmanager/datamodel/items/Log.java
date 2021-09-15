@@ -17,7 +17,11 @@ public class Log extends Items{
 	public String[] getVisibleRowSpecific() {
 		List<String> visibleRow = new ArrayList<>();
 		List<String> visibleCols = ConfigFileData.getInstance().getLogVisibleColumns();
-
+		
+		if(!visibleCols.contains(ID_FIELD)) {
+			visibleCols.add(ID_FIELD);
+		}
+		
 		for (int i=0;i<visibleCols.size();i++) {
 			visibleRow.add("");
 		}

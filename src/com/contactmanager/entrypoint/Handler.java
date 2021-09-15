@@ -11,11 +11,12 @@ public class Handler implements Thread.UncaughtExceptionHandler{
 	
 	@Override
 	public void uncaughtException(Thread t, Throwable e) {
-		String errorTrace = "";
+		String errorTrace = e.getMessage()+ "\n";
 		for(StackTraceElement stElement :e.getStackTrace()){
 			errorTrace += stElement.toString() + "\n";
 		}
 		LOGGER.fatal(errorTrace);
+		System.out.println(errorTrace);
 		
 	}
 
