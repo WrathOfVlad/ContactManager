@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Handler implements Thread.UncaughtExceptionHandler{
 
-	public static final  Logger LOGGER = LogManager.getLogger(Main.class.getName());
+	public static final  Logger LOGGER = LogManager.getLogger();
 	
 	@Override
 	public void uncaughtException(Thread t, Throwable e) {
