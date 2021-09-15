@@ -3,4 +3,5 @@
 /wbp-meta/
 /.settings/
 /target/
-/errorLogs.log
+/errorLog.log
+/Logs/

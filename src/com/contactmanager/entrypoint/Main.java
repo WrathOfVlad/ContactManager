@@ -2,9 +2,6 @@ package com.contactmanager.entrypoint;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.contactmanager.utils.io.DataStorageFactory;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.utils.multiplatform.MultiPlatformSupportFactory;
@@ -15,41 +12,34 @@ import com.contactmanager.view.MainFrame;
 public class Main 
 {
 	public static final String VERSION = "2.5.2";
-	public static final  Logger parentLogger = LogManager.getLogger(Main.class.getName());
 
+	
 	public static void main(String[] args) throws SecurityException, IOException{		
-	
-		try {
-			
+		Handler globalExceptionHandler = new Handler();
+        Thread.setDefaultUncaughtExceptionHandler(globalExceptionHandler);
+        
+		DataStorageFactory pointerDataStorageFactory = new DataStorageFactory();
+		MultiPlatformSupportFactory pointerMultiPlatformSupportFactory = new MultiPlatformSupportFactory();
 		
-			DataStorageFactory pointerDataStorageFactory = new DataStorageFactory();
-			MultiPlatformSupportFactory pointerMultiPlatformSupportFactory = new MultiPlatformSupportFactory();
-			
-			MultiPlatformSupportHandler pointerMultiPlatformSupport = pointerMultiPlatformSupportFactory.getSupportHandler();
-			if(pointerMultiPlatformSupport == null) {
-				System.out.println("Unsupported OS");
-			}
-			
-			DataStorageHandler pointerDataStorage = pointerDataStorageFactory.getDataStorage();
-			if(pointerDataStorage == null) {
-				System.out.println("Invalid Storage Type");
-				return;
-			}
-	
-			
-			new MainFrame(pointerDataStorage, pointerMultiPlatformSupport);
-	
-			pointerDataStorage.deleteOldBackups();
-			
-			parentLogger.info("successful setup");
+		MultiPlatformSupportHandler pointerMultiPlatformSupport = pointerMultiPlatformSupportFactory.getSupportHandler();
+		if(pointerMultiPlatformSupport == null) {
+			System.out.println("Unsupported OS");
+			Handler.LOGGER.fatal("Unsupported OS");
 		}
-		catch (Exception e) {
-			String fullException = "";
-			for (StackTraceElement exception : e.getStackTrace()) {
-				fullException += exception.toString() + " ";
-			}
-			parentLogger.fatal(fullException);
+		
+		DataStorageHandler pointerDataStorage = pointerDataStorageFactory.getDataStorage();
+		if(pointerDataStorage == null) {
+			System.out.println("Invalid Storage Type");
+			Handler.LOGGER.fatal("Invalid Storage Type");
+			return;
 		}
+
+		new MainFrame(pointerDataStorage, pointerMultiPlatformSupport);
+
+		pointerDataStorage.deleteOldBackups();
+		
+		Handler.LOGGER.info("successful setup for version " + VERSION);
+
 	
 
 		
