@@ -153,10 +153,16 @@ public class ContactLog extends JPanel {
 	}
 	
 	public void setContactLog(Log items) {
-		this.log = items;
-		items.loadFromDataModel(itemViews);
-		textPane.setText(items.getItemInfo("notes").getDataValue());
-		isNewLog = false;
+		if(items != null) {
+			this.log = items;
+			items.loadFromDataModel(itemViews);
+			textPane.setText(items.getItemInfo("notes").getDataValue());
+			isNewLog = false;
+		}
+		else {
+			clear();
+		}
+		
 	}
 	
 	
