@@ -556,7 +556,6 @@ public class ContactDetail extends JPanel {
 	
 	private void add() {
 		if (id != null) {
-			mainFrame.getContactLog().setContactLog(null);
 			mainFrame.changePage(MainFrame.CONTACT_LOG);
 		}
 		

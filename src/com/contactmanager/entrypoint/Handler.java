@@ -13,12 +13,10 @@ public class Handler implements Thread.UncaughtExceptionHandler{
 	public void uncaughtException(Thread t, Throwable e) {
 		String errorTrace = "";
 		for(StackTraceElement stElement :e.getStackTrace()){
-			errorTrace += stElement.toString() + "\n\t";
+			errorTrace += stElement.toString() + "\n";
 		}
 		LOGGER.fatal(errorTrace);
-		System.out.println(errorTrace);
+		
 	}
-	
-	
 
 }
