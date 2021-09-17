@@ -11,7 +11,7 @@ import com.contactmanager.view.MainFrame;
 
 public class Main 
 {
-	public static final String VERSION = "2.5.2";
+	public static final String VERSION = "2.5.3";
 
 	
 	public static void main(String[] args) throws SecurityException, IOException{		
