@@ -46,7 +46,7 @@ public class MainFrame extends JFrame {
 	public String currentCard;
 	
 	public MainFrame(DataStorageHandler dataStorage, MultiPlatformSupportHandler multiPlatformSupport) {
-		
+		super("Contact Manager");
 		contactInfo = new CurrentContactInfo(this,dataStorage);
 
 		
@@ -59,7 +59,7 @@ public class MainFrame extends JFrame {
 		contactLog = new ContactLog(this,contactInfo);
 		
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource(DataStorageHandler.ICON_PATH)));
-
+		
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);

@@ -34,8 +34,8 @@ public class Main
 			return;
 		}
 
-		new MainFrame(pointerDataStorage, pointerMultiPlatformSupport);
-
+		MainFrame mainFrame = new MainFrame(pointerDataStorage, pointerMultiPlatformSupport);
+		
 		pointerDataStorage.deleteOldBackups();
 		
 		Handler.LOGGER.info("successful setup for version " + VERSION);
