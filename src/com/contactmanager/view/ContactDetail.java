@@ -50,7 +50,6 @@ import javax.swing.undo.UndoManager;
 
 import com.contactmanager.datamodel.CurrentContactInfo;
 import com.contactmanager.datamodel.items.Log;
-import com.contactmanager.utils.io.ConfigFileData;
 import com.contactmanager.utils.io.DataStorageHandler;
 import com.contactmanager.utils.viewutils.JTableFromItemsWrapper;
 import com.contactmanager.utils.viewutils.TraversalPolicy;
@@ -263,7 +262,7 @@ public class ContactDetail extends JPanel {
 		
 		List<Map<Integer, JComponent>> tabOrder = new LinkedList<Map<Integer, JComponent>>();
 		
-		itemViews = new ItemViews(ConfigFileData.getInstance().getItemMetaData());
+		itemViews = new ItemViews(contactInfo.getContacts().getMetaData(),mainFrame);
 		
 		itemViews.displayItems(this, tabOrder);
 		

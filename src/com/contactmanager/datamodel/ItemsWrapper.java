@@ -157,5 +157,9 @@ public abstract class ItemsWrapper {
 		return null;
 	}
 	
+	public Map<String, Map<String, Object>> getMetaData(){
+		return new HashMap<String, Map<String, Object>>(metaDataMap);
+	}
+	
 	public abstract void save();
 }

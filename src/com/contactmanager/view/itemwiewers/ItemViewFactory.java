@@ -4,15 +4,16 @@ import java.util.Map;
 
 import com.contactmanager.datamodel.singleitem.DataType;
 import com.contactmanager.datamodel.singleitem.Item;
+import com.contactmanager.view.MainFrame;
 
 public class ItemViewFactory {
 	
-	public ItemView getItemView(String dataId, Map<String, Object> metaDataMap) throws Exception {
+	public ItemView getItemView(String dataId, Map<String, Object> metaDataMap,MainFrame mainFrame) throws Exception {
 		
 		DataType dataType = DataType.valueOf(metaDataMap.get(Item.DATA_TYPE_ID).toString());
 		switch (dataType) {
 		case LINK: {
-			return new LinkView(dataId,metaDataMap);
+			return new LinkView(dataId,metaDataMap,mainFrame);
 		}
 		case DATE:{
 			return new DateView(dataId, metaDataMap);

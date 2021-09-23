@@ -15,7 +15,10 @@ import com.contactmanager.utils.io.DataStorageHandler;
 
 public class Logs extends ItemsWrapper{
 	
+	private static final String DATE = "Last Contact";
+	
 	private Integer id;
+	
 	
 	public Logs(DataStorageHandler dataStorageHandler) {
 		super(dataStorageHandler);
@@ -32,7 +35,7 @@ public class Logs extends ItemsWrapper{
 		
 		for (Items log : wrapperMap.values()) {
 			try {
-				LocalDate date = LocalDate.parse(log.getItemInfo(Items.ID_FIELD).getDataValue(), formatter);
+				LocalDate date = LocalDate.parse(log.getItemInfo(DATE).getDataValue(), formatter);
 				if(date.isAfter(maxDate)) {
 					maxDate = date;
 					maxLog = log;

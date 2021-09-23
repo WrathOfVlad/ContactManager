@@ -24,7 +24,6 @@ public abstract class ItemView {
 	
 	
 	protected Boolean isInEditMode = false;
-	protected MainFrame mainFrame;
 	
 	
 	protected void initiate(String dataId, Map<String, Object> metaData) throws Exception {

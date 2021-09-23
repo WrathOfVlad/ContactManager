@@ -77,7 +77,7 @@ public class ContactLog extends JPanel {
 		
 		List<Map<Integer, JComponent>> tabOrder = new LinkedList<Map<Integer, JComponent>>();
 		
-		itemViews = new ItemViews(ConfigFileData.getInstance().getLogsMetaData());
+		itemViews = new ItemViews(ConfigFileData.getInstance().getLogsMetaData(),mainFrame);
 		
 		itemViews.displayItems(this, tabOrder);
 		

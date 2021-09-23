@@ -25,9 +25,12 @@ public class LinuxSupport extends MultiPlatformSupportHandler{
 	@Override
 	public void openLinkInBrowser(String url) throws Exception {
 		Runtime rt = Runtime.getRuntime();
-		String[] browsers = { "xdg-open", "firefox","google-chrome", "mozilla", "konqueror",
-		                                 "netscape", "opera", "links", "lynx" };
 
+		String browser = "python -m webbrowser -n " + "\"" + url + "\"";
+		rt.exec(new String[] { "sh", "-c", browser});
+		/*
+		String[] browsers = { "xdg-open", "firefox","google-chrome", "mozilla", "konqueror",
+		             "netscape", "opera", "links", "lynx" };
 		StringBuffer cmd = new StringBuffer();
 		for (int i = 0; i < browsers.length; i++)
 		    if(i == 0)
@@ -36,7 +39,7 @@ public class LinuxSupport extends MultiPlatformSupportHandler{
 		        cmd.append(String.format(" || %s \"%s\"", browsers[i], url)); 
 		    // If the first didn't work, try the next browser and so on
 
-		rt.exec(new String[] { "sh", "-c", cmd.toString() });	
+		*/
 	}
 
 }

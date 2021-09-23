@@ -13,11 +13,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.contactmanager.datamodel.singleitem.LinkItem;
+import com.contactmanager.view.MainFrame;
 
 public class LinkView extends DefaultView {
 	
-	public LinkView(String dataId, Map<String, Object> metaData) throws Exception {
+	private MainFrame mainFrame;
+	
+	public LinkView(String dataId, Map<String, Object> metaData, MainFrame mainFrame) throws Exception {
 		super(dataId, metaData);
+		this.mainFrame = mainFrame;
 	}
 
 	JLabel linkLabel = new JLabel();
@@ -67,7 +71,7 @@ public class LinkView extends DefaultView {
 			try {
 				mainFrame.openURL(textField.getText());
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(mainFrame, "Something went wrong");
+				JOptionPane.showMessageDialog(mainFrame,"Something went wrong");
 			}
 		}
 		else {

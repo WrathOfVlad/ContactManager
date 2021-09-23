@@ -8,16 +8,24 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import com.contactmanager.datamodel.CurrentContactInfo;
 import com.contactmanager.datamodel.items.Items;
+import com.contactmanager.datamodel.items.Log;
+import com.contactmanager.datamodel.singleitem.ExternalLoading;
 import com.contactmanager.datamodel.singleitem.Item;
+import com.contactmanager.view.MainFrame;
 
 public class ItemViews {
 	public static final String LABLE_TYPE = "dataLabel";
 	
 	private Map<String, ItemView> itemViewMap = new LinkedHashMap<>();
 	
+	private CurrentContactInfo contactInfo;
+	private MainFrame mainFrame;
 	
-	public ItemViews(Map<String, Map<String,Object>> metaData) {
+	public ItemViews(Map<String, Map<String,Object>> metaData,MainFrame mainFrame) {
+		this.contactInfo = mainFrame.getContactInfo();
+		this.mainFrame = mainFrame;
 		try {
 			initializeMap(metaData);
 		} catch (Exception e) {
@@ -29,7 +37,7 @@ public class ItemViews {
 		ItemViewFactory factory = new ItemViewFactory();
 		for (String dataId : metaData.keySet()) {
 			if(metaData.get(dataId).containsKey(LABLE_TYPE)) {
-				addToMap(dataId, factory.getItemView(dataId, metaData.get(dataId)));
+				addToMap(dataId, factory.getItemView(dataId, metaData.get(dataId),mainFrame));
 			}
 		}
 	}
@@ -48,8 +56,25 @@ public class ItemViews {
 		List<Boolean> isValidList = new ArrayList<>();
 		for (String dataId : itemViewMap.keySet()) {
 			Item item = tempDataMap.get(dataId);
+			if(item.getExternalLoading() != null) {
+				if(item.getExternalLoading().equals(ExternalLoading.LOGS)) {
+					Log log= contactInfo.getLogs().getLatestLog();
+					if(log != null)  {
+						Item logItem = log.getItemInfo(dataId);
+						ItemView itemView = itemViewMap.get(dataId);
+						String dataValue = logItem.getDataValue();
+						itemView.setTextFieldText(dataValue);
+						isValidList.add(item.setDataValue(dataValue));
+						continue;
+					}
+				}
+			}
+			
 			ItemView itemView = itemViewMap.get(dataId);
 			isValidList.add(item.setDataValue(itemView.getTextFieldText()));
+		
+			
+			
 			
 		}
 		if(isValidList.contains(false)) {return false;}
