@@ -34,7 +34,7 @@ public class Main
 			return;
 		}
 
-		MainFrame mainFrame = new MainFrame(pointerDataStorage, pointerMultiPlatformSupport);
+		new MainFrame(pointerDataStorage, pointerMultiPlatformSupport);
 		
 		pointerDataStorage.deleteOldBackups();
 		

@@ -82,7 +82,7 @@ public class ContactDetail extends JPanel {
 	public ContactDetail(MainFrame mainFrame, CurrentContactInfo contactInfo) {
 		this.mainFrame = mainFrame;
 		this.contactInfo = contactInfo;
-		
+
 		table = new JTableFromItemsWrapper(contactInfo.getLogs());
 		table.addMouseListener(new MouseAdapter() {
 			@Override

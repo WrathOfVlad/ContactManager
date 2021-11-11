@@ -8,7 +8,6 @@ import javax.swing.JPanel;
 
 import com.contactmanager.datamodel.singleitem.DataType;
 import com.contactmanager.datamodel.singleitem.Item;
-import com.contactmanager.view.MainFrame;
 
 public abstract class ItemView {
 	public static final String IS_EDITABLE_FIELD = "isEditable";

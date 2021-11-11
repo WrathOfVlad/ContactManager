@@ -20,7 +20,6 @@ public class WindowsSupport extends MultiPlatformSupportHandler{
 		try {
 			image = ImageIO.read(getClass().getResource(DataStorageHandler.ICON_PATH));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		    SystemTray tray = SystemTray.getSystemTray();
@@ -30,7 +29,6 @@ public class WindowsSupport extends MultiPlatformSupportHandler{
 		    try {
 				tray.add(trayIcon);
 			} catch (AWTException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

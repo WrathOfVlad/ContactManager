@@ -17,6 +17,7 @@ public class Contacts extends ItemsWrapper{
 	public Contacts(DataStorageHandler dataStorage, MainFrame mainFrame) {
 		super(dataStorage);
 		this.mainFrame = mainFrame;
+		
 	}
 	
 	@Override

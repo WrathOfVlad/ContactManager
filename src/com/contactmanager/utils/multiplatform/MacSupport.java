@@ -13,7 +13,6 @@ public class MacSupport extends MultiPlatformSupportHandler{
 		    try {
 				builder.inheritIO().start();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	}

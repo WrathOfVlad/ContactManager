@@ -17,7 +17,6 @@ public class LinuxSupport extends MultiPlatformSupportHandler{
 		    try {
 				builder.inheritIO().start();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	}
@@ -25,7 +24,6 @@ public class LinuxSupport extends MultiPlatformSupportHandler{
 	@Override
 	public void openLinkInBrowser(String url) throws Exception {
 		Runtime rt = Runtime.getRuntime();
-
 		String browser = "python -m webbrowser -n " + "\"" + url + "\"";
 		rt.exec(new String[] { "sh", "-c", browser});
 		/*
