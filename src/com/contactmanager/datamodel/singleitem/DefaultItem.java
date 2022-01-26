@@ -3,25 +3,19 @@ package com.contactmanager.datamodel.singleitem;
 import java.util.Map;
 
 public class DefaultItem extends Item{
-	
-	
 	public DefaultItem(String dataId, Map<String, Object> metaData) throws Exception {
 		addGeneralInfo(dataId,metaData);
 
 		this.dataType = DataType.DEFAULT;
-	}
-	
-	
+	}	
 	@Override
 	public DataType getDataType() {
 		return dataType;
 	}
-
 	@Override
 	public ExternalLoading getExternalLoading() {
 		return loadingLocation;
-	}
-	
+	}	
 	public static String getRegex(DataType dataType) {
 		switch (dataType) {
 		case DATE: {
@@ -37,7 +31,6 @@ public class DefaultItem extends Item{
 			return null;
 		}
 	}
-	
 	protected void addGeneralInfo(String dataId, Map<String, Object> metaData) {
 		this.dataId = dataId;
 		if(metaData.containsKey(LOADING_LOCATION)) {
@@ -45,19 +38,14 @@ public class DefaultItem extends Item{
 		}
 		
 	}
-	
+	@Override
 	public Boolean setValue(String value) {
 		this.dataValue = value;
 		return true;
 	};
-
 	@Override
 	public String getDataValue() {
 		return this.dataValue;
 	}
-	@Override
-	public Boolean setDataValue(String value) {
-		this.dataValue = value;
-		return true;
-	}
+
 }

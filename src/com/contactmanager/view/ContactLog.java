@@ -174,7 +174,7 @@ public class ContactLog extends JPanel {
 	}
 	private void save() {
 		log.saveToDataModel(itemViews);
-		log.getItemInfo("notes").setDataValue(textPane.getText());
+		log.getItemInfo("notes").setValue(textPane.getText());
 		if(isNewLog){
 			contactInfo.getLogs().addItem(log);
 		}

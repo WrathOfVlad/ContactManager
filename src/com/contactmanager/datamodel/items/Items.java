@@ -1,6 +1,5 @@
 package com.contactmanager.datamodel.items;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,10 +25,6 @@ public abstract class Items {
 		
 	}
 	
-	
-	public List<String> getItemIds(){
-		return new ArrayList<String>(dataMap.keySet());
-	}
 	public Item getItemInfo(String dataId) {
 		return dataMap.get(dataId);
 	}
@@ -97,7 +92,7 @@ public abstract class Items {
 
 		for (String textField : rowData.keySet()) {
 			if(textField.equals(ID_FIELD)) {continue;}
-			dataMap.get(textField).setDataValue(rowData.get(textField));
+			dataMap.get(textField).setValue(rowData.get(textField));
 		}
 		return true; 
 	}

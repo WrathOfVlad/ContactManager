@@ -26,7 +26,7 @@ public abstract class Item {
 	protected ExternalLoading loadingLocation = null;
 	
 	public abstract String getDataValue(); 
-	public abstract Boolean setDataValue(String value);
+	public abstract Boolean setValue(String value);
 
 	public abstract DataType getDataType();
 	public abstract ExternalLoading getExternalLoading();

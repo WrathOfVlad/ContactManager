@@ -64,14 +64,14 @@ public class ItemViews {
 						ItemView itemView = itemViewMap.get(dataId);
 						String dataValue = logItem.getDataValue();
 						itemView.setTextFieldText(dataValue);
-						isValidList.add(item.setDataValue(dataValue));
+						isValidList.add(item.setValue(dataValue));
 						continue;
 					}
 				}
 			}
 			
 			ItemView itemView = itemViewMap.get(dataId);
-			isValidList.add(item.setDataValue(itemView.getTextFieldText()));
+			isValidList.add(item.setValue(itemView.getTextFieldText()));
 		
 			
 			
