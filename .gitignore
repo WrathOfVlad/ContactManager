@@ -1,6 +1,7 @@
-/bin
+/bin/
 /config.json
 /wbp-meta/
 /.settings/
 /target/
 /errorLogs/
+/.vscode/
