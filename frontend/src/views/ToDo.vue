@@ -23,10 +23,6 @@
               default: "ToDo"
             }
         },
-        mounted(){
-            $this.$nextTick;
-            this.passToParent();
-        },
 
         setup() {
             const todoElements = ref(['John',"bananna"]);

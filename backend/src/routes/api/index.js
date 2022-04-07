@@ -16,4 +16,10 @@ router.post("/", (req,res) => {
 });
 
 
+router.get("/contacts", (req,res) => {
+    const allData = require("../../../data/contacts.json");
+    res.json(allData);
+});
+
+
 module.exports = router;

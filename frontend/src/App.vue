@@ -1,18 +1,21 @@
 <template>
-    <MainGrid />
+    <RouterView />
 </template>
 
 
 <script>
     import { ref } from 'vue'
-    import ToDo from './components/ToDo.vue'
-    import MainGrid from './components/MainGrid.vue';    
+    import ToDo from './views/ToDo.vue'
+    import MainGrid from './views/MainGrid.vue'; 
+    import Login from './views/Login.vue';   
+    
 
     export default {
         name: "App",
         components: {
         ToDo,
-        MainGrid
+        MainGrid,
+        Login
     },
         setup() {
             const msg = ref('Hello World!');
@@ -22,7 +25,7 @@
             // }
             return {
                 msg,
-                setRef
+                // setRef
             }
         }
     }
