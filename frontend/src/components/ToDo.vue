@@ -14,7 +14,7 @@
 <script>
     import { ref } from 'vue'
     export default {
-        
+        name:"ToDo",
         props:{
           title: { 
               type: String,
