@@ -1,9 +1,5 @@
 <template>
-  <h1>{{ msg }}</h1>
-  <p id="p"></p>
-  <input v-model="msg">
-  <ToDo id="First"></ToDo>
-  <button @click=ajaxClick()>Get</button>
+    <MainGrid />
 </template>
 
 
@@ -21,25 +17,12 @@
         setup() {
             const msg = ref('Hello World!');
 
-            const ajaxClick = async function() {
-                console.log("clicked");
-                $.ajax({
-                    url:"http://localhost:8080/api",
-                    success: result => {
-                        $("#first").todoElements=ref(result);
-                        console.log(result);
-                    },
-                    error: error => {
-                        console.error(error);
-                        console.log(error.error)
-                    }
-
-                })
-
-            }
+            // const setRef = (ref) => {
+            //     console.log(ref.value);
+            // }
             return {
                 msg,
-                ajaxClick,
+                setRef
             }
         }
     }

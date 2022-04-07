@@ -9,6 +9,8 @@
     <button @click="addElement">Add</button>
 
     <button @click="isRemove = !isRemove">Toggle Remove</button>
+    <button @click="todoGet()">Update From Server</button>
+    <button @click="todoSave()">SaveToServer</button>
 </template>
 
 <script>
@@ -21,17 +23,52 @@
               default: "ToDo"
             }
         },
+        mounted(){
+            $this.$nextTick;
+            this.passToParent();
+        },
 
         setup() {
             const todoElements = ref(['John',"bananna"]);
             const newItem = ref("");
             const isRemove = ref(false);
 
+            const passToParent = () => {
+                $emit("setRef", isRemove);
+            }
+
             const elementClicked = (key) => {
                 if(isRemove.value){
                     console.log(key);
                     todoElements.value.splice(key,1);
                 }
+            }
+
+            const todoGet = async function() {
+                $.ajax({
+                    datatype: "json",
+                    url:"http://localhost:8080/api",
+                    success: result => {
+                        todoElements.value = result;
+                        console.log(result);
+                    },
+                    error: error => {
+                        console.error(error);
+                    }
+
+                })
+            }
+            const todoSave = async function() {
+                $.ajax({
+                    method: "POST",
+                    url: "http://localhost:8080/api",
+                    data: {
+                        allData: JSON.stringify(todoElements.value)
+                    },
+                    error: error => {
+                        console.error(error);
+                    }
+                })
             }
 
             const addElement = () => {
@@ -44,7 +81,10 @@
                 newItem,
                 isRemove,
                 addElement,
-                elementClicked
+                elementClicked,
+                todoGet,
+                todoSave,
+                passToParent
             }
         }
     }
