@@ -1,9 +1,12 @@
 #!/bin/zsh
 
+file="all.txt"
+echo "" > $file
 for i in **/*.java; do
-    echo "\n\n--------------------------------------------------" >> all.txt
-    echo "File Directory: ${i%/*}" >> all.txt
-    echo "File Name: ${${i##*/}%.java}\n" >> all.txt
-    cat $i >> all.txt
-    echo "--------------------------------------------------" >> all.txt
+    echo "/*==================================================" >> $file
+    echo "* File Name: ${${i##*/}%.java}\n" >> $file
+    echo "* File Directory: ${i%/*}" >> $file
+    echo "==================================================*/" >> $file
+    cat $i >> $file
+    echo "\n" >> $file
 done
