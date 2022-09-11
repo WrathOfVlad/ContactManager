@@ -7,7 +7,7 @@ const router = createRouter({
     routes: [
         {
             path: '/login',
-            name: 'login',
+            name: 'Login',
             component: Login
         },
         {
@@ -21,10 +21,11 @@ const router = createRouter({
     ]
 })
 
+router.beforeEach(async (to, from) => {
+    if ( !isAuthenticated && to.name !== 'Login') {
+      return { name: 'Login' }
+    }
+  })
 
-// const router = createRouter({
-//   history: createWebHistory(import.meta.env.BASE_URL),
-//   routes: routes,
-// });
 
 export default router;

@@ -22,4 +22,26 @@ router.get("/contacts", (req,res) => {
 });
 
 
+
+router.post("/login", (req,res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+
+    const users = require("../../../data/users.json");
+
+    if (users["1"].username == username){
+        if(users["1"].password == password){
+            res.json("PASSED");
+        }
+        else{
+            res.json("incorrect password");
+        }
+    }
+    else{
+        res.json("incorrect user");
+    }
+
+})
+
+
 module.exports = router;
