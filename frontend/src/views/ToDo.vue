@@ -1,4 +1,5 @@
 <template>
+    <h1>Hello</h1>
     <h1>{{ title }}</h1>
     <ul>
         <li :style="{color:isRemove ? 'red' : 'black' , cursor: isRemove ? 'pointer':'default'}" @click="elementClicked(index)" v-for="(element,index) in todoElements" v-bind:key="index"> 
